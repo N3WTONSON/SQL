@@ -1,0 +1,1718 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Grimoire : Premiers pas</title>
+<link rel="icon" href="assets/logo-128.webp" type="image/webp">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Alegreya:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;600&family=Cinzel:wght@700&display=swap">
+<style>
+/* Layout : une seule carte au centre, une seule chose à faire à la fois. Même monde que le Grimoire, en plus calme. */
+:root {
+  --night: #11132a; --stone: #191c36; --stone-2: #222644; --seam: #343a62;
+  --ink: #ece7da; --ink-dim: #a3a3b8; --torch: #f0a43a; --torch-deep: #b8701a;
+  --rune: #6fd3b0; --blood: #e2574c; --arcane: #66c9ff;
+  --f-display: "Pirata One", Georgia, serif;
+  --f-body: "Alegreya", Georgia, "Times New Roman", serif;
+  --f-code: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --f-hud: "Cinzel", "Trajan Pro", Georgia, serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; background: var(--night); color: var(--ink); }
+body { font-family: var(--f-body); font-size: 19px; line-height: 1.55; min-height: 100%;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 48px;
+  background-image: radial-gradient(ellipse 60% 40% at 50% -10%, rgba(102,201,255,.10), transparent 70%); }
+img { max-width: 100%; }
+.wrap { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+
+header { display: flex; align-items: center; gap: 12px; padding-block: 14px; border-bottom: 2px solid var(--seam); flex-wrap: wrap; }
+header img { width: 44px; height: auto; }
+header h1 { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 28px; color: var(--torch); line-height: 1; margin-right: auto; }
+header h1 small { display: block; font-family: var(--f-hud); font-size: 12px; color: var(--ink-dim); letter-spacing: 1.5px; margin-top: 4px; }
+.dots { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; max-width: 360px; }
+.dot { width: 16px; height: 8px; background: var(--seam); }
+.dot.done { background: var(--rune); }
+.dot.now { background: var(--torch); }
+
+.lessonTag { font-family: var(--f-hud); font-size: 13px; letter-spacing: 1.6px; color: var(--arcane); }
+.card { background: var(--stone); border: 1px solid var(--seam); padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+.card h2 { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: clamp(28px, 5vw, 38px); line-height: 1.1; text-wrap: balance; }
+.card p { margin: 0; max-width: 62ch; }
+.ask { font-size: 22px; line-height: 1.4; border-left: 4px solid var(--torch); padding: 6px 0 6px 14px; }
+.stepcount { font-family: var(--f-hud); font-size: 12px; letter-spacing: 1.4px; color: var(--ink-dim); }
+code { font-family: var(--f-code); font-size: .88em; background: var(--stone-2); padding: 1px 5px; color: var(--ink); }
+.word { display: inline-grid; gap: 0; text-align: center; vertical-align: middle; margin: 2px; }
+.word b { font-family: var(--f-code); font-weight: 600; font-size: 15px; background: var(--stone-2); border: 1px solid var(--seam); padding: 2px 8px; color: var(--torch); }
+.word i { font-style: normal; font-size: 13px; color: var(--ink-dim); }
+
+/* tableaux */
+.tablewrap { overflow-x: auto; border: 1px solid var(--seam); }
+table { border-collapse: collapse; font-family: var(--f-code); font-size: 14px; min-width: 100%; }
+th { text-align: left; color: var(--torch); font-weight: 600; padding: 7px 12px; border-bottom: 1px solid var(--seam); white-space: nowrap; background: var(--stone-2); }
+td { padding: 6px 12px; border-bottom: 1px solid #1c2040; white-space: nowrap; font-variant-numeric: tabular-nums; }
+th .fr { display: block; font-family: var(--f-body); font-weight: 400; font-size: 12px; color: var(--ink-dim); }
+tr.keep td { background: rgba(111,211,176,.14); }
+tr.drop td { color: #5d6174; text-decoration: line-through; text-decoration-color: rgba(226,87,76,.6); }
+td .tag { color: #11132a; font-weight: 600; padding: 1px 7px; }
+.tables { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; align-items: start; }
+.tables > div { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.partTag { color: var(--torch); }
+.legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 15px; color: var(--ink-dim); }
+.legend span::before { content: ""; display: inline-block; width: 12px; height: 12px; margin-right: 6px; vertical-align: -1px; }
+.legend .k::before { background: rgba(111,211,176,.5); }
+.legend .d::before { background: rgba(226,87,76,.5); }
+.count { font-family: var(--f-hud); font-size: 12px; letter-spacing: 1px; color: var(--ink-dim); }
+
+/* blocs */
+.zoneLabel { font-family: var(--f-hud); font-size: 12px; letter-spacing: 1.4px; color: var(--ink-dim); }
+.phrase { min-height: 82px; border: 2px dashed var(--seam); padding: 10px; display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-start; }
+.phrase .placeholder { color: var(--ink-dim); font-style: italic; align-self: center; }
+.bank { display: flex; flex-wrap: wrap; gap: 8px; }
+.tile { display: grid; gap: 2px; text-align: center; background: var(--stone-2); border: 1px solid var(--seam); border-bottom-width: 3px; padding: 8px 12px 6px; cursor: pointer; color: var(--ink); min-width: 64px; }
+.tile:hover { border-color: var(--torch); }
+.tile:focus-visible, .btn:focus-visible, .opt:focus-visible, textarea:focus-visible { outline: 2px solid var(--torch); outline-offset: 2px; }
+.tile .sql { font-family: var(--f-code); font-weight: 600; font-size: 16px; color: var(--torch); }
+.tile .fr { font-size: 13px; color: var(--ink-dim); line-height: 1.2; }
+.phrase .tile { border-color: var(--torch-deep); }
+.phrase .tile.given { border-style: dashed; border-color: var(--seam); opacity: .75; cursor: default; }
+.phrase .tile.given:hover { border-color: var(--seam); }
+.codeLine { font-family: var(--f-code); font-size: 16px; padding: 10px 12px; background: #0b0d1e; border: 1px solid var(--seam); min-height: 44px; word-break: break-word; }
+.reading { font-size: 18px; color: var(--ink); }
+.reading em { color: var(--arcane); font-style: normal; }
+
+textarea { width: 100%; min-height: 96px; resize: vertical; font-family: var(--f-code); font-size: 17px; line-height: 1.5; padding: 12px; color: var(--ink); background: #0b0d1e; border: 2px solid var(--seam); }
+
+.btns { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.btn { font-family: var(--f-hud); font-size: 14px; letter-spacing: 1px; padding: 12px 18px; border: 2px solid var(--seam); background: transparent; color: var(--ink); cursor: pointer; }
+.btn:hover { border-color: var(--torch); }
+.btn.main { background: var(--torch); border-color: var(--torch); color: #1a1206; box-shadow: 0 4px 0 var(--torch-deep); }
+.btn.main:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--torch-deep); }
+.btn[disabled] { opacity: .4; cursor: not-allowed; }
+
+.opts { display: flex; flex-direction: column; gap: 8px; }
+.opt { text-align: left; font: inherit; font-size: 18px; color: var(--ink); background: var(--stone-2); border: 1px solid var(--seam); padding: 12px 14px; cursor: pointer; }
+.opt:hover { border-color: var(--torch); }
+.opt.ok { border-color: var(--rune); }
+.opt.no { border-color: var(--blood); }
+
+.fb { padding: 12px 14px; border-left: 4px solid; font-size: 18px; }
+.fb b { font-family: var(--f-hud); font-size: 13px; letter-spacing: 1px; font-weight: 400; display: block; margin-bottom: 2px; }
+.fb.ok { border-color: var(--rune); background: rgba(111,211,176,.08); }
+.fb.ok b { color: var(--rune); }
+.fb.try { border-color: var(--torch); background: rgba(240,164,58,.07); }
+.fb.try b { color: var(--torch); }
+.fb.info { border-color: var(--arcane); background: rgba(102,201,255,.06); }
+.fb.info b { color: var(--arcane); }
+/* --- moyens mnémotechniques --- */
+.memo { border: 2px solid var(--arcane); background: rgba(102,201,255,.06); padding: 16px 18px; display: flex; flex-direction: column; gap: 6px; }
+.memo .notion { font-family: var(--f-hud); font-size: 12px; letter-spacing: 1.4px; color: var(--arcane); }
+.memo .hook { font-size: 24px; line-height: 1.3; font-weight: 600; color: var(--ink); text-wrap: balance; }
+.memo .hook u { text-decoration: none; color: var(--torch); }
+.memo .detail { font-size: 17px; color: var(--ink-dim); }
+.memos { display: flex; flex-direction: column; gap: 12px; }
+.tip { font-size: 15px; color: var(--ink-dim); font-style: italic; }
+.recall { font-family: var(--f-hud); font-size: 12px; letter-spacing: 1.4px; color: var(--night); background: var(--torch); padding: 3px 8px; align-self: flex-start; }
+.wilda { display: flex; flex-wrap: wrap; gap: 6px; align-items: stretch; }
+.wilda span { display: grid; text-align: center; background: var(--stone-2); border: 1px solid var(--seam); padding: 6px 10px; }
+.wilda b { font-size: 26px; font-family: var(--f-display); font-weight: 400; color: var(--torch); line-height: 1; }
+.wilda i { font-style: normal; font-size: 13px; color: var(--ink-dim); }
+.wilda code { font-size: 12px; }
+#pocket, #train { display: flex; flex-direction: column; gap: 12px; }
+#train h2 { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 32px; }
+.chain { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.chain span { display: grid; grid-template-columns: auto auto; column-gap: 6px; align-items: baseline; background: var(--stone-2); border: 1px solid var(--seam); padding: 6px 9px; }
+.chain b { font-family: var(--f-hud); font-size: 12px; color: var(--arcane); display: inline; margin: 0; letter-spacing: 0; }
+.chain code { background: none; padding: 0; color: var(--torch); font-weight: 600; }
+.chain i { grid-column: 1 / -1; font-style: normal; font-size: 14px; color: var(--ink); }
+.mastery { display: flex; flex-wrap: wrap; gap: 6px; }
+.mk { display: grid; gap: 3px; background: var(--stone-2); border: 1px solid var(--seam); padding: 6px 8px; }
+.mk.won { border-color: var(--rune); }
+.mk code { background: none; padding: 0; font-size: 13px; color: var(--ink); }
+.pips { display: flex; gap: 2px; }
+.pips i { width: 9px; height: 5px; background: var(--seam); }
+.pips i.on { background: var(--rune); }
+.tprog { display: flex; align-items: center; gap: 12px; }
+.tbar { flex: 1; height: 6px; background: var(--seam); position: relative; }
+.tbar i { position: absolute; inset: 0 auto 0 0; background: var(--arcane); transition: width .4s; }
+.blank { display: inline-block; min-width: 70px; text-align: center; border-bottom: 2px solid var(--torch); color: var(--torch); }
+.tile.placed { cursor: default; border-color: var(--rune); animation: tileIn .22s ease-out; }
+.opt[disabled] { cursor: default; }
+#trainBanner { border: 2px solid var(--arcane); background: rgba(102,201,255,.07); padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between; }
+#trainBanner p { margin: 0; }
+#pocket h2 { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 32px; }
+.learned { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 6px; }
+.footer { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 15px; color: var(--ink-dim); }
+.footer a, .footer button { color: var(--arcane); background: none; border: 0; font: inherit; cursor: pointer; padding: 0; text-decoration: underline; }
+.pop { animation: pop .35s ease-out; }
+@keyframes pop { from { transform: scale(.96); opacity: .4; } to { transform: none; opacity: 1; } }
+/* --- images, sons, animations --- */
+.pix { image-rendering: pixelated; flex: none; vertical-align: middle; }
+.tile .pix { margin: 0 auto 2px; }
+.zoneLabel .pix { margin-right: 6px; vertical-align: -6px; }
+.hudBtns { display: flex; gap: 8px; align-items: center; margin-left: auto; }
+.switchBtn { display: inline-flex; align-items: center; gap: 7px; font-family: var(--f-hud); font-size: 12px; letter-spacing: 1px; text-decoration: none; color: var(--night); background: var(--torch); border: 1px solid var(--torch); padding: 6px 11px; white-space: nowrap; transition: transform 0.15s ease, background 0.15s ease; }
+.switchBtn:hover { background: #f7c06a; transform: translateY(-1px); }
+.switchBtn:focus-visible { outline: 2px solid var(--arcane); outline-offset: 2px; }
+.switchBtn .arr { font-family: var(--f-body); font-size: 15px; line-height: 1; }
+@media (max-width: 560px) { .switchBtn .long { display: none; } }
+.soundBtn { font-family: var(--f-hud); font-size: 12px; letter-spacing: 1px; background: none; border: 1px solid var(--seam); color: var(--ink-dim); padding: 6px 9px; cursor: pointer; }
+.soundBtn:hover { border-color: var(--torch); color: var(--ink); }
+.phrase .tile:not(.given) { animation: tileIn .22s ease-out; }
+@keyframes tileIn { from { transform: translateY(-8px) scale(.9); opacity: .2; } to { transform: none; opacity: 1; } }
+tbody tr { animation: rowIn .35s ease-out both; animation-delay: calc(var(--i, 0) * 45ms); }
+@keyframes rowIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: none; } }
+tr.drop td { animation: bounced .5s ease-in both; animation-delay: calc(700ms + var(--i, 0) * 160ms); }
+@keyframes bounced { 0% { background: transparent; color: var(--ink); text-decoration-color: transparent; } 40% { background: rgba(226,87,76,.25); color: var(--ink); text-decoration-color: transparent; } 100% { background: transparent; color: #5d6174; text-decoration-color: rgba(226,87,76,.7); } }
+tr.keep td { animation: kept .5s ease-out both; animation-delay: calc(700ms + var(--i, 0) * 160ms); }
+@keyframes kept { from { background: transparent; } to { background: rgba(111,211,176,.14); } }
+td .tag { display: inline-block; animation: tagPulse 1.6s ease-in-out 2; animation-delay: calc(400ms + var(--i, 0) * 60ms); }
+@keyframes tagPulse { 50% { transform: scale(1.18); } }
+.fb, .card { position: relative; }
+.spark { position: absolute; left: 50%; top: 50%; width: 7px; height: 7px; pointer-events: none; animation: spark .85s ease-out forwards; z-index: 5; }
+@keyframes spark { from { transform: translate(-50%, -50%); opacity: 1; } to { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(90deg); opacity: 0; } }
+.shake { animation: shake .35s; }
+@keyframes shake { 25% { transform: translateX(-6px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-3px); } }
+.castles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin: 6px 0 10px; }
+.castle { animation: rise 0.45s ease-out both; animation-delay: calc(var(--i, 0) * 0.1s); margin: 0; position: relative; border: 2px solid var(--torch-deep); border-radius: 6px; overflow: hidden; background: var(--night); }
+.castle img { display: block; width: 100%; height: auto; aspect-ratio: 720 / 411; object-fit: cover; }
+.castle figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 14px 7px 5px; background: linear-gradient(transparent, rgba(17, 19, 42, 0.94) 42%); display: flex; flex-direction: column; font-size: 12px; line-height: 1.25; color: var(--ink); }
+.castle figcaption b { color: var(--torch); font-size: 14px; }
+.castle figcaption code { font-size: 10.5px; color: var(--ink-dim); background: none; padding: 0; }
+.kingdom { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+.kcard { border: 1px solid var(--seam); background: var(--stone-2); padding: 10px; display: flex; flex-direction: column; gap: 5px; animation: rise 0.45s ease-out both; animation-delay: calc(var(--i, 0) * 0.08s); }
+.kart { margin: 0 0 4px; position: relative; border: 2px solid var(--torch-deep); border-radius: 6px; overflow: hidden; }
+.kart img { display: block; width: 100%; height: auto; aspect-ratio: 720 / 411; object-fit: cover; transition: transform 0.4s ease; }
+.kcard:hover .kart img { transform: scale(1.04); }
+.kart figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 16px 8px 6px; display: flex; align-items: center; gap: 6px; background: linear-gradient(transparent, rgba(17, 19, 42, 0.92) 50%); font-family: var(--f-hud); font-size: 13px; letter-spacing: 0.06em; color: var(--ink); }
+.kart figcaption code { font-size: 17px; letter-spacing: 0; }
+.kcols { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
+.kcols code { font-size: 12px !important; font-weight: 400 !important; color: var(--ink) !important; border: 1px solid var(--seam) !important; padding: 1px 5px !important; background: var(--night) !important; }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .kcard, .kart img { animation: none; transition: none; } }
+.kcard .pix { flex: none; }
+@keyframes float { 50% { transform: translateY(-4px); } }
+.kcard code { font-size: 16px; color: var(--torch); background: none; padding: 0; font-weight: 600; }
+.kcard b { font-weight: 600; }
+.kcard i { font-size: 14px; color: var(--ink-dim); font-style: normal; line-height: 1.3; }
+
+/* ---------- Tablettes et écrans tactiles ---------- */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+button, a, summary, .tile, .opt, [data-ins] { touch-action: manipulation; -webkit-tap-highlight-color: rgba(240, 164, 58, 0.25); }
+textarea { font-size: max(16px, 1em); }            /* sous 16 px, l'iPad zoome dès qu'on touche le champ */
+@media (hover: none) {                              /* au doigt, l'effet de survol resterait « collé » après le toucher */
+  .switchBtn:hover { transform: none; background: var(--torch); }
+  .tile:hover, .opt:hover, .btn:hover { border-color: var(--seam); }
+  .phrase .tile:hover { border-color: var(--torch-deep); }
+  .opt.ok:hover { border-color: var(--rune); } .opt.no:hover { border-color: var(--blood); }
+  .kcard:hover .kart img { transform: none; }
+}
+@media (pointer: coarse) {
+  .switchBtn, .soundBtn { min-height: 42px; padding-inline: 14px; }
+  .footer { gap: 6px 18px; }
+  .footer a, .footer button { min-height: 44px; display: inline-flex; align-items: center; }
+  .btn { min-height: 48px; }
+  .tile { min-height: 52px; min-width: 48px; }
+  .opt { min-height: 52px; }
+}
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+@media (max-width: 520px) { body { font-size: 18px; } .card { padding: 16px; } .ask { font-size: 20px; } .dot { width: 18px; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <img src="assets/logo-128.webp" alt="" width="44" height="47">
+    <h1>Premiers pas<small>LE GRIMOIRE DES REQUÊTES</small></h1>
+    <div class="dots" id="dots" aria-label="Progression"></div>
+    <div class="hudBtns"><a class="switchBtn" id="switchMode" href="index.html" data-switch title="Le Grimoire des Requêtes : l'aventure complète"><span class="arr">⇄</span>L'aventure<span class="long"> complète</span></a>
+    <button class="soundBtn" id="sound" aria-pressed="true">SON : OUI</button></div>
+  </header>
+  <div class="lessonTag" id="tag"></div>
+  <div id="trainBanner" hidden><p><b>Ton entraînement du jour t'attend.</b> Dix questions, trois minutes, pour ancrer les mots et l'ordre.</p><button class="btn main" id="bannerGo">S'entraîner</button></div>
+  <main class="card pop" id="card" aria-live="polite"><p>Le grimoire s'ouvre…</p></main>
+  <section class="card" id="pocket" hidden aria-label="Aide-mémoire"></section>
+  <section class="card" id="train" hidden aria-label="Entraînement" aria-live="polite"></section>
+  <div class="footer">
+    <button id="back">← Étape précédente</button>
+    <span><button id="trainBtn">S'entraîner (3 min)</button> · <button id="pocketBtn">Mon aide-mémoire</button></span>
+    <span><a href="index.html" target="_blank" rel="noopener">Aller à l'aventure complète</a> · <button id="restart">Recommencer</button></span>
+  </div>
+</div>
+
+<script src="vendor/sql-wasm.js"></script>
+<script src="vendor/sql-wasm-binary.js"></script>
+<script>
+"use strict";
+const SCHEMA_SQL = "\nCREATE TABLE visites (\n  id INTEGER PRIMARY KEY, num_heros INTEGER REFERENCES heros(id), num_chateau INTEGER REFERENCES chateaux(id), jour INTEGER, heure INTEGER\n);\nCREATE TABLE chateaux (\n  id INTEGER PRIMARY KEY, nom TEXT NOT NULL, region TEXT, seigneur TEXT, tresor INTEGER\n);\nCREATE TABLE heros (\n  id INTEGER PRIMARY KEY, nom TEXT NOT NULL, classe TEXT, niveau INTEGER, pv INTEGER, fortune INTEGER,\n  num_chateau INTEGER REFERENCES chateaux(id)\n);\nCREATE TABLE monstres (\n  id INTEGER PRIMARY KEY, nom TEXT NOT NULL, type TEXT, region TEXT, pv INTEGER, danger INTEGER, butin TEXT\n);\nCREATE TABLE sorts (\n  id INTEGER PRIMARY KEY, nom TEXT NOT NULL, ecole TEXT, puissance INTEGER, mana INTEGER,\n  num_heros INTEGER REFERENCES heros(id)\n);\nCREATE TABLE inventaire (\n  id INTEGER PRIMARY KEY, objet TEXT NOT NULL, rarete TEXT, valeur INTEGER,\n  num_heros INTEGER REFERENCES heros(id)\n);\n\nINSERT INTO visites VALUES\n (1,1,1,3,19),(2,3,1,3,21),(3,4,1,3,22),(4,6,1,3,23),(5,2,2,3,22),(6,5,2,3,21),(7,1,1,2,22),(8,4,3,3,23),(9,6,3,2,20);\n\nINSERT INTO chateaux VALUES\n (1,'Bastion de l''Aube','Plaines Dorées','Reine Ysolde',12000),\n (2,'Fort Roc-Tonnerre','Pics Gelés','Thane Hrolf',4300),\n (3,'Tour Penchée de Brumeval','Marais Putride','Archimage Ombrelin',870);\n\nINSERT INTO heros VALUES\n (1,'Aria Lamebrume','Paladin',12,140,320,1),\n (2,'Borin Barbe-de-Fer','Guerrier',9,180,75,2),\n (3,'Lyra Murmure-Vent','Mage',14,85,510,1),\n (4,'Kael Pas-Feutré','Voleur',7,95,1200,3),\n (5,'Mira Chantelune','Druide',10,110,40,2),\n (6,'Gédéon le Distrait','Mage',3,60,5,3);\n\nINSERT INTO monstres VALUES\n (1,'Gobelin Grincheux','Gobelin','Forêt Sombre',30,2,'Dent cariée'),\n (2,'Loup Spectral','Bête','Forêt Sombre',65,5,'Croc d''ectoplasme'),\n (3,'Troll des Ponts','Troll','Marais Putride',150,7,'Péage impayé'),\n (4,'Champignon Hurleur','Plante','Forêt Sombre',20,1,'Spore bruyante'),\n (5,'Ours-Hibou','Bête','Forêt Sombre',90,6,'Plume de 40 kg'),\n (6,'Liche Mineure','Mort-vivant','Crypte Oubliée',120,8,'Phylactère fêlé'),\n (7,'Slime Collant','Gelée','Marais Putride',45,3,'Gelée à la menthe'),\n (8,'Dragonnet Boudeur','Dragon','Pics Gelés',200,9,'Écaille vexée'),\n (9,'Araignée Tisse-Nuit','Bête','Forêt Sombre',55,4,'Soie d''ombre');\n\nINSERT INTO sorts VALUES\n (1,'Boule de Feu','Feu',80,30,3),\n (2,'Lumière Sacrée','Lumière',60,25,1),\n (3,'Ronces Vivantes','Nature',45,20,5),\n (4,'Pas de l''Ombre','Ombre',30,15,4),\n (5,'Tempête de Givre','Glace',95,45,3),\n (6,'Étincelle Ratée','Feu',5,1,6),\n (7,'Jugement Divin','Lumière',110,60,1),\n (8,'Peau d''Écorce','Nature',25,10,5);\n\nINSERT INTO inventaire VALUES\n (1,'Épée Solaire','Légendaire',5000,1),\n (2,'Hache à Double Tranchant','Rare',800,2),\n (3,'Bâton de Cristal','Épique',2400,3),\n (4,'Crochets de Serrure','Commun',15,4),\n (5,'Bourse Trouée','Commun',1,6),\n (6,'Graine d''Yggdrasil','Légendaire',7000,5),\n (7,'Potion Douteuse','Commun',3,6),\n (8,'Cape d''Invisibilité (presque)','Rare',950,4);\n";
+/* ---------- IMAGES : pixel art des 5 tables (12 × 12) ---------- */
+const PIX_PAL = { k: "#1a1630", o: "#f0a43a", y: "#f7d36b", g: "#a7adc4", d: "#6f7590", w: "#ece7da", b: "#66c9ff", B: "#3a7fc4",
+  r: "#e2574c", G: "#6fd3b0", D: "#2f9b78", p: "#c792ea", n: "#b07440", N: "#7a4a24", s: "#f2c79b" };
+const PIX = {
+  heros: [      // un chevalier casqué
+    ".....rr.....", "....rrr.....", "...gggggg...", "..gggggggg..", "..gkkggkkg..", "..gggggggg..",
+    "...dsssssd..", "....dddd....", "..bbbbbbbb..", ".bbbbbybbbb.", ".BbbbbbbbbB.", "..NN....NN.."],
+  monstres: [    // un slime à crocs
+    "............", "....GGGG....", "...GGGGGG...", "..GGGGGGGG..", ".GGwkGGwkGG.", ".GGwkGGwkGG.",
+    "GGGGGGGGGGGG", "GGkkkkkkkkGG", "GGkwkkkkwkGG", "DGGGGGGGGGGD", ".DGGGGGGGGD.", "..D..DD..D.."],
+  sorts: [      // une baguette et ses étincelles
+    "........y...", "........y...", "......yyyyy.", "........y...", ".......py.b.", "......p.....",
+    ".....p..b...", "....p.......", "...p........", "..p......b..", ".w..........", "............"],
+  inventaire: [   // un sac avec une pièce d'or
+    "............", "....NNNN....", ".....NN.....", "....kkkk....", "...nnnnnn...", "..nnnnnnnn..",
+    ".nnnnyynnnn.", ".nnnyyyynnn.", ".nnnnyynnnn.", ".nnnnnnnnnn.", "..nnnnnnnn..", "...NNNNNN..."],
+  chateaux: [     // un château et ses drapeaux
+    ".rr......rr.", ".d.......d..", "g.g......g.g", "ggg.g..g.ggg", "gggggggggggg", "gkggggggggkg",
+    "gggggggggggg", "ggggNNNNgggg", "gggNnnnnNggg", "gggNnnnnNggg", "gggNnnnnNggg", "dddddddddddd"]
+};
+const TABLE_ICON_FR = { heros: "les héros", monstres: "les monstres", sorts: "les sorts", inventaire: "les objets des héros", chateaux: "les châteaux" };
+const TABLE_MEMO = { heros: "heros, sans accent : les héros", monstres: "monstres : les monstres",
+  sorts: "sorts : les sortilèges que connaissent les héros", inventaire: "inventaire : le sac du héros, ses objets",
+  chateaux: "chateaux, sans accent circonflexe : les châteaux" };
+function pixIcon(t, size = 24, cls = "pix") {
+  const g = PIX[t]; if (!g) return "";
+  let r = "";
+  g.forEach((row, y) => [...row].forEach((c, x) => { if (PIX_PAL[c]) r += `<rect x="${x}" y="${y}" width="1" height="1" fill="${PIX_PAL[c]}"/>`; }));
+  return `<svg class="${cls}" viewBox="0 0 12 12" width="${size}" height="${size}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;
+}
+
+/* ---------- BRUITAGES : synthétisés par le navigateur (Web Audio), aucun fichier ---------- */
+const FX = (() => {
+  let ctx = null, on = true;
+  try { on = localStorage.getItem("grimoire-son") !== "off"; } catch (e) {}
+  const ac = () => {
+    if (!ctx) { const C = window.AudioContext || window.webkitAudioContext; if (!C) return null; ctx = new C(); }
+    if (ctx.state === "suspended") ctx.resume();
+    return ctx;
+  };
+  function tone(freq, t0, dur, type = "square", vol = 0.06, freqEnd) {
+    const a = ac(); if (!a) return;
+    const t = a.currentTime + t0, o = a.createOscillator(), g = a.createGain();
+    o.type = type; o.frequency.setValueAtTime(freq, t);
+    if (freqEnd) o.frequency.exponentialRampToValueAtTime(freqEnd, t + dur);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + dur + 0.03);
+  }
+  function noise(t0, dur, vol = 0.05, freq = 1500) {
+    const a = ac(); if (!a) return;
+    const t = a.currentTime + t0, len = Math.floor(a.sampleRate * dur), buf = a.createBuffer(1, len, a.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len);
+    const src = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain();
+    src.buffer = buf; f.type = "bandpass"; f.frequency.value = freq; f.Q.value = 0.8; g.gain.value = vol;
+    src.connect(f); f.connect(g); g.connect(a.destination); src.start(t);
+  }
+  // iPad / Android : le son ne peut démarrer qu'après un premier toucher ; on « réveille » l'audio à chaque toucher
+  ["pointerdown", "touchend", "keydown"].forEach((ev) => document.addEventListener(ev, () => { if (on) { const a = ac(); if (a && a.state === "suspended") a.resume(); } }, { passive: true, once: false }));
+  const S = {
+    click:   () => tone(880, 0, 0.05, "square", 0.035),
+    unclick: () => tone(440, 0, 0.06, "square", 0.03),
+    page:    () => noise(0, 0.16, 0.035, 2600),
+    good:    () => { tone(523, 0, 0.12, "triangle", 0.09); tone(784, 0.1, 0.22, "triangle", 0.09); },
+    bad:     () => tone(250, 0, 0.24, "sine", 0.11, 150),
+    win:     () => [523, 659, 784, 1047].forEach((f, i) => tone(f, i * 0.09, 0.24, "triangle", 0.08)),
+    cast:    () => { noise(0, 0.28, 0.05, 3200); tone(900, 0.04, 0.28, "sine", 0.05, 2200); },
+    hit:     () => { noise(0, 0.16, 0.1, 500); tone(170, 0, 0.22, "square", 0.05, 70); },
+    levelup: () => [392, 523, 659, 784, 1047].forEach((f, i) => tone(f, i * 0.07, 0.2, "square", 0.045)),
+    ko:      () => [392, 330, 262, 196].forEach((f, i) => tone(f, i * 0.16, 0.26, "triangle", 0.08)),
+    scroll:  () => { noise(0, 0.22, 0.03, 1800); tone(1320, 0.12, 0.15, "sine", 0.03); }
+  };
+  return {
+    play(n) { if (on && S[n]) { try { S[n](); } catch (e) {} } },
+    get on() { return on; },
+    toggle() { on = !on; try { localStorage.setItem("grimoire-son", on ? "on" : "off"); } catch (e) {} if (on) S.click(); return on; }
+  };
+})();
+
+/* ---------- ANIMATIONS : étincelles et secousse ---------- */
+const reducedMotion = () => window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+function burst(el, n = 14) {
+  if (!el || reducedMotion()) return;
+  const colors = ["#f0a43a", "#f7d36b", "#66c9ff", "#6fd3b0", "#c792ea"];
+  for (let i = 0; i < n; i++) {
+    const s = document.createElement("span"), a = (Math.PI * 2 * i) / n + Math.random() * 0.4, d = 40 + Math.random() * 50;
+    s.className = "spark";
+    s.style.cssText = `--dx:${Math.cos(a) * d}px;--dy:${Math.sin(a) * d}px;background:${colors[i % colors.length]}`;
+    el.appendChild(s); setTimeout(() => s.remove(), 900);
+  }
+}
+function shake(el) { if (!el || reducedMotion()) return; el.classList.remove("shake"); void el.offsetWidth; el.classList.add("shake"); }
+const TABLE_ART = { heros: "assets/table-heros.webp", monstres: "assets/table-monstres.webp", sorts: "assets/table-sorts.webp", inventaire: "assets/table-inventaire.webp", chateaux: "assets/table-chateaux.webp" };
+const CASTLE_ART = { 1: "assets/chateau-1.webp", 2: "assets/chateau-2.webp", 3: "assets/chateau-3.webp" };
+const REGION_ART = { "Forêt Sombre": "assets/region-foret.webp", "Marais Putride": "assets/region-marais.webp", "Crypte Oubliée": "assets/region-crypte.webp" };
+function regionCards(rows) {   // rows : [region, nombre de monstres, noms]
+  return `<div class="castles">${rows.filter((r) => REGION_ART[r[0]]).map(([region, n, noms], i) => `<figure class="castle" style="--i:${i}"><img src="${REGION_ART[region]}" alt="${esc(region)}">
+    <figcaption><b>${esc(region)}</b><code>region = '${esc(region)}' · ${n} monstre${n > 1 ? "s" : ""} : ${esc(noms)}</code></figcaption></figure>`).join("")}</div>`;
+}
+const regionsHTML = (names) => regionCards(run("SELECT region, COUNT(*), GROUP_CONCAT(nom, ', ') FROM monstres GROUP BY region ORDER BY COUNT(*) DESC").values.filter((x) => names.includes(x[0])));
+const castlesHTML = () => `<div class="castles">${run("SELECT id, nom, region, seigneur FROM chateaux ORDER BY id").values.map(([id, nom, region, seigneur], i) => `<figure class="castle" style="--i:${i}"><img src="${CASTLE_ART[id]}" alt="${esc(nom)}">
+  <figcaption><b>${esc(nom)}</b><code>id ${id} · region ${esc(region)} · seigneur ${esc(seigneur)}</code></figcaption></figure>`).join("")}</div>`;
+const colsOf = (t) => { try { return run(`SELECT name FROM pragma_table_info('${t}')`).values.map((r) => r[0]); } catch (e) { return []; } };
+const kingdomHTML = () => `<div class="kingdom">${Object.keys(TABLE_ART).map((t, i) => `<div class="kcard" style="--i:${i}">
+  <figure class="kart"><img src="${TABLE_ART[t]}" alt="${TABLE_ICON_FR[t]}"><figcaption>${pixIcon(t, 22)}<span>TABLE <code>${t}</code></span></figcaption></figure>
+  <b>${TABLE_ICON_FR[t]}</b><i>${TABLE_MEMO[t]}</i><span class="kcols">${colsOf(t).map((c) => `<code>${c}</code>`).join("")}</span></div>`).join("")}</div>`;
+
+/* ---------- Les mots, avec leur traduction ---------- */
+const FR = {
+  "SELECT": "montre", "*": "tout", "FROM": "dans la table", "WHERE": "seulement si", "ORDER BY": "trie par",
+  "DESC": "du + grand au + petit", "ASC": "du + petit au + grand", ",": "et", ">": "plus grand que", "<": "plus petit que", "=": "est égal à",
+  "heros": "des héros", "monstres": "des monstres", "sorts": "des sorts", "chateaux": "des châteaux", "inventaire": "des objets",
+  "COUNT(*)": "le nombre de lignes", "GROUP BY": "range en paquets par", "JOIN": "relie à la table", "ON": "quand",
+  "heros.nom": "le nom du héros", "chateaux.nom": "le nom du château", "heros.num_chateau": "le n° de château du héros", "chateaux.id": "le n° du château",
+  "heros.id": "le n° du héros", "inventaire.num_heros": "le n° du héros noté sur l'objet", "inventaire.objet": "l'objet", "inventaire.rarete": "la rareté de l'objet",
+  "SUM(heros.fortune)": "la somme de l'or des héros", "heros.fortune": "l'or du héros",
+  "LEFT JOIN": "relie en gardant tout le monde", "IS NULL": "est vide", "= NULL": "est égal à vide", "sorts.id": "le n° du sort",
+  "sorts.num_heros": "le n° du héros noté sur le sort", "sorts.nom": "le nom du sort", "HAVING": "garde seulement les tas où", ">=": "au moins",
+  "AVG(pv)": "la moyenne des PV", "(": "ouvre la parenthèse", ")": "ferme la parenthèse", "IN": "fait partie de", "num_heros": "le n° du héros",
+  "id": "le numéro", "objet": "l'objet", "rarete": "la rareté", "INSERT INTO": "ajoute dans la table", "(id, nom)": "les cases id et nom",
+  "VALUES": "les valeurs", "(4, 'Donjon Nuageux')": "4 et le texte Donjon Nuageux", "(4, Donjon Nuageux)": "4 et ??? (sans apostrophes)",
+  "(1, 'Donjon Nuageux')": "1 et le texte Donjon Nuageux", "(10, 'Golem de Pierre')": "10 et le texte Golem de Pierre",
+  "UPDATE": "modifie la table", "SET": "change", "fortune + 100": "son or actuel + 100", "niveau + 1": "son niveau actuel + 1", "DELETE FROM": "supprime de la table",
+  "DISTINCT": "sans doublons", "LIKE": "ressemble au motif", "NOT LIKE": "ne ressemble pas au motif", "'L%'": "L, puis n'importe quoi",
+  "'%L'": "n'importe quoi, puis L", "'%Vent'": "n'importe quoi, puis Vent", "'Vent%'": "Vent, puis n'importe quoi", "'Tour%'": "Tour, puis n'importe quoi",
+  "CASE": "étiquette : début", "WHEN": "quand", "THEN": "alors", "ELSE": "sinon", "END": "fin de l'étiquette", "FIN": "fin ?",
+  "danger": "le danger", "AS": "nommé", "statut": "l'étiquette « statut »", "heros.niveau": "le niveau du héros", "classe": "la classe",
+  "AND": "et aussi", "OR": "ou bien", "LIMIT": "garde seulement", "MAX(fortune)": "la plus grande fortune", "MIN(fortune)": "la plus petite fortune",
+  "SUM(fortune)": "la somme des fortunes", "BETWEEN": "est entre", "CREATE TABLE": "construis la table", "familiers": "des familiers",
+  "INTEGER": "nombre entier", "TEXT": "texte", "PRIMARY KEY": "identité de la ligne", "espece": "l'espèce", "NOMBRE": "??? (en français)", "quetes": "des quêtes",
+  "id INTEGER PRIMARY KEY": "id, l'identité", "titre TEXT": "titre, un texte", "recompense INTEGER": "recompense, un nombre",
+  "ALTER TABLE": "modifie le plan de la table", "ADD COLUMN": "ajoute la colonne", "age": "l'âge", "DROP TABLE": "démolis la table", "brouillon": "brouillon",
+  "(1, 'Braise', 'Salamandre', 3)": "1, Braise, Salamandre, héros 3", "(2, 'Plume', 'Hibou', 5)": "2, Plume, Hibou, héros 5", "(1, Braise, Salamandre, 3)": "??? (sans apostrophes)",
+  "familiers.nom": "le nom du familier", "familiers.num_heros": "le n° du héros noté sur le familier", "heros.num_heros": "??? (n'existe pas)",
+  "COALESCE(": "la valeur, ou bien (début)", "seigneur": "le seigneur", "UPPER(nom)": "le nom en majuscules", "LOWER(nom)": "le nom en minuscules",
+  "LENGTH(nom)": "le nombre de lettres du nom", "UPPER(classe)": "la classe en majuscules", "MIN(pv)": "le plus petit nombre de PV",
+  "WITH": "prépare la liste", "riches": "la liste riches", "forts": "la liste forts", "RANK()": "la place sur le podium", "OVER": "en regardant toutes les lignes",
+  "rang": "la colonne rang", "PARTITION BY": "un podium par",
+  "nom": "le nom", "fortune": "l'or", "pv": "les PV", "classe": "la classe", "region": "la région", "ecole": "l'école", "niveau": "le niveau", "puissance": "la puissance"
+};
+const COL_FR = { id: "numéro unique", pv: "points de vie", fortune: "l'or du héros", num_chateau: "n° du château", num_heros: "n° du héros",
+  mana: "coût en mana", tresor: "l'or du château", ecole: "école de magie", butin: "ce qu'il laisse",
+  "COUNT(*)": "nombre de lignes", "SUM(heros.fortune)": "somme de l'or", heros: "héros", chateau: "château", porteur: "porteur", n_chateau: "n° de château", nb_sorts: "nombre de sorts", moyenne: "moyenne", sort: "sort", statut: "étiquette", menace: "étiquette",
+  rang: "place sur le podium", colonne: "nom de la colonne", type: "ce qu'on y range", espece: "espèce", age: "âge", seigneur: "seigneur", note: "note", tables: "tables du royaume", role: "rôle",
+  "MIN(pv)": "le plus petit", "MAX(pv)": "le plus grand", "MAX(fortune)": "la plus grande", "UPPER(nom)": "en majuscules", "LENGTH(nom)": "nombre de lettres" };
+function frOf(t) {
+  if (FR[t]) return FR[t];
+  if (/^'.*'$/.test(t)) return "le texte " + t.slice(1, -1);
+  if (/^\d+$/.test(t)) return "le nombre " + t;
+  return "???";
+}
+
+/* ---------- Les leçons ---------- */
+const PARTS = {
+  1: { label: "PARTIE 1 · LIRE UNE TABLE", end: "Tu as tout ce qu'il faut pour le Chapitre 1 de l'aventure. La partie 2 prépare le Chapitre 2 : compter, faire des paquets et relier deux tables." },
+  2: { label: "PARTIE 2 · COMPTER ET RELIER", end: "Tu as tout ce qu'il faut pour le Chapitre 2. La partie 3 prépare le Chapitre 3 : trouver ce qui manque, filtrer les tas et poser une question dans la question." },
+  3: { label: "PARTIE 3 · CHERCHER PLUS LOIN", end: "Tu as tout ce qu'il faut pour le Chapitre 3. La partie 4 prépare le Chapitre 4 : ajouter, modifier et supprimer des lignes." },
+  4: { label: "PARTIE 4 · MODIFIER LE ROYAUME", end: "Tu as tout ce qu'il faut pour le Chapitre 4. La partie 5 prépare le Chapitre 5 : retirer les doublons, chercher un motif et fabriquer des étiquettes." },
+  5: { label: "PARTIE 5 · LE CONSEIL DES SAGES", end: "Tu as tout ce qu'il faut pour le Chapitre 5. La partie 6 prépare le Chapitre 6 : couper une liste, dire « ou bien », trouver le plus petit et le plus grand, et chercher entre deux bornes." },
+  6: { label: "PARTIE 6 · LES OUTILS OUBLIÉS", end: "Tu as tout ce qu'il faut pour l'enquête du Chapitre 6. La partie 7 prépare le Chapitre 7 : construire, agrandir et démolir des tables." },
+  7: { label: "PARTIE 7 · L'ARCHITECTE", end: "Tu as tout ce qu'il faut pour le Chapitre 7. La partie 8 prépare le Chapitre 8 : remplir les cases vides, travailler le texte, préparer des listes et classer." },
+  8: { label: "PARTIE 8 · LES ARCHIVES", end: "" }
+};
+function wd(sql, fr) { return '<span class="word"><b>' + sql + '</b><i>' + fr + '</i></span>'; }
+const LESSONS = [
+  { part: 1, title: "Une table, c'est quoi ?", learned: ["Une table est un tableau : une ligne par élément, une colonne par information.", "Les mots-clés (SELECT, FROM…) sont en anglais ; les noms des tables et des colonnes sont en français, sans accents."],
+    steps: [
+      { type: "look", title: "Le registre des héros",
+        text: ["Une <b>base de données</b>, c'est un ensemble de tableaux. Chaque tableau s'appelle une <b>table</b>.", "Voici la table <code>heros</code> : les héros du royaume. <b>Chaque ligne est un héros.</b> <b>Chaque colonne est une information</b> sur lui. Sous chaque nom de colonne, sa traduction en français."],
+        sql: "SELECT * FROM heros" },
+      { type: "quiz", q: "Combien de héros y a-t-il dans la table ?", options: [
+        { t: "7, une par colonne", why: "Les colonnes sont les informations (nom, classe…), pas les héros. Compte plutôt les lignes." },
+        { t: "6, une par ligne", ok: true, why: "Exactement. Une ligne = un héros. Il y a 6 lignes, donc 6 héros." },
+        { t: "3", why: "Compte les lignes du tableau, de Aria jusqu'à Gédéon." }] },
+      { type: "quiz", q: "Comment s'appelle la colonne qui contient l'or de chaque héros ?", options: [
+        { t: "or", why: "Bonne idée, mais OR est déjà un mot-clé SQL (il veut dire « ou ») : il ne peut pas servir de nom. Regarde les titres des colonnes." },
+        { t: "fortune", ok: true, why: "Oui : la fortune d'un héros, c'est son or. On ne l'appelle pas « or », car OR est déjà un mot-clé SQL." },
+        { t: "niveau", why: "Le niveau, c'est l'expérience du héros. Cherche la colonne qui contient son or." }] }
+    ] },
+  { part: 1, title: "Demander toute une table", learned: ["SELECT * FROM table montre toute la table.", "SELECT = montre-moi, * = tout, FROM = de la table."],
+    steps: [
+      { type: "look", title: "Ta première phrase",
+        text: ["Pour parler à la base de données, on écrit une petite phrase. La plus simple de toutes :", "<span class=\"word\"><b>SELECT</b><i>montre</i></span> <span class=\"word\"><b>*</b><i>tout</i></span> <span class=\"word\"><b>FROM</b><i>de la table</i></span> <span class=\"word\"><b>heros</b><i>les héros</i></span>", "Elle se lit : « <b>montre tout de la table des héros</b> ». Le symbole <code>*</code> (l'étoile) veut dire « toutes les colonnes ». C'est ce qui a affiché le tableau de la leçon 1."] },
+      { type: "build", ask: "Montre tout le contenu de la table des héros.", target: ["SELECT", "*", "FROM", "heros"], extra: ["monstres"],
+        why: "Tu as demandé : montre tout, de la table heros. Résultat : le registre complet, 6 lignes." },
+      { type: "build", ask: "Maintenant, montre tout le contenu de la table des monstres.", target: ["SELECT", "*", "FROM", "monstres"], extra: ["heros", "sorts"],
+        why: "Il suffit de changer le nom de la table après FROM. La phrase reste la même." },
+      { type: "type", ask: "À toi de l'écrire au clavier : montre tout le contenu de la table des sorts. (Indice : les sorts s'appellent sorts.)", expected: "SELECT * FROM sorts",
+        words: ["SELECT", "*", "FROM", "sorts"], why: "Tu viens d'écrire ta première requête SQL toute seule. Les majuscules ne sont pas obligatoires, mais elles rendent la phrase plus lisible." }
+    ] },
+  { part: 1, title: "Choisir les colonnes", learned: ["Au lieu de *, on écrit les noms des colonnes voulues.", "Plusieurs colonnes se séparent par une virgule : SELECT nom, fortune."],
+    steps: [
+      { type: "look", title: "Pas besoin de tout",
+        text: ["<code>*</code> montre <b>toutes</b> les colonnes. Souvent, on n'en veut que quelques-unes.", "On remplace alors l'étoile par les noms des colonnes voulues, séparés par une <b>virgule</b>. Exemple : seulement le nom et l'or des héros.", "<span class=\"word\"><b>SELECT</b><i>montre</i></span> <span class=\"word\"><b>nom</b><i>le nom</i></span> <span class=\"word\"><b>,</b><i>et</i></span> <span class=\"word\"><b>fortune</b><i>l'or</i></span> <span class=\"word\"><b>FROM</b><i>de la table</i></span> <span class=\"word\"><b>heros</b><i>les héros</i></span>"],
+        sql: "SELECT nom, fortune FROM heros" },
+      { type: "build", ask: "Montre seulement le nom de chaque héros.", target: ["SELECT", "nom", "FROM", "heros"], extra: ["*", "fortune"],
+        traps: { "*": "L'étoile veut dire « toutes les colonnes ». Ici on ne veut que le nom : remplace-la par la colonne nom." },
+        why: "Une seule colonne, mais toujours les 6 héros. Choisir des colonnes ne retire jamais de lignes." },
+      { type: "build", ask: "Montre le nom et la classe de chaque héros.", target: ["SELECT", "nom", ",", "classe", "FROM", "heros"], extra: ["fortune", "*"],
+        why: "La virgule sépare les colonnes. Elles s'affichent dans l'ordre où tu les écris." },
+      { type: "type", ask: "Au clavier : montre le nom et les points de vie (pv) de chaque monstre (monstres).", expected: "SELECT nom, pv FROM monstres",
+        words: ["SELECT", "nom", ",", "pv", "FROM", "monstres"], why: "Tu sais maintenant choisir précisément les colonnes que tu veux voir." }
+    ] },
+  { part: 1, title: "Garder certaines lignes (avec un nombre)", learned: ["WHERE garde seulement les lignes qui respectent une condition.", "La base teste chaque ligne : oui, elle reste ; non, elle part.", "> veut dire « plus grand que », < veut dire « plus petit que »."],
+    steps: [
+      { type: "look", title: "Le tamis",
+        text: ["Jusqu'ici, on obtient <b>toutes</b> les lignes. Le mot <code>WHERE</code> (« seulement si ») permet d'en garder <b>certaines</b>.", "Exemple : <span class=\"word\"><b>WHERE</b><i>seulement si</i></span> <span class=\"word\"><b>pv</b><i>les PV</i></span> <span class=\"word\"><b>&gt;</b><i>plus grand que</i></span> <span class=\"word\"><b>100</b><i>le nombre 100</i></span>", "La base pose la question <b>à chaque ligne</b> : « tes PV sont-ils plus grands que 100 ? ». Oui : la ligne reste (en vert). Non : elle part (barrée)."],
+        sql: "SELECT nom, pv FROM monstres", highlight: { col: 1, test: (v) => v > 100 } },
+      { type: "build", ask: "Montre le nom des monstres qui ont plus de 100 PV.", target: ["SELECT", "nom", "FROM", "monstres", "WHERE", "pv", ">", "100"], extra: ["<"],
+        traps: { "<": "Le signe < veut dire « plus petit que ». Pour « plus de 100 », il faut > (la pointe vers la droite : le plus grand nombre est à gauche)." },
+        why: "La phrase se lit : montre le nom, de la table des monstres, seulement si les PV sont plus grands que 100. Il en reste 3." },
+      { type: "build", ask: "Montre le nom des monstres qui ont moins de 50 PV.", target: ["SELECT", "nom", "FROM", "monstres", "WHERE", "pv", "<", "50"], extra: [">", "100"],
+        traps: { ">": "Le signe > veut dire « plus grand que ». Pour « moins de 50 », il faut <.", "100": "La question parle de 50, pas de 100." },
+        why: "Même phrase, autre condition : 3 petits monstres restent." },
+      { type: "type", ask: "Au clavier : montre le nom et l'or (fortune) des héros (heros) qui ont plus de 100 pièces d'or.", expected: "SELECT nom, fortune FROM heros WHERE fortune > 100",
+        words: ["SELECT", "nom", ",", "fortune", "FROM", "heros", "WHERE", "fortune", ">", "100"], why: "Trois héros sont riches : Aria, Lyra et Kael. WHERE vient toujours après FROM : on choisit d'abord la table, puis on filtre ses lignes." }
+    ] },
+  { part: 1, title: "Garder certaines lignes (avec un texte)", learned: ["Un texte se met entre apostrophes : 'Mage'.", "Sans apostrophes, la base croit que c'est un nom de colonne.", "Le texte doit être écrit exactement comme dans la table, accents compris."],
+    steps: [
+      { type: "look", title: "Les apostrophes",
+        text: ["On peut aussi filtrer avec un <b>texte</b>, par exemple la classe <i>Mage</i>.", "Un texte s'écrit toujours <b>entre apostrophes</b> : <code>'Mage'</code>. Les apostrophes disent à la base : « ceci est un texte, pas le nom d'une colonne ».", "Le texte doit être écrit <b>exactement</b> comme dans la table : mêmes majuscules, mêmes accents. Pour la base, <code>'mage'</code> et <code>'Mage'</code> sont deux mots différents."],
+        sql: "SELECT nom, classe FROM heros", highlight: { col: 1, test: (v) => v === "Mage" } },
+      { type: "build", ask: "Montre le nom des héros dont la classe est Mage.", target: ["SELECT", "nom", "FROM", "heros", "WHERE", "classe", "=", "'Mage'"], extra: ["Mage"],
+        traps: { "Mage": "Sans apostrophes, la base croit que Mage est le nom d'une colonne, et cette colonne n'existe pas. Prends le bloc 'Mage' avec les apostrophes." },
+        why: "Lyra et Gédéon sont les deux mages. Les apostrophes ont transformé Mage en texte à comparer." },
+      { type: "quiz", q: "Laquelle de ces conditions trouve les monstres de la Forêt Sombre ?", options: [
+        { t: "WHERE region = Forêt Sombre", why: "Il manque les apostrophes : la base chercherait des colonnes appelées Forêt et Sombre." },
+        { t: "WHERE region = 'Foret Sombre'", why: "Presque ! Mais il manque l'accent sur le ê. Dans la table, c'est écrit Forêt. Ici, la base ne trouverait rien." },
+        { t: "WHERE region = 'Forêt Sombre'", ok: true, why: "Parfait : des apostrophes, et le texte exactement comme dans la table." }] },
+      { type: "build", ask: "Montre le nom et les PV des monstres de la Forêt Sombre.", target: ["SELECT", "nom", ",", "pv", "FROM", "monstres", "WHERE", "region", "=", "'Forêt Sombre'"], extra: ["'Foret Sombre'"],
+        traps: { "'Foret Sombre'": "Regarde bien l'accent : dans la table, c'est écrit Forêt avec un ê. Sans l'accent, la base ne trouve aucune ligne." },
+        why: "C'est exactement la mission du Chapitre 1 de l'aventure. Tu viens de la réussir en comprenant chaque mot." },
+      { type: "type", ask: "Au clavier : montre le nom des sorts (sorts) de l'école (ecole) Feu.", expected: "SELECT nom FROM sorts WHERE ecole = 'Feu'",
+        words: ["SELECT", "nom", "FROM", "sorts", "WHERE", "ecole", "=", "'Feu'"], why: "Deux sorts de feu : la Boule de Feu et l'Étincelle Ratée. N'oublie jamais les apostrophes autour d'un texte." }
+    ] },
+  { part: 1, title: "Ranger les lignes", learned: ["ORDER BY range les lignes selon une colonne.", "Par défaut, du plus petit au plus grand. Avec DESC, du plus grand au plus petit.", "Ordre de la phrase : SELECT → FROM → WHERE → ORDER BY."],
+    steps: [
+      { type: "look", title: "Trier",
+        text: ["Les lignes arrivent dans un ordre quelconque. <code>ORDER BY</code> (« trie par ») les range selon une colonne.", "<code>ORDER BY pv</code> range du plus petit au plus grand. Ajoute <code>DESC</code> (pour <i>descending</i>, « descendant ») pour aller du plus grand au plus petit.", "ORDER BY se met <b>à la fin</b> de la phrase."] },
+      { type: "build", ask: "Montre le nom et les PV des monstres, du plus fort au plus faible.", target: ["SELECT", "nom", ",", "pv", "FROM", "monstres", "ORDER BY", "pv", "DESC"], extra: ["ASC"], ordered: true,
+        traps: { "ASC": "ASC range du plus petit au plus grand. Pour commencer par le plus fort, il faut DESC." },
+        why: "Le Dragonnet (200 PV) arrive en premier, le Champignon (20 PV) en dernier." },
+      { type: "type", ask: "Au clavier : montre le nom et l'or (fortune) des héros, du plus riche au plus pauvre.", expected: "SELECT nom, fortune FROM heros ORDER BY fortune DESC", ordered: true,
+        words: ["SELECT", "nom", ",", "fortune", "FROM", "heros", "ORDER BY", "fortune", "DESC"], why: "Kael le voleur est le plus riche avec 1200 pièces. Gédéon, avec 5 pièces, ferme la marche." }
+    ] },
+
+  /* ===================== PARTIE 2 : le Chapitre 2 de l'aventure ===================== */
+  { part: 2, title: "Compter", learned: ["COUNT(*) donne le nombre de lignes, au lieu de les montrer.", "Il se place après SELECT, à la place des colonnes.", "Avec WHERE, il compte seulement les lignes qui restent."],
+    steps: [
+      { type: "look", title: "Un nombre au lieu d'une liste",
+        text: ["Parfois, on ne veut pas la liste des lignes, on veut savoir <b>combien</b> il y en a.", "<span class=\"word\"><b>COUNT(*)</b><i>le nombre de lignes</i></span> se met juste après SELECT, à la place des colonnes. COUNT veut dire « compter » en anglais.", "Compare les deux phrases ci-dessous : la même question, mais la seconde répond par un nombre."],
+        tables: [{ label: "SELECT nom FROM heros  →  la liste", sql: "SELECT nom FROM heros" }, { label: "SELECT COUNT(*) FROM heros  →  le nombre", sql: "SELECT COUNT(*) FROM heros" }],
+        after: ["Les 6 lignes de gauche sont <b>écrasées en une seule</b> qui contient le nombre 6."] },
+      { type: "build", ask: "Combien y a-t-il de monstres en tout ?", target: ["SELECT", "COUNT(*)", "FROM", "monstres"], extra: ["*", "nom"],
+        traps: { "*": "L'étoile seule montre toutes les colonnes. Pour compter, il faut le bloc COUNT(*).", "nom": "On ne veut pas les noms, on veut un nombre : prends COUNT(*)." },
+        why: "La base a compté les lignes de la table des monstres : 9." },
+      { type: "build", ask: "Combien y a-t-il de mages parmi les héros ?", target: ["SELECT", "COUNT(*)", "FROM", "heros", "WHERE", "classe", "=", "'Mage'"], extra: ["Mage", "nom"],
+        traps: { "Mage": "Sans apostrophes, la base croit que Mage est une colonne. Prends 'Mage' avec les apostrophes.", "nom": "On veut un nombre, pas des noms : COUNT(*)." },
+        why: "D'abord WHERE garde les 2 mages, ensuite COUNT(*) les compte : 2. Le comptage se fait toujours sur les lignes qui restent après le filtre." },
+      { type: "type", ask: "Au clavier : combien de monstres vivent dans la Forêt Sombre ? (table monstres, colonne region)", expected: "SELECT COUNT(*) FROM monstres WHERE region = 'Forêt Sombre'",
+        words: ["SELECT", "COUNT(*)", "FROM", "monstres", "WHERE", "region", "=", "'Forêt Sombre'"], why: "5 monstres. Tu combines déjà deux notions : filtrer (WHERE) puis compter (COUNT)." }
+    ] },
+  { part: 2, title: "Faire des paquets", learned: ["GROUP BY range les lignes en paquets qui ont la même valeur.", "COUNT(*) compte alors chaque paquet séparément.", "Le résultat a une ligne par paquet.", "À côté de COUNT(*), on affiche la colonne qui sert à faire les paquets."],
+    steps: [
+      { type: "look", title: "Ranger en paquets", regions: ["Forêt Sombre", "Marais Putride", "Crypte Oubliée"],
+        text: ["Et si on veut compter les monstres <b>de chaque région</b>, tout d'un coup ?", "On range d'abord les monstres en <b>paquets</b> : tous ceux d'une même région ensemble. Les couleurs montrent les paquets."],
+        tables: [{ label: "Les monstres, rangés par région", sql: "SELECT nom, region FROM monstres ORDER BY region", hl: { color: 1 } }],
+        after: ["<span class=\"word\"><b>GROUP BY</b><i>range en paquets par</i></span> <span class=\"word\"><b>region</b><i>la région</i></span> fait ces paquets. Ensuite, COUNT(*) compte <b>chaque paquet</b>, et chaque paquet devient une seule ligne :"] },
+      { type: "look", title: "Le résultat : une ligne par paquet",
+        text: ["<span class=\"word\"><b>SELECT</b><i>montre</i></span> <span class=\"word\"><b>region</b><i>la région</i></span> <span class=\"word\"><b>,</b><i>et</i></span> <span class=\"word\"><b>COUNT(*)</b><i>le nombre de lignes</i></span> <span class=\"word\"><b>FROM</b><i>dans la table</i></span> <span class=\"word\"><b>monstres</b><i>des monstres</i></span> <span class=\"word\"><b>GROUP BY</b><i>range en paquets par</i></span> <span class=\"word\"><b>region</b><i>la région</i></span>"],
+        tables: [{ label: "Résultat", sql: "SELECT region, COUNT(*) FROM monstres GROUP BY region", hl: { color: 0 } }],
+        after: ["Les 5 monstres de la Forêt Sombre sont devenus une seule ligne avec le nombre 5. Mêmes couleurs, mêmes paquets."] },
+      { type: "quiz", q: "Avec GROUP BY region, combien de lignes aura le résultat ?", options: [
+        { t: "9, une par monstre", why: "Non : GROUP BY rassemble les monstres. Chaque paquet devient une seule ligne." },
+        { t: "4, une par région", ok: true, why: "Oui : il y a 4 régions différentes, donc 4 paquets, donc 4 lignes." },
+        { t: "1, le total", why: "Ça, ce serait COUNT(*) sans GROUP BY : un seul paquet avec tout le monde." }] },
+      { type: "build", ask: "Combien de héros y a-t-il dans chaque classe ?", target: ["SELECT", "classe", ",", "COUNT(*)", "FROM", "heros", "GROUP BY", "classe"], extra: ["nom", "WHERE"],
+        traps: { "nom": "Un paquet « Mage » contient plusieurs héros : la base ne peut pas afficher un seul nom pour tout le paquet. À côté de COUNT(*), on affiche la colonne des paquets : classe.", "WHERE": "Pas besoin de filtrer ici : on garde tous les héros, on les range seulement en paquets." },
+        why: "5 paquets : un par classe. Le paquet Mage contient 2 héros, les autres 1 seul." },
+      { type: "type", ask: "Au clavier : combien de sorts y a-t-il dans chaque école ? (table sorts, colonne ecole)", expected: "SELECT ecole, COUNT(*) FROM sorts GROUP BY ecole",
+        words: ["SELECT", "ecole", ",", "COUNT(*)", "FROM", "sorts", "GROUP BY", "ecole"], why: "5 écoles. Feu, Lumière et Nature ont 2 sorts chacune, Glace et Ombre un seul. La même colonne apparaît deux fois : après SELECT pour l'afficher, après GROUP BY pour faire les paquets." }
+    ] },
+  { part: 2, title: "Relier deux tables", learned: ["id veut dire « numéro ». num_chateau = le numéro du château.", "Le point se lit « de » : heros.nom = le nom (de la table) des héros.", "JOIN relie deux tables ; ON donne la règle : les deux numéros doivent être égaux."],
+    steps: [
+      { type: "look", title: "Le problème : un simple numéro",
+        text: ["Dans la table des héros, on ne trouve pas le <b>nom</b> du château où chacun vit. On trouve seulement son <b>numéro</b>, dans la colonne <code>num_chateau</code>.", "<span class=\"word\"><b>num_</b><i>numéro</i></span> <span class=\"word\"><b>chateau</b><i>du château</i></span> : <code>num_chateau</code> veut simplement dire « <b>numéro du château</b> ». Dans chaque table, la colonne <code>id</code> est le numéro de la ligne elle-même.", "Les noms des châteaux sont rangés dans une autre table, <code>chateaux</code>. Les couleurs relient les numéros : le 1 orange d'Aria, c'est le château n°1 orange."],
+        tables: [{ label: "heros : les héros", sql: "SELECT nom, num_chateau FROM heros", hl: { color: 1 } }, { label: "chateaux : les châteaux", sql: "SELECT id, nom FROM chateaux", hl: { color: 0 } }] },
+      { type: "quiz", q: "Aria a le numéro de château 1. Dans quel château vit-elle ?", options: [
+        { t: "Fort Roc-Tonnerre", why: "Fort Roc-Tonnerre porte le numéro 2. Cherche le château orange, numéro 1." },
+        { t: "Bastion de l'Aube", ok: true, why: "Oui ! Tu as pris le numéro d'Aria et cherché le château qui porte le même numéro. C'est exactement ce que fera la base." },
+        { t: "Tour Penchée de Brumeval", why: "La Tour porte le numéro 3. Cherche le château orange, numéro 1." }] },
+      { type: "look", title: "Le point : de quelle table ?",
+        text: ["Les deux tables ont une colonne <code>nom</code> : le nom du héros d'un côté, le nom du château de l'autre. Si on écrit juste <code>nom</code>, la base ne sait pas lequel on veut.", "Alors on écrit <b>la table, un point, la colonne</b>. Le point se lit « de » :",
+          "<span class=\"word\"><b>heros.nom</b><i>le nom du héros</i></span> <span class=\"word\"><b>chateaux.nom</b><i>le nom du château</i></span>",
+          "<span class=\"word\"><b>heros.num_chateau</b><i>le n° de château noté chez le héros</i></span> <span class=\"word\"><b>chateaux.id</b><i>le n° du château</i></span>",
+          "C'est comme une adresse : d'abord la table (la maison), puis la colonne (la pièce)."] },
+      { type: "quiz", q: "Que veut dire chateaux.nom ?", options: [
+        { t: "Le nom du héros", why: "Regarde le mot avant le point : chateaux, les châteaux. C'est le nom du château." },
+        { t: "Le nom du château", ok: true, why: "Oui : la colonne nom de la table chateaux." },
+        { t: "Le numéro du château", why: "Le numéro, ce serait chateaux.id. Ici la colonne est nom : le nom." }] },
+      { type: "quiz", q: "Et heros.num_chateau ?", options: [
+        { t: "Le numéro du héros", why: "Le numéro du héros lui-même serait heros.id. Ici, c'est num_chateau : le numéro de château." },
+        { t: "Le nom du château", why: "On ne trouve pas de nom dans num_chateau, seulement un numéro." },
+        { t: "Le numéro du château, noté chez le héros", ok: true, why: "Exactement : dans la table des héros, le numéro de leur château. Aria a 1." }] },
+      { type: "look", title: "JOIN fait le travail pour toi",
+        text: ["<span class=\"word\"><b>JOIN</b><i>relie à la table</i></span> <span class=\"word\"><b>chateaux</b><i>des châteaux</i></span> colle à chaque héros une ligne de la table des châteaux.", "<span class=\"word\"><b>ON</b><i>quand</i></span> <span class=\"word\"><b>heros.num_chateau</b><i>le n° de château du héros</i></span> <span class=\"word\"><b>=</b><i>est égal à</i></span> <span class=\"word\"><b>chateaux.id</b><i>le n° du château</i></span> donne la règle : le bon château est celui qui a <b>le même numéro</b>. C'est ce que tu as fait pour Aria."],
+        tables: [{ label: "Résultat : chaque héros avec son château", sql: "SELECT heros.nom AS heros, heros.num_chateau AS n_chateau, chateaux.nom AS chateau FROM heros JOIN chateaux ON heros.num_chateau = chateaux.id", hl: { color: 1 } }] },
+      { type: "build", ask: "Le début est posé. Termine seulement la règle : le n° de château du héros est égal au n° du château.",
+        given: ["SELECT", "heros.nom", ",", "chateaux.nom", "FROM", "heros", "JOIN", "chateaux", "ON"],
+        target: ["SELECT", "heros.nom", ",", "chateaux.nom", "FROM", "heros", "JOIN", "chateaux", "ON", "heros.num_chateau", "=", "chateaux.id"], extra: ["heros.id"],
+        traps: { "heros.id": "heros.id est le numéro du héros lui-même (Aria = 1, Borin = 2…), pas celui de son château. Il faut heros.num_chateau." },
+        why: "Trois blocs seulement, et c'est le cœur du JOIN : le numéro chez le héros = le numéro du château." },
+      { type: "build", ask: "Un peu plus : le début est posé jusqu'à « heros ». Ajoute le JOIN et sa règle.",
+        given: ["SELECT", "heros.nom", ",", "chateaux.nom", "FROM", "heros"],
+        target: ["SELECT", "heros.nom", ",", "chateaux.nom", "FROM", "heros", "JOIN", "chateaux", "ON", "heros.num_chateau", "=", "chateaux.id"], extra: ["heros.id"],
+        traps: { "heros.id": "heros.id est le numéro du héros, pas celui de son château. Il faut heros.num_chateau." },
+        why: "Bravo. Astuce : retire les trois derniers blocs, et tu verras ce qui se passe sans la règle ON : chaque héros est collé à chaque château." },
+      { type: "build", ask: "Toute la phrase, cette fois : montre le nom de chaque héros et le nom de son château.",
+        target: ["SELECT", "heros.nom", ",", "chateaux.nom", "FROM", "heros", "JOIN", "chateaux", "ON", "heros.num_chateau", "=", "chateaux.id"], extra: ["nom"],
+        traps: { "nom": "Les deux tables ont une colonne nom. Précise laquelle : heros.nom (le héros) ou chateaux.nom (le château)." },
+        why: "Tu as construit un JOIN complet. La phrase se lit : montre le nom du héros et le nom du château, dans la table des héros reliée à celle des châteaux, quand les numéros sont égaux." }
+    ] },
+  { part: 2, title: "Relier, puis filtrer", learned: ["Après un JOIN, on a une grande table avec les colonnes des deux tables.", "WHERE se place après le JOIN … ON et peut filtrer sur n'importe laquelle de ces colonnes."],
+    steps: [
+      { type: "look", title: "Une grande table",
+        text: ["Après un JOIN, tout se passe comme si on avait <b>une seule grande table</b> avec les colonnes des deux. On peut donc la filtrer avec WHERE, comme d'habitude.", "Ici, les objets reliés à leurs porteurs. En vert, les objets <b>légendaires</b> :"],
+        tables: [{ label: "inventaire relié à heros", sql: "SELECT inventaire.objet, inventaire.rarete, heros.nom AS porteur FROM inventaire JOIN heros ON inventaire.num_heros = heros.id", hl: { col: 1, test: (v) => v === "Légendaire" } }],
+        after: ["Le WHERE se met <b>après</b> le JOIN … ON. L'ordre de la phrase : SELECT → FROM → JOIN … ON → WHERE."] },
+      { type: "build", ask: "Qui porte les objets légendaires ? Le JOIN est déjà posé : ajoute seulement le WHERE.",
+        given: ["SELECT", "heros.nom", ",", "inventaire.objet", "FROM", "inventaire", "JOIN", "heros", "ON", "inventaire.num_heros", "=", "heros.id"], target: ["SELECT", "heros.nom", ",", "inventaire.objet", "FROM", "inventaire", "JOIN", "heros", "ON", "inventaire.num_heros", "=", "heros.id", "WHERE", "inventaire.rarete", "=", "'Légendaire'"], extra: ["'Legendaire'"],
+        traps: { "'Legendaire'": "Regarde l'accent : dans la table, c'est écrit Légendaire avec un é. Sans l'accent, la base ne trouve rien." },
+        why: "Aria porte l'Épée Solaire, Mira la Graine d'Yggdrasil. Le JOIN a fourni le nom du porteur, le WHERE a gardé les légendaires." }
+    ] },
+  { part: 2, title: "Additionner par paquets", learned: ["SUM(colonne) additionne les valeurs d'une colonne.", "Avec GROUP BY, il additionne chaque paquet séparément.", "JOIN + GROUP BY + SUM : relier, ranger en paquets, additionner."],
+    steps: [
+      { type: "look", title: "SUM : additionner",
+        text: ["<span class=\"word\"><b>SUM(heros.fortune)</b><i>la somme de l'or des héros</i></span> additionne une colonne. SUM veut dire « somme ».", "Avec GROUP BY, il additionne <b>chaque paquet</b>. Ici, les héros sont rangés par château (mêmes couleurs que tout à l'heure) :"],
+        tables: [{ label: "Chaque héros, son or et son château", sql: "SELECT heros.num_chateau AS n_chateau, chateaux.nom AS chateau, heros.nom AS heros, heros.fortune FROM chateaux JOIN heros ON heros.num_chateau = chateaux.id ORDER BY heros.num_chateau", hl: { color: 0 } },
+                 { label: "La somme de chaque paquet", sql: "SELECT chateaux.id AS n_chateau, chateaux.nom AS chateau, SUM(heros.fortune) FROM chateaux JOIN heros ON heros.num_chateau = chateaux.id GROUP BY chateaux.nom ORDER BY chateaux.id", hl: { color: 0 } }],
+        after: ["Bastion : 320 + 510 = 830. Fort : 75 + 40 = 115. Tour : 1200 + 5 = 1205. La Tour qui penche est la plus riche, grâce à Kael le voleur."] },
+      { type: "build", ask: "Montre chaque château avec la somme de l'or de ses héros. Le début est posé : ajoute seulement les paquets.",
+        given: ["SELECT", "chateaux.nom", ",", "SUM(heros.fortune)", "FROM", "chateaux", "JOIN", "heros", "ON", "heros.num_chateau", "=", "chateaux.id"], target: ["SELECT", "chateaux.nom", ",", "SUM(heros.fortune)", "FROM", "chateaux", "JOIN", "heros", "ON", "heros.num_chateau", "=", "chateaux.id", "GROUP BY", "chateaux.nom"], extra: ["chateaux.id"],
+        traps: { "chateaux.id": "On pourrait, mais on veut voir le nom de chaque château : fais les paquets par chateaux.nom." },
+        why: "Trois châteaux, trois sommes. Tu as relié (JOIN), rangé en paquets (GROUP BY) et additionné (SUM)." },
+      { type: "build", ask: "Le boss du Chapitre 2 : la même chose, du château le plus riche au plus pauvre. Ajoute seulement le tri.",
+        given: ["SELECT", "chateaux.nom", ",", "SUM(heros.fortune)", "FROM", "chateaux", "JOIN", "heros", "ON", "heros.num_chateau", "=", "chateaux.id", "GROUP BY", "chateaux.nom"], target: ["SELECT", "chateaux.nom", ",", "SUM(heros.fortune)", "FROM", "chateaux", "JOIN", "heros", "ON", "heros.num_chateau", "=", "chateaux.id", "GROUP BY", "chateaux.nom", "ORDER BY", "SUM(heros.fortune)", "DESC"], extra: ["ASC"], ordered: true,
+        traps: { "ASC": "ASC range du plus petit au plus grand. Pour commencer par le plus riche, il faut DESC." },
+        why: "C'est la mission du boss du Chapitre 2. Dans l'aventure, on donne souvent un nom court à la somme avec AS total, puis on écrit ORDER BY total DESC : c'est la même chose, en plus lisible." }
+    ]   },
+
+  /* ===================== PARTIE 3 : le Chapitre 3 de l'aventure ===================== */
+  { part: 3, title: "Trouver ce qui manque", learned: ["JOIN ne garde que les lignes qui ont trouvé un partenaire.", "LEFT JOIN garde tout le monde ; les cases sans partenaire valent NULL (vide).", "On teste le vide avec IS NULL, jamais avec = NULL."],
+    steps: [
+      { type: "quiz", recall: true, q: "SUM(heros.fortune) donne…", options: [{ t: "Le nombre de héros", why: "Compter, c'est COUNT. SUM ressemble à « somme »." }, { t: "La somme de l'or des héros", ok: true, why: "Oui : SUM = somme, on additionne." }, { t: "L'or du plus riche", why: "Ce serait MAX. SUM additionne tout le tas." }] },
+      { type: "look", title: "Qui n'a aucun sort ?",
+        text: ["Chaque sort de la table <code>sorts</code> garde le numéro du héros qui le connaît : <code>num_heros</code>. Les couleurs relient les numéros.", "Regarde bien : un numéro de héros n'apparaît <b>jamais</b> du côté des sorts."],
+        tables: [{ label: "heros : les héros", sql: "SELECT id, nom FROM heros", hl: { color: 0 } }, { label: "sorts : les sorts", sql: "SELECT nom, num_heros FROM sorts ORDER BY num_heros", hl: { color: 1 } }] },
+      { type: "quiz", q: "Quel héros ne connaît aucun sort ?", options: [
+        { t: "Aria (n°1)", why: "Aria a deux sorts. Cherche le numéro qui n'apparaît pas à droite." },
+        { t: "Borin (n°2)", ok: true, why: "Oui : aucun sort ne porte le numéro 2. Borin est un guerrier : il tape, il n'enchante pas." },
+        { t: "Gédéon (n°6)", why: "Gédéon a l'Étincelle Ratée (n°6). Cherche le numéro absent." }] },
+      { type: "look", title: "Le JOIN fait disparaître Borin",
+        text: [wd("JOIN", "relie") + " ne garde que les héros qui ont trouvé un partenaire. Borin n'a aucun sort : il <b>disparaît</b> du résultat.",
+          wd("LEFT JOIN", "relie en gardant tout le monde") + " garde <b>tous</b> les héros. Quand il n'y a pas de partenaire, la case reste vide : elle vaut <code>NULL</code> (affiché —)."],
+        tables: [{ label: "Avec JOIN : 8 lignes, pas de Borin", sql: "SELECT heros.nom AS heros, sorts.nom AS sort FROM heros JOIN sorts ON sorts.num_heros = heros.id" },
+                 { label: "Avec LEFT JOIN : Borin est là, sans sort", sql: "SELECT heros.nom AS heros, sorts.nom AS sort FROM heros LEFT JOIN sorts ON sorts.num_heros = heros.id" }] },
+      { type: "memo", keys: ["leftjoin", "isnull"] },
+      { type: "build", ask: "Le début est posé. Relie les héros à leurs sorts, en gardant tout le monde.",
+        given: ["SELECT", "heros.nom", ",", "sorts.nom", "FROM", "heros"],
+        target: ["SELECT", "heros.nom", ",", "sorts.nom", "FROM", "heros", "LEFT JOIN", "sorts", "ON", "sorts.num_heros", "=", "heros.id"], extra: ["JOIN"],
+        traps: { "JOIN": "JOIN tout court ferait disparaître Borin. Pour garder tout le monde sur la photo, il faut LEFT JOIN." },
+        why: "9 lignes : Borin est là, avec une case vide (—) à la place du sort." },
+      { type: "build", ask: "Maintenant, garde seulement les héros dont le sort est vide.",
+        given: ["SELECT", "heros.nom", "FROM", "heros", "LEFT JOIN", "sorts", "ON", "sorts.num_heros", "=", "heros.id"],
+        target: ["SELECT", "heros.nom", "FROM", "heros", "LEFT JOIN", "sorts", "ON", "sorts.num_heros", "=", "heros.id", "WHERE", "sorts.id", "IS NULL"], extra: ["= NULL"],
+        traps: { "= NULL": "On ne peut pas être égal à du vide : « = NULL » ne trouve jamais rien. Pose la question « est-ce vide ? » : IS NULL." },
+        why: "Seul Borin reste. LEFT JOIN + IS NULL : c'est la recette pour trouver ce qui manque." }
+    ] },
+  { part: 3, title: "Filtrer les tas", learned: ["HAVING filtre les tas, une fois qu'ils sont comptés.", "WHERE filtre les lignes avant les tas ; HAVING filtre après.", "Ordre : SELECT → FROM → WHERE → GROUP BY → HAVING → ORDER BY."],
+    steps: [
+      { type: "quiz", recall: true, q: "LEFT JOIN, c'est…", options: [{ t: "Une jointure qui ne garde que les couples", why: "Ça, c'est JOIN tout court." }, { t: "La photo de classe : tout le monde y est, même sans partenaire", ok: true, why: "Oui : les cases sans partenaire restent vides (NULL)." }, { t: "Un tri de gauche à droite", why: "Rien à voir avec un tri : pense à la photo de classe." }] },
+      { type: "look", title: "Garder seulement les gros tas",
+        text: ["Combien de sorts connaît chaque héros ? Avec GROUP BY, on fait un tas par héros, puis COUNT(*) compte chaque tas.", "Le Conseil ne veut que les héros qui ont <b>au moins 2 sorts</b>. En vert, les tas qui restent :"],
+        tables: [{ label: "Un tas par héros", sql: "SELECT heros.nom AS heros, COUNT(*) AS nb_sorts FROM heros JOIN sorts ON sorts.num_heros = heros.id GROUP BY heros.nom", hl: { col: 1, test: (v) => v >= 2 } }],
+        after: ["Le problème : WHERE ne peut pas faire ce tri. Quand le videur WHERE passe, les tas ne sont pas encore faits, donc les sorts ne sont pas encore comptés. Il faut un second videur, qui passe <b>après</b> les tas : HAVING."] },
+      { type: "memo", keys: ["having", "wilda3"] },
+      { type: "quiz", q: "Pour garder seulement les tas d'au moins 2 lignes, on écrit…", options: [
+        { t: "WHERE COUNT(*) >= 2", why: "WHERE est le videur de l'entrée : les tas ne sont pas encore faits quand il passe." },
+        { t: "HAVING COUNT(*) >= 2", ok: true, why: "Oui : HAVING, le videur de la sortie, regarde les tas déjà comptés." },
+        { t: "ORDER BY COUNT(*)", why: "ORDER BY range les tas, mais n'en retire aucun." }] },
+      { type: "build", ask: "Le début est posé. Garde seulement les héros qui ont au moins 2 sorts.",
+        given: ["SELECT", "heros.nom", ",", "COUNT(*)", "FROM", "heros", "JOIN", "sorts", "ON", "sorts.num_heros", "=", "heros.id", "GROUP BY", "heros.nom"],
+        target: ["SELECT", "heros.nom", ",", "COUNT(*)", "FROM", "heros", "JOIN", "sorts", "ON", "sorts.num_heros", "=", "heros.id", "GROUP BY", "heros.nom", "HAVING", "COUNT(*)", ">=", "2"], extra: ["WHERE"],
+        traps: { "WHERE": "WHERE passe avant que les tas soient faits : il ne peut pas compter. Le videur des tas, c'est HAVING." },
+        why: "Aria, Lyra et Mira : 2 sorts chacune. Kael et Gédéon, avec un seul sort, sont restés dehors." },
+      { type: "type", ask: "Au clavier : montre les régions (region) qui ont au moins 2 monstres (table monstres), avec leur nombre.", expected: "SELECT region, COUNT(*) FROM monstres GROUP BY region HAVING COUNT(*) >= 2",
+        words: ["SELECT", "region", ",", "COUNT(*)", "FROM", "monstres", "GROUP BY", "region", "HAVING", "COUNT(*)", ">=", "2"], why: "Forêt Sombre (5) et Marais Putride (2). Les régions qui n'ont qu'un monstre ont été arrêtées par HAVING." }
+    ] },
+  { part: 3, title: "Une question dans la question", learned: ["AVG(colonne) calcule la moyenne.", "Une sous-requête est une petite requête entre parenthèses.", "La base calcule la boîte en premier, puis l'utilise comme une valeur."],
+    steps: [
+      { type: "quiz", recall: true, q: "Quel videur trie les tas déjà comptés ?", options: [{ t: "WHERE", why: "WHERE est le videur de l'entrée, il passe avant les tas." }, { t: "HAVING", ok: true, why: "Oui : le videur de la sortie. Wilda Gronde, puis Hurle." }, { t: "ORDER BY", why: "ORDER BY range, il ne retire rien." }] },
+      { type: "look", title: "La moyenne",
+        text: [wd("AVG(pv)", "la moyenne des PV") + " additionne les PV de tous les monstres, puis divise par leur nombre. AVG vient de l'anglais <i>average</i> : moyenne."],
+        tables: [{ label: "Les PV des monstres", sql: "SELECT nom, pv FROM monstres" }, { label: "SELECT AVG(pv) FROM monstres", sql: "SELECT ROUND(AVG(pv), 1) AS moyenne FROM monstres" }],
+        after: ["La moyenne vaut environ 86,1 PV."] },
+      { type: "memo", keys: ["avg", "subquery"] },
+      { type: "look", title: "La boîte de l'assistant",
+        text: ["Question : quels monstres ont <b>plus de PV que la moyenne</b> ?", "On pourrait écrire pv &gt; 86.1. Mais si un nouveau monstre arrive, la moyenne change et le nombre devient faux. Alors on demande à un assistant de la recalculer à chaque fois :",
+          wd("WHERE", "seulement si") + " " + wd("pv", "les PV") + " " + wd("&gt;", "plus grand que") + " " + wd("(", "ouvre la boîte") + " " + wd("SELECT AVG(pv) FROM monstres", "la moyenne, calculée par l'assistant") + " " + wd(")", "ferme la boîte"),
+          "La base calcule <b>d'abord</b> la boîte entre parenthèses, puis s'en sert comme d'un nombre ordinaire."],
+        tables: [{ label: "En vert : les monstres au-dessus de la moyenne", sql: "SELECT nom, pv FROM monstres", hl: { col: 1, test: (v) => v > 86.11 } }] },
+      { type: "build", ask: "Le début est posé. Remplis la boîte de l'assistant : la moyenne des PV des monstres.",
+        given: ["SELECT", "nom", ",", "pv", "FROM", "monstres", "WHERE", "pv", ">"],
+        target: ["SELECT", "nom", ",", "pv", "FROM", "monstres", "WHERE", "pv", ">", "(", "SELECT", "AVG(pv)", "FROM", "monstres", ")"], extra: ["86"],
+        traps: { "86": "Écrire 86 marche aujourd'hui, mais la moyenne change dès qu'un monstre arrive. Laisse l'assistant la calculer : ( SELECT AVG(pv) FROM monstres )." },
+        why: "Troll, Ours-Hibou, Liche et Dragonnet : 4 monstres au-dessus de 86,1 PV." }
+    ] },
+  { part: 3, title: "Est-ce dans la liste ?", learned: ["IN veut dire « dans » : la valeur fait-elle partie de la liste ?", "La liste s'écrit à la main, IN (3, 6), ou se fabrique avec une sous-requête.", "La sous-requête de IN doit renvoyer une seule colonne."],
+    steps: [
+      { type: "quiz", recall: true, q: "Dans pv > ( SELECT AVG(pv) FROM monstres ), qu'est-ce qui est calculé en premier ?", options: [{ t: "La boîte entre parenthèses", ok: true, why: "Oui : l'assistant calcule la moyenne d'abord." }, { t: "Le pv >", why: "On ne peut pas comparer avant de connaître la moyenne : la boîte passe d'abord." }, { t: "Tout en même temps", why: "Non : la boîte de l'assistant passe toujours en premier." }] },
+      { type: "look", title: "IN : dans la liste",
+        text: [wd("IN", "fait partie de") + " demande : « ce numéro est-il <b>dans</b> la liste ? ». IN veut dire « dans » en anglais.",
+          wd("num_heros IN (3, 6)", "le n° du héros vaut 3 ou 6") + " garde les objets des héros n°3 et n°6. En vert :"],
+        tables: [{ label: "inventaire : les objets", sql: "SELECT objet, num_heros FROM inventaire", hl: { col: 1, test: (v) => v === 3 || v === 6 } }] },
+      { type: "memo", keys: ["in"] },
+      { type: "build", ask: "Le début est posé. Garde les objets dont le n° du héros est 3 ou 6.",
+        given: ["SELECT", "objet", "FROM", "inventaire", "WHERE", "num_heros"],
+        target: ["SELECT", "objet", "FROM", "inventaire", "WHERE", "num_heros", "IN", "(", "3", ",", "6", ")"], extra: ["="],
+        traps: { "=": "= compare à une seule valeur. Pour une liste de plusieurs numéros, il faut IN." },
+        why: "Les 3 objets des héros n°3 et n°6." },
+      { type: "look", title: "L'assistant fabrique la liste",
+        text: ["Qui sont les héros n°3 et n°6 ? Ce sont les deux <b>mages</b>. Au lieu d'écrire les numéros à la main, l'assistant peut fabriquer la liste :",
+          wd("(", "ouvre la boîte") + " " + wd("SELECT id FROM heros WHERE classe = 'Mage'", "les numéros des mages") + " " + wd(")", "ferme la boîte")],
+        tables: [{ label: "Ce que renvoie la boîte de l'assistant", sql: "SELECT id FROM heros WHERE classe = 'Mage'" }] },
+      { type: "build", ask: "Le début est posé. Remplis la boîte : les numéros (id) des héros dont la classe est Mage.",
+        given: ["SELECT", "objet", "FROM", "inventaire", "WHERE", "num_heros", "IN"],
+        target: ["SELECT", "objet", "FROM", "inventaire", "WHERE", "num_heros", "IN", "(", "SELECT", "id", "FROM", "heros", "WHERE", "classe", "=", "'Mage'", ")"], extra: ["nom"],
+        traps: { "nom": "La liste doit contenir des numéros (id), pour les comparer à num_heros. Une liste de noms ne correspondrait à aucun numéro." },
+        why: "Bâton de Cristal, Bourse Trouée, Potion Douteuse : les objets des deux mages. Si un nouveau mage arrive, la liste se met à jour toute seule." }
+    ] },
+
+  /* ===================== PARTIE 4 : le Chapitre 4 de l'aventure ===================== */
+  { part: 4, title: "Ajouter une ligne", learned: ["INSERT INTO table (colonnes) VALUES (valeurs) ajoute une ligne.", "Les valeurs vont dans les colonnes dans le même ordre, comme un formulaire.", "Chaque id doit être unique."],
+    steps: [
+      { type: "quiz", recall: true, q: "Que veut dire IN ?", options: [{ t: "Dans : fait partie de la liste", ok: true, why: "Oui : est-ce que ce numéro est dans la liste ?" }, { t: "Insérer", why: "Insérer, c'est INSERT : justement la leçon d'aujourd'hui !" }, { t: "Inverse", why: "Non : IN veut dire « dans »." }] },
+      { type: "look", title: "On passe à l'écriture",
+        text: ["Jusqu'ici, tu <b>lisais</b> le royaume. Maintenant, tu vas l'<b>écrire</b>.",
+          "Pour ajouter une ligne, on remplit un formulaire : d'abord les noms des cases (les colonnes), puis ce qu'on écrit dedans (les valeurs), <b>dans le même ordre</b>.",
+          wd("INSERT INTO", "ajoute dans la table") + " " + wd("chateaux", "les châteaux") + " " + wd("(id, nom)", "les cases id et nom") + " " + wd("VALUES", "les valeurs") + " " + wd("(4, 'Donjon Nuageux')", "4 et « Donjon Nuageux »"),
+          "Le 4 va dans id, 'Donjon Nuageux' va dans nom. Les autres cases restent vides (NULL)."],
+        tables: [{ label: "chateaux avant : 3 châteaux", sql: "SELECT * FROM chateaux" }] },
+      { type: "memo", keys: ["insert"] },
+      { type: "build", write: "chateaux", ask: "Construis le château n°4, le « Donjon Nuageux ».",
+        target: ["INSERT INTO", "chateaux", "(id, nom)", "VALUES", "(4, 'Donjon Nuageux')"], extra: ["(4, Donjon Nuageux)", "(1, 'Donjon Nuageux')"],
+        traps: { "(4, Donjon Nuageux)": "Le texte a perdu ses boucles d'oreilles : sans apostrophes, la base ne comprend pas Donjon Nuageux. Prends le bloc avec 'Donjon Nuageux'.",
+                 "(1, 'Donjon Nuageux')": "Le numéro 1 est déjà pris par le Bastion de l'Aube. id = identité : chaque ligne a le sien. Prends le 4, qui est libre." },
+        why: "Une 4e ligne apparaît en vert : 4 dans id, Donjon Nuageux dans nom. Le formulaire est rempli." },
+      { type: "type", write: "monstres", ask: "Au clavier : ajoute dans la table monstres le monstre n°10, appelé 'Golem de Pierre'. Colonnes : (id, nom).", expected: "INSERT INTO monstres (id, nom) VALUES (10, 'Golem de Pierre')",
+        words: ["INSERT INTO", "monstres", "(id, nom)", "VALUES", "(10, 'Golem de Pierre')"], why: "Le Golem rejoint les 9 autres monstres. Tu viens d'écrire dans une base de données." }
+    ] },
+  { part: 4, title: "Modifier des lignes", learned: ["UPDATE table SET colonne = valeur modifie des lignes qui existent déjà.", "colonne = colonne + 100 part de l'ancienne valeur.", "Sans WHERE, TOUTES les lignes sont modifiées."],
+    steps: [
+      { type: "quiz", recall: true, q: "Dans un INSERT, comment la base sait-elle quelle valeur va dans quelle case ?", options: [{ t: "Elle devine", why: "Non : elle suit l'ordre, comme un formulaire." }, { t: "Par l'ordre : 1re valeur dans la 1re colonne, et ainsi de suite", ok: true, why: "Oui : les cases, puis les valeurs, dans le même ordre." }, { t: "Par ordre alphabétique", why: "Non : par position, dans l'ordre où tu les écris." }] },
+      { type: "look", title: "Mettre à jour",
+        text: [wd("UPDATE", "modifie la table") + " " + wd("heros", "les héros") + " " + wd("SET", "change") + " " + wd("fortune = fortune + 100", "l'or devient l'or actuel + 100") + " " + wd("WHERE", "seulement si") + " " + wd("nom = 'Borin Barbe-de-Fer'", "c'est Borin"),
+          "Le <b>WHERE</b> est vital : c'est lui qui choisit qui est modifié. Sans ce videur, <b>tout le monde</b> serait modifié.",
+          "Le trésorier veut payer Borin 100 pièces. Aujourd'hui, Borin a 75 pièces :"],
+        tables: [{ label: "heros : l'or de chacun", sql: "SELECT nom, fortune FROM heros" }] },
+      { type: "memo", keys: ["update"] },
+      { type: "build", write: "heros", ask: "Paie Borin : ajoute 100 pièces à son or. Astuce : regarde le résultat en direct juste avant de poser le WHERE !",
+        target: ["UPDATE", "heros", "SET", "fortune", "=", "fortune + 100", "WHERE", "nom", "=", "'Borin Barbe-de-Fer'"], extra: ["100"],
+        traps: { "100": "fortune = 100 remplacerait son or par 100. Pour en AJOUTER 100, il faut fortune + 100 : son or actuel, plus 100." },
+        why: "Seul Borin passe de 75 à 175 pièces. Juste avant le WHERE, tu as peut-être vu tout le royaume se faire payer : c'est ce qui arrive sans videur." },
+      { type: "type", write: "heros", ask: "Au clavier : Gédéon le Distrait gagne un niveau. Ajoute 1 à son niveau (niveau + 1), seulement pour 'Gédéon le Distrait'.", expected: "UPDATE heros SET niveau = niveau + 1 WHERE nom = 'Gédéon le Distrait'",
+        words: ["UPDATE", "heros", "SET", "niveau", "=", "niveau + 1", "WHERE", "nom", "=", "'Gédéon le Distrait'"], why: "Gédéon passe du niveau 3 au niveau 4. Bravo, Gédéon." }
+    ] },
+  { part: 4, title: "Supprimer des lignes", learned: ["DELETE FROM table WHERE condition supprime des lignes entières.", "Pas de corbeille : regarde d'abord avec un SELECT et le même WHERE.", "Sans WHERE, toute la table est vidée."],
+    steps: [
+      { type: "quiz", recall: true, q: "Que se passe-t-il avec un UPDATE sans WHERE ?", options: [{ t: "Rien du tout", why: "Si : sans videur, l'ordre s'applique à tout le monde." }, { t: "Toutes les lignes sont modifiées", ok: true, why: "Oui : sans videur, tout le royaume est modifié." }, { t: "La base refuse", why: "Malheureusement non : elle obéit, et modifie tout." }] },
+      { type: "look", title: "Regarde avant de détruire",
+        text: [wd("DELETE FROM", "supprime de la table") + " efface des lignes <b>entières</b>. Il n'y a pas de corbeille : une ligne supprimée est perdue.",
+          "Le réflexe des pros : écrire d'abord un SELECT avec le même WHERE, pour voir qui sera supprimé. Le forgeron veut fondre les objets <b>communs</b>. Voici les victimes :"],
+        tables: [{ label: "SELECT * FROM inventaire WHERE rarete = 'Commun'", sql: "SELECT * FROM inventaire WHERE rarete = 'Commun'" }] },
+      { type: "memo", keys: ["delete"] },
+      { type: "build", write: "inventaire", ask: "Fonds les objets communs : supprime de inventaire les objets dont la rareté (rarete) est 'Commun'.",
+        target: ["DELETE FROM", "inventaire", "WHERE", "rarete", "=", "'Commun'"], extra: ["*"],
+        traps: { "*": "Pas d'étoile avec DELETE : on supprime des lignes entières, pas des colonnes. DELETE FROM inventaire suffit." },
+        why: "Les 3 objets communs sont barrés : ils ont été fondus. Les objets rares, épiques et légendaires sont intacts." },
+      { type: "quiz", q: "Que fait DELETE FROM inventaire, sans WHERE ?", options: [
+        { t: "Il ne supprime rien", why: "Hélas si : sans videur, il supprime tout." },
+        { t: "Il supprime TOUS les objets", ok: true, why: "Oui, toute la table est vidée. D'où la règle : regarde (SELECT) avant de détruire (DELETE)." },
+        { t: "Il supprime la première ligne", why: "Non : sans WHERE, il n'y a aucun tri, tout part." }] }
+    ]   },
+
+  /* ===================== PARTIE 5 : le Chapitre 5 de l'aventure ===================== */
+  { part: 5, title: "Sans doublons", learned: ["DISTINCT retire les lignes en double du résultat.", "Il se place juste après SELECT.", "Deux lignes sont des doublons si toutes leurs colonnes affichées sont identiques."],
+    steps: [
+      { type: "quiz", recall: true, q: "Avant un DELETE, que faut-il faire ?", options: [{ t: "Rien, on supprime directement", why: "Il n'y a pas de corbeille : une erreur ne se rattrape pas." }, { t: "Regarder les victimes avec un SELECT et le même WHERE", ok: true, why: "Oui : regarde avant de détruire." }, { t: "Faire un UPDATE", why: "Non : on vérifie avec un SELECT, qui ne change rien." }] },
+      { type: "look", title: "Les doublons",
+        text: ["Le Conseil veut la liste des <b>écoles de magie</b>. Mais chaque sort donne une ligne : certaines écoles apparaissent deux fois (mêmes couleurs).",
+          wd("DISTINCT", "sans doublons") + " se place juste après SELECT et ne garde chaque valeur qu'<b>une seule fois</b>."],
+        tables: [{ label: "SELECT ecole FROM sorts : 8 lignes", sql: "SELECT ecole FROM sorts ORDER BY ecole", hl: { color: 0 } }, { label: "SELECT DISTINCT ecole FROM sorts : 5 lignes", sql: "SELECT DISTINCT ecole FROM sorts ORDER BY ecole", hl: { color: 0 } }] },
+      { type: "memo", keys: ["distinct"] },
+      { type: "build", ask: "Le début est posé. Montre les écoles de magie, chacune une seule fois.",
+        given: ["SELECT"], target: ["SELECT", "DISTINCT", "ecole", "FROM", "sorts"], extra: ["*"],
+        traps: { "*": "Avec *, chaque ligne entière est différente (chaque sort a son nom) : DISTINCT ne retirerait rien. On veut seulement la colonne ecole." },
+        why: "5 écoles : Feu, Lumière, Nature, Ombre, Glace. Les doublons ont disparu." },
+      { type: "build", ask: "Quelles classes de héros existent dans le royaume ? Chacune une seule fois.",
+        target: ["SELECT", "DISTINCT", "classe", "FROM", "heros"], extra: ["nom"],
+        traps: { "nom": "Chaque héros a un nom différent : DISTINCT nom ne retirerait rien. On veut les classes." },
+        why: "5 classes pour 6 héros : il y a deux mages, Lyra et Gédéon, mais « Mage » n'apparaît qu'une fois." },
+      { type: "type", ask: "Au clavier : dans quelles régions (region) vivent les monstres (monstres) ? Chaque région une seule fois.", expected: "SELECT DISTINCT region FROM monstres",
+        words: ["SELECT", "DISTINCT", "region", "FROM", "monstres"], why: "4 régions : la Forêt Sombre, le Marais Putride, la Crypte Oubliée et les Pics Gelés." }
+    ] },
+  { part: 5, title: "Chercher un motif", learned: ["= compare un texte en entier ; LIKE le compare à un motif.", "% remplace n'importe quelles lettres : 'L%' commence par L, '%L' finit par L.", "NOT LIKE garde tout, sauf ce qui ressemble au motif."],
+    steps: [
+      { type: "quiz", recall: true, q: "Que fait DISTINCT ?", options: [{ t: "Il retire les doublons du résultat", ok: true, why: "Oui : la liste d'invités, chaque nom une seule fois." }, { t: "Il trie le résultat", why: "Trier, c'est ORDER BY." }, { t: "Il supprime des lignes de la table", why: "Non : il ne touche pas la table, seulement ce qui s'affiche." }] },
+      { type: "look", title: "Le joker %",
+        text: ["L'oracle ne se souvient que du début d'un nom : « il commence par L ». Avec =, impossible : = veut le nom <b>en entier</b>.",
+          wd("LIKE", "ressemble au motif") + " " + wd("'L%'", "L, puis n'importe quoi") + " : le <b>%</b> est un joker, il remplace n'importe quelles lettres (ou aucune).",
+          "En vert, les monstres dont le nom commence par L :"],
+        tables: [{ label: "monstres", sql: "SELECT nom FROM monstres", hl: { col: 0, test: (v) => /^L/.test(v) } }] },
+      { type: "memo", keys: ["like"] },
+      { type: "quiz", q: "Quel motif trouve les noms qui COMMENCENT par « Dra » ?", options: [
+        { t: "'%Dra'", why: "Le joker est devant : ce motif veut dire « finit par Dra »." },
+        { t: "'Dra%'", ok: true, why: "Oui : Dra d'abord, puis n'importe quoi. C'est le Dragonnet Boudeur." },
+        { t: "'Dra'", why: "Sans joker, LIKE cherche le nom exact « Dra » : il ne trouve rien." }] },
+      { type: "build", ask: "Le début est posé. Garde les monstres dont le nom commence par L.",
+        given: ["SELECT", "nom", "FROM", "monstres", "WHERE", "nom"], target: ["SELECT", "nom", "FROM", "monstres", "WHERE", "nom", "LIKE", "'L%'"], extra: ["=", "'%L'"],
+        traps: { "=": "= cherche un nom qui serait exactement « L% ». Pour utiliser le joker %, il faut LIKE.", "'%L'": "'%L' veut dire « finit par L ». On veut « commence par L » : le joker se met après, 'L%'." },
+        why: "Le Loup Spectral et la Liche Mineure." },
+      { type: "build", ask: "Le début est posé. Garde le héros dont le nom finit par « Vent ».",
+        given: ["SELECT", "nom", "FROM", "heros", "WHERE", "nom"], target: ["SELECT", "nom", "FROM", "heros", "WHERE", "nom", "LIKE", "'%Vent'"], extra: ["'Vent%'"],
+        traps: { "'Vent%'": "'Vent%' veut dire « commence par Vent ». Pour « finit par », le joker se met devant : '%Vent'." },
+        why: "Lyra Murmure-Vent. Le joker devant, puis la fin du nom." },
+      { type: "memo", keys: ["notlike"] },
+      { type: "build", ask: "Le début est posé. Montre tous les châteaux, SAUF ceux dont le nom commence par « Tour ».",
+        given: ["SELECT", "nom", "FROM", "chateaux", "WHERE", "nom"], target: ["SELECT", "nom", "FROM", "chateaux", "WHERE", "nom", "NOT LIKE", "'Tour%'"], extra: ["LIKE"],
+        traps: { "LIKE": "LIKE garderait seulement la Tour. On veut tout, sauf elle : NOT LIKE." },
+        why: "Le Bastion de l'Aube et le Fort Roc-Tonnerre. La Tour Penchée est écartée." }
+    ] },
+  { part: 5, title: "Fabriquer une étiquette", learned: ["CASE fabrique une étiquette pour chaque ligne.", "CASE WHEN … THEN … ELSE … END : quand, alors, sinon, fin.", "Le premier WHEN vrai gagne : la condition la plus stricte d'abord."],
+    steps: [
+      { type: "quiz", recall: true, q: "Que veut dire le motif '%Vent' ?", options: [{ t: "Commence par Vent", why: "Le joker est devant : n'importe quoi, puis Vent." }, { t: "Finit par Vent", ok: true, why: "Oui : n'importe quoi, puis Vent à la fin." }, { t: "Exactement « Vent »", why: "Il y a un joker : ce n'est pas le texte exact." }] },
+      { type: "look", title: "Des mots plutôt que des chiffres",
+        text: ["Les villageois ont peur des chiffres de danger. Le Conseil veut des <b>mots</b> : « Mortel » si le danger vaut au moins 7, « Calme » sinon.",
+          wd("CASE", "étiquette : début") + " " + wd("WHEN", "quand") + " " + wd("danger &gt;= 7", "le danger vaut au moins 7") + " " + wd("THEN", "alors") + " " + wd("'Mortel'", "« Mortel »") + " " + wd("ELSE", "sinon") + " " + wd("'Calme'", "« Calme »") + " " + wd("END", "fin"),
+          "CASE est calculé <b>pour chaque ligne</b> et crée une colonne qui n'existe pas dans la table."],
+        tables: [{ label: "L'étiquette, ligne par ligne", sql: "SELECT nom, danger, CASE WHEN danger >= 7 THEN 'Mortel' ELSE 'Calme' END AS menace FROM monstres" }] },
+      { type: "memo", keys: ["case"] },
+      { type: "build", ask: "Le début est posé. Termine l'étiquette : alors « Mortel », sinon « Calme », puis fin, dans la table des monstres.",
+        given: ["SELECT", "nom", ",", "CASE", "WHEN", "danger", ">=", "7"],
+        target: ["SELECT", "nom", ",", "CASE", "WHEN", "danger", ">=", "7", "THEN", "'Mortel'", "ELSE", "'Calme'", "END", "FROM", "monstres"], extra: ["FIN"],
+        traps: { "FIN": "Le mot de fin s'écrit en anglais, comme tous les mots-clés : END." },
+        why: "Le Troll, la Liche et le Dragonnet sont « Mortel », tous les autres « Calme »." },
+      { type: "look", title: "Le premier WHEN vrai gagne",
+        text: ["Avec trois étiquettes, l'ordre des WHEN compte. La base les lit dans l'ordre et s'arrête au <b>premier vrai</b>.",
+          "À gauche, le bon ordre : le plus strict d'abord. À droite, les WHEN inversés : la Liche (danger 8) répond déjà oui à « au moins 4 », et elle n'est plus jamais « Mortel »."],
+        tables: [{ label: "Bon ordre : >= 7 puis >= 4", sql: "SELECT nom, danger, CASE WHEN danger >= 7 THEN 'Mortel' WHEN danger >= 4 THEN 'Dangereux' ELSE 'Inoffensif' END AS menace FROM monstres" },
+                 { label: "Mauvais ordre : >= 4 puis >= 7", sql: "SELECT nom, danger, CASE WHEN danger >= 4 THEN 'Dangereux' WHEN danger >= 7 THEN 'Mortel' ELSE 'Inoffensif' END AS menace FROM monstres" }] },
+      { type: "memo", keys: ["casefirst"] },
+      { type: "quiz", q: "Avec WHEN danger >= 4 THEN 'Dangereux' WHEN danger >= 7 THEN 'Mortel', que devient la Liche (danger 8) ?", options: [
+        { t: "Mortel", why: "Elle le mériterait, mais le premier WHEN (>= 4) est déjà vrai : la base s'arrête là." },
+        { t: "Dangereux", ok: true, why: "Oui : le premier WHEN vrai gagne. D'où la règle : le plus strict d'abord." },
+        { t: "Rien du tout", why: "Si : elle reçoit l'étiquette du premier WHEN vrai." }] },
+      { type: "build", ask: "Le début est posé. Ajoute la deuxième étiquette (Dangereux à partir de 4), le sinon (Inoffensif) et la fin.",
+        given: ["SELECT", "nom", ",", "CASE", "WHEN", "danger", ">=", "7", "THEN", "'Mortel'"],
+        target: ["SELECT", "nom", ",", "CASE", "WHEN", "danger", ">=", "7", "THEN", "'Mortel'", "WHEN", "danger", ">=", "4", "THEN", "'Dangereux'", "ELSE", "'Inoffensif'", "END", "FROM", "monstres"], extra: ["FIN"],
+        traps: { "FIN": "Le mot de fin s'écrit END." },
+        why: "C'est exactement la mission « Le Registre des Menaces » de l'aventure." }
+    ] },
+  { part: 5, title: "Le jugement du Conseil", learned: ["On peut ranger en tas par une étiquette calculée : CASE puis GROUP BY.", "Le boss du Chapitre 5 réunit JOIN, CASE, NOT LIKE et ORDER BY.", "Toute phrase se lit dans l'ordre des questions : quoi ? où ? reliée à quoi ? lesquelles ? quels tas ? quel ordre ?"],
+    steps: [
+      { type: "quiz", recall: true, q: "Comment finit toujours un CASE ?", options: [{ t: "Par ELSE", why: "ELSE est facultatif. Le mot qui ferme toujours, c'est END." }, { t: "Par END", ok: true, why: "Oui : quand, alors, sinon, fin." }, { t: "Par un point-virgule", why: "Non : le CASE se ferme avec END, au milieu de la phrase." }] },
+      { type: "look", title: "Ranger par étiquette",
+        text: ["Le Conseil lève un impôt : combien de héros sont <b>riches</b> (au moins 300 pièces) et combien sont <b>modestes</b> ?",
+          "D'abord on fabrique l'étiquette avec CASE et on la nomme avec AS, puis on range en tas par cette étiquette, comme les chaussettes par couleur."],
+        tables: [{ label: "L'étiquette de chaque héros", sql: "SELECT nom, fortune, CASE WHEN fortune >= 300 THEN 'Riche' ELSE 'Modeste' END AS statut FROM heros" },
+                 { label: "Un tas par étiquette", sql: "SELECT CASE WHEN fortune >= 300 THEN 'Riche' ELSE 'Modeste' END AS statut, COUNT(*) FROM heros GROUP BY statut" }] },
+      { type: "build", ask: "Le début est posé : l'étiquette s'appelle statut. Range les héros en tas par statut.",
+        given: ["SELECT", "CASE", "WHEN", "fortune", ">=", "300", "THEN", "'Riche'", "ELSE", "'Modeste'", "END", "AS", "statut", ",", "COUNT(*)", "FROM", "heros"],
+        target: ["SELECT", "CASE", "WHEN", "fortune", ">=", "300", "THEN", "'Riche'", "ELSE", "'Modeste'", "END", "AS", "statut", ",", "COUNT(*)", "FROM", "heros", "GROUP BY", "statut"], extra: ["nom"],
+        traps: { "nom": "On range par étiquette, pas par nom : chaque héros ferait son propre tas. GROUP BY statut." },
+        why: "3 riches, 3 modestes. C'est la mission « L'Impôt du Conseil »." },
+      { type: "look", title: "Le boss du Chapitre 5",
+        text: ["Le Conseil remet ses titres : <b>Champion</b> à partir du niveau 10, <b>Écuyer</b> en dessous. La Tour Penchée est exclue. Les plus aguerris passent en premier.",
+          "Dis la demande à voix haute, dans l'ordre des questions : montre le héros, son château et son titre (<b>quoi ?</b>), dans les héros (<b>où ?</b>) reliés à leur château (<b>reliée à quoi ?</b>), sauf la Tour (<b>lesquelles ?</b>), du plus haut niveau au plus bas (<b>quel ordre ?</b>)."] },
+      { type: "build", ask: "Le début est posé : le titre et le JOIN. Ajoute le videur (sauf la Tour) et le tri (niveau décroissant).",
+        given: ["SELECT", "heros.nom", ",", "chateaux.nom", ",", "CASE", "WHEN", "heros.niveau", ">=", "10", "THEN", "'Champion'", "ELSE", "'Écuyer'", "END", "FROM", "heros", "JOIN", "chateaux", "ON", "heros.num_chateau", "=", "chateaux.id"],
+        target: ["SELECT", "heros.nom", ",", "chateaux.nom", ",", "CASE", "WHEN", "heros.niveau", ">=", "10", "THEN", "'Champion'", "ELSE", "'Écuyer'", "END", "FROM", "heros", "JOIN", "chateaux", "ON", "heros.num_chateau", "=", "chateaux.id", "WHERE", "chateaux.nom", "NOT LIKE", "'Tour%'", "ORDER BY", "heros.niveau", "DESC"], extra: ["LIKE"], ordered: true,
+        traps: { "LIKE": "LIKE garderait seulement la Tour. Pour l'exclure : NOT LIKE." },
+        why: "Lyra, Aria et Mira sont Championnes ; Borin reste Écuyer. C'est le boss du Chapitre 5 : tu as tout ce qu'il faut pour le vaincre." }
+    ] },
+  /* ===================== PARTIE 6 : le Chapitre 6 de l'aventure ===================== */
+  { part: 6, title: "Seulement les premiers", learned: ["LIMIT n garde seulement les n premières lignes.", "LIMIT se place tout à la fin, après ORDER BY.", "ORDER BY puis LIMIT 1 : le premier d'un classement (le plus riche, le plus fort…)."],
+    steps: [
+      { type: "quiz", recall: true, q: "Dans un CASE, quel WHEN l'emporte ?", options: [{ t: "Le dernier", why: "Non : la base s'arrête dès qu'un WHEN est vrai." }, { t: "Le premier WHEN vrai", ok: true, why: "Oui : la file d'attente, le premier vrai gagne." }, { t: "Le plus long", why: "Non : c'est l'ordre qui compte. Le premier vrai gagne." }] },
+      { type: "look", title: "Couper la liste",
+        text: ["Le gardien veut seulement les <b>3 monstres les plus robustes</b>, pas les 9.",
+          wd("ORDER BY pv DESC", "trie du plus fort au plus faible") + " puis " + wd("LIMIT 3", "garde seulement 3 lignes") + " : on trie d'abord, puis on coupe la liste."],
+        tables: [{ label: "monstres triés par PV : 9 lignes", sql: "SELECT nom, pv FROM monstres ORDER BY pv DESC" }, { label: "… avec LIMIT 3 : 3 lignes", sql: "SELECT nom, pv FROM monstres ORDER BY pv DESC LIMIT 3" }] },
+      { type: "memo", keys: ["limit"] },
+      { type: "build", ask: "Le début est posé. Garde seulement les 3 monstres qui ont le plus de PV.",
+        given: ["SELECT", "nom", ",", "pv", "FROM", "monstres", "ORDER BY", "pv", "DESC"], target: ["SELECT", "nom", ",", "pv", "FROM", "monstres", "ORDER BY", "pv", "DESC", "LIMIT", "3"], extra: ["WHERE"], ordered: true,
+        traps: { "WHERE": "WHERE garde les lignes selon une condition. Ici on veut couper la liste après 3 lignes : LIMIT." },
+        why: "Le Dragonnet (200), le Troll (150) et la Liche (120)." },
+      { type: "build", ask: "Le début est posé. Montre seulement le héros le plus riche.",
+        given: ["SELECT", "nom", "FROM", "heros"], target: ["SELECT", "nom", "FROM", "heros", "ORDER BY", "fortune", "DESC", "LIMIT", "1"], extra: ["ASC"], ordered: true,
+        traps: { "ASC": "ASC met le plus pauvre en haut : LIMIT 1 garderait Gédéon et ses 5 pièces ! Le plus riche d'abord : DESC." },
+        why: "Kael Pas-Feutré et ses 1200 pièces. Trier, puis garder le premier." },
+      { type: "type", ask: "Au clavier : montre le nom (nom) des 2 monstres (monstres) les moins dangereux (danger, du plus petit au plus grand).", expected: "SELECT nom FROM monstres ORDER BY danger LIMIT 2", ordered: true,
+        words: ["SELECT", "nom", "FROM", "monstres", "ORDER BY", "danger", "LIMIT", "2"], why: "Le Champignon Hurleur (1) et le Gobelin Grincheux (2). Sans DESC, on part du plus petit." }
+    ] },
+  { part: 6, title: "Ou bien", learned: ["AND : toutes les conditions. OR : au moins une.", "Chaque côté du OR est une condition complète : region = 'A' OR region = 'B'.", "La base fait les AND avant les OR : on entoure le OR de parenthèses."],
+    steps: [
+      { type: "quiz", recall: true, q: "Où se place LIMIT dans la phrase ?", options: [{ t: "Juste après SELECT", why: "Non : on trie d'abord, on coupe ensuite. LIMIT est la dernière question : combien ?" }, { t: "Tout à la fin, après ORDER BY", ok: true, why: "Oui : trier, puis couper." }, { t: "Avant WHERE", why: "Non : LIMIT vient en tout dernier." }] },
+      { type: "look", title: "AND est exigeant, OR est indulgent", regions: ["Forêt Sombre", "Marais Putride"],
+        text: ["On cherche les monstres de la <b>Forêt Sombre</b> ou du <b>Marais Putride</b>. Avec AND, un monstre devrait vivre dans les deux à la fois : personne !",
+          wd("OR", "ou bien") + " se contente d'<b>une seule</b> condition vraie. En vert, les monstres qui passent :"],
+        tables: [{ label: "monstres", sql: "SELECT nom, region FROM monstres", hl: { col: 1, test: (v) => v === "Forêt Sombre" || v === "Marais Putride" } }] },
+      { type: "memo", keys: ["or"] },
+      { type: "build", ask: "Le début est posé. Ajoute les monstres du Marais Putride.",
+        given: ["SELECT", "nom", "FROM", "monstres", "WHERE", "region", "=", "'Forêt Sombre'"], target: ["SELECT", "nom", "FROM", "monstres", "WHERE", "region", "=", "'Forêt Sombre'", "OR", "region", "=", "'Marais Putride'"], extra: ["AND"],
+        traps: { "AND": "Avec AND, le monstre devrait vivre dans la Forêt ET dans le Marais : impossible, 0 ligne. On veut l'un OU l'autre." },
+        why: "7 monstres : les 5 de la Forêt et les 2 du Marais. Chaque côté du OR est une condition complète." },
+      { type: "look", title: "Le piège : AND passe avant OR",
+        text: ["Maintenant : les monstres de la Forêt ou du Marais, <b>et</b> qui ont plus de 50 PV.",
+          "La base fait les AND en premier, comme les multiplications avant les additions. Sans parenthèses, elle lit « Forêt, OU (Marais et plus de 50 PV) » : le Gobelin (30 PV) passe à tort.",
+          wd("( … OR … )", "la boîte : le OR reste enfermé dedans") + " puis " + wd("AND pv &gt; 50", "et plus de 50 PV")],
+        tables: [{ label: "Sans parenthèses : 6 lignes", sql: "SELECT nom, region, pv FROM monstres WHERE region = 'Forêt Sombre' OR region = 'Marais Putride' AND pv > 50" },
+                 { label: "Avec parenthèses : 4 lignes", sql: "SELECT nom, region, pv FROM monstres WHERE (region = 'Forêt Sombre' OR region = 'Marais Putride') AND pv > 50" }] },
+      { type: "memo", keys: ["parens"] },
+      { type: "build", ask: "Le début est posé, avec la parenthèse ouverte. Ferme la boîte, puis ajoute : et plus de 50 PV.",
+        given: ["SELECT", "nom", "FROM", "monstres", "WHERE", "(", "region", "=", "'Forêt Sombre'", "OR", "region", "=", "'Marais Putride'"],
+        target: ["SELECT", "nom", "FROM", "monstres", "WHERE", "(", "region", "=", "'Forêt Sombre'", "OR", "region", "=", "'Marais Putride'", ")", "AND", "pv", ">", "50"], extra: ["OR"],
+        traps: { "OR": "Ici on veut les deux à la fois : la bonne région ET plus de 50 PV. C'est AND." },
+        why: "4 monstres : le Loup, l'Ours-Hibou, l'Araignée et le Troll. Le Gobelin et le Slime, trop faibles, sont écartés." }
+    ] },
+  { part: 6, title: "Le plus petit, le plus grand", learned: ["MIN() donne la plus petite valeur d'une colonne, MAX() la plus grande.", "Comme COUNT et SUM, ils résument toute la colonne en un seul nombre.", "Pour savoir À QUI est le maximum : WHERE colonne = (SELECT MAX(colonne) FROM table)."],
+    steps: [
+      { type: "quiz", recall: true, q: "La base fait-elle d'abord les AND ou les OR ?", options: [{ t: "Les OR", why: "Non : AND passe avant OR, comme × avant +." }, { t: "Les AND", ok: true, why: "Oui : d'où les parenthèses autour du OR." }, { t: "Dans l'ordre où on les écrit", why: "Non : AND passe toujours avant OR, quel que soit l'ordre d'écriture." }] },
+      { type: "look", title: "Deux nouveaux résumés",
+        text: [wd("MIN(pv)", "la plus petite valeur de pv") + " et " + wd("MAX(pv)", "la plus grande valeur de pv") + " lisent toute la colonne et ne gardent qu'<b>un seul nombre</b>, comme COUNT(*) et SUM."],
+        tables: [{ label: "monstres", sql: "SELECT nom, pv FROM monstres" }, { label: "SELECT MIN(pv), MAX(pv) FROM monstres", sql: "SELECT MIN(pv), MAX(pv) FROM monstres" }] },
+      { type: "memo", keys: ["minmax"] },
+      { type: "build", ask: "Le début est posé. Quelle est la plus grande fortune du royaume ?",
+        given: ["SELECT"], target: ["SELECT", "MAX(fortune)", "FROM", "heros"], extra: ["MIN(fortune)", "SUM(fortune)"],
+        traps: { "MIN(fortune)": "MIN donne la plus petite. On veut la plus grande : MAX, comme MAXimum.", "SUM(fortune)": "SUM additionnerait toutes les fortunes. On veut la plus grande : MAX." },
+        why: "1200 pièces. Mais à qui sont-elles ? Le nombre seul ne le dit pas…" },
+      { type: "look", title: "À qui est le maximum ?",
+        text: ["MAX(fortune) donne un nombre, pas un nom. L'astuce : la <b>boîte de l'assistant</b> (chapitre 3) calcule le maximum, puis le videur WHERE garde le héros qui a exactement cette fortune."],
+        tables: [{ label: "SELECT nom FROM heros WHERE fortune = (SELECT MAX(fortune) FROM heros)", sql: "SELECT nom, fortune FROM heros WHERE fortune = (SELECT MAX(fortune) FROM heros)" }] },
+      { type: "build", ask: "Le début est posé. Remplis la boîte de l'assistant pour trouver le héros le plus riche.",
+        given: ["SELECT", "nom", "FROM", "heros", "WHERE", "fortune", "=", "("], target: ["SELECT", "nom", "FROM", "heros", "WHERE", "fortune", "=", "(", "SELECT", "MAX(fortune)", "FROM", "heros", ")"], extra: ["MIN(fortune)"],
+        traps: { "MIN(fortune)": "MIN trouverait le plus pauvre (Gédéon). On cherche le plus riche : MAX." },
+        why: "Kael Pas-Feutré. L'assistant trouve 1200, puis le videur garde celui qui a 1200 pièces." },
+      { type: "type", ask: "Au clavier : quel est le plus petit nombre de PV (pv) parmi les monstres (monstres) ?", expected: "SELECT MIN(pv) FROM monstres",
+        words: ["SELECT", "MIN(pv)", "FROM", "monstres"], why: "20 PV : c'est le Champignon Hurleur." }
+    ] },
+  { part: 6, title: "Entre deux bornes", learned: ["BETWEEN a AND b : entre a et b.", "Les deux bornes sont comprises : BETWEEN 5 AND 10 garde 5 et 10.", "C'est un raccourci pour colonne >= a AND colonne <= b."],
+    steps: [
+      { type: "quiz", recall: true, q: "Que donne MAX(fortune) ?", options: [{ t: "Le héros le plus riche", why: "Pas tout à fait : MAX donne seulement le nombre. Pour le nom, il faut la boîte de l'assistant." }, { t: "La plus grande fortune (un nombre)", ok: true, why: "Oui : un seul nombre, 1200." }, { t: "La somme des fortunes", why: "Additionner, c'est SUM." }] },
+      { type: "look", title: "Une fenêtre",
+        text: ["Le maître d'armes cherche les héros de niveau <b>5 à 10</b>.",
+          wd("niveau", "le niveau") + " " + wd("BETWEEN", "est entre") + " " + wd("5", "5") + " " + wd("AND", "et") + " " + wd("10", "10") + " : les deux bornes sont <b>comprises</b>. Mira, niveau 10 pile, est gardée.",
+          "En vert, les héros qui passent :"],
+        tables: [{ label: "heros", sql: "SELECT nom, niveau FROM heros", hl: { col: 1, test: (v) => v >= 5 && v <= 10 } }] },
+      { type: "memo", keys: ["between"] },
+      { type: "build", ask: "Le début est posé. Garde les héros dont le niveau est entre 5 et 10.",
+        given: ["SELECT", "nom", "FROM", "heros", "WHERE", "niveau"], target: ["SELECT", "nom", "FROM", "heros", "WHERE", "niveau", "BETWEEN", "5", "AND", "10"], extra: ["OR"],
+        traps: { "OR": "BETWEEN s'écrit avec AND : entre 5 ET 10." },
+        why: "Borin (9), Kael (7) et Mira (10). Le 10 est compris." },
+      { type: "quiz", q: "danger BETWEEN 3 AND 6 garde-t-il un monstre de danger 6 ?", options: [
+        { t: "Oui, les bornes sont comprises", ok: true, why: "Oui : 3 et 6 sont dans la fenêtre." },
+        { t: "Non, il faut moins de 6", why: "BETWEEN garde les deux bornes : 6 est compris." },
+        { t: "Seulement avec OR", why: "Non : BETWEEN 3 AND 6 garde déjà 3, 4, 5 et 6." }] },
+      { type: "type", ask: "Au clavier : montre le nom (nom) des monstres (monstres) dont le danger (danger) est entre 3 et 6.", expected: "SELECT nom FROM monstres WHERE danger BETWEEN 3 AND 6",
+        words: ["SELECT", "nom", "FROM", "monstres", "WHERE", "danger", "BETWEEN", "3", "AND", "6"], why: "Le Loup (5), l'Ours-Hibou (6), le Slime (3) et l'Araignée (4)." }
+    ] },
+
+  /* ===================== PARTIE 7 : le Chapitre 7 de l'aventure ===================== */
+  { part: 7, title: "Construire une table", learned: ["CREATE TABLE construit une table vide à partir d'un plan.", "Le plan : chaque colonne s'écrit nom TYPE, séparées par des virgules.", "INTEGER = nombre entier, TEXT = texte, PRIMARY KEY = l'identité de la ligne."],
+    steps: [
+      { type: "quiz", recall: true, q: "BETWEEN 5 AND 10 garde-t-il le niveau 10 ?", options: [{ t: "Oui", ok: true, why: "Oui : les deux bornes sont comprises." }, { t: "Non", why: "Si : BETWEEN garde les deux bornes." }, { t: "Ça dépend", why: "Non : BETWEEN garde toujours les deux bornes." }] },
+      { type: "look", title: "Le plan d'une table",
+        text: ["Jusqu'ici, les tables existaient déjà. Maintenant, tu deviens <b>architecte</b> : tu vas en construire une.",
+          "Une table commence par un <b>plan</b> : le nom de chaque colonne et son <b>type</b>, c'est-à-dire ce qu'on a le droit d'y ranger. Voici le plan de la table heros :"],
+        tables: [{ label: "heros : son plan", sql: "SELECT name AS colonne, type FROM pragma_table_info('heros')" }],
+        after: [wd("INTEGER", "nombre entier") + " " + wd("TEXT", "texte") + " " + wd("PRIMARY KEY", "l'identité de la ligne")] },
+      { type: "memo", keys: ["create", "types"] },
+      { type: "build", ddl: "familiers", ask: "Le début est posé. Termine le plan de la table familiers : un nom (texte) et une espèce (texte), puis ferme la parenthèse.",
+        given: ["CREATE TABLE", "familiers", "(", "id", "INTEGER", "PRIMARY KEY", ","], target: ["CREATE TABLE", "familiers", "(", "id", "INTEGER", "PRIMARY KEY", ",", "nom", "TEXT", ",", "espece", "TEXT", ")"], extra: ["NOMBRE"],
+        traps: { "NOMBRE": "Les types s'écrivent en anglais, comme tous les mots-clés : INTEGER pour un nombre, TEXT pour un texte." },
+        why: "Ta table familiers existe : 3 colonnes, et 0 ligne pour l'instant. Une table neuve est toujours vide." },
+      { type: "type", ddl: "quetes", ask: "Au clavier : crée la table quetes avec 3 colonnes : id (INTEGER PRIMARY KEY), titre (TEXT) et recompense (INTEGER).", expected: "CREATE TABLE quetes (id INTEGER PRIMARY KEY, titre TEXT, recompense INTEGER)",
+        words: ["CREATE TABLE", "quetes", "(", "id INTEGER PRIMARY KEY", ",", "titre TEXT", ",", "recompense INTEGER", ")"], why: "Le tableau des quêtes est bâti. Prochaine étape : le remplir." }
+    ] },
+  { part: 7, title: "Remplir sa table", learned: ["Une table neuve se remplit avec INSERT INTO, comme les autres.", "Sans liste de colonnes, les valeurs suivent l'ordre du plan.", "Ta table se relie aux autres par sa colonne num_heros."],
+    steps: [
+      { type: "quiz", recall: true, q: "Que veut dire PRIMARY KEY ?", options: [{ t: "La colonne la plus importante à afficher", why: "Non : c'est l'identité de la ligne, comme une carte d'identité." }, { t: "L'identité unique de chaque ligne", ok: true, why: "Oui : deux lignes ne peuvent pas avoir le même id." }, { t: "Le mot de passe de la table", why: "Non : c'est l'identité unique de chaque ligne." }] },
+      { type: "look", title: "Une table vide attend ses pensionnaires",
+        setup: "CREATE TABLE familiers (id INTEGER PRIMARY KEY, nom TEXT, espece TEXT, num_heros INTEGER)",
+        text: ["La table familiers a maintenant 4 colonnes : id, nom, espece et <b>num_heros</b>, le numéro du héros qui possède l'animal. Elle est vide.",
+          "On la remplit avec le même INSERT qu'à la partie 4. Sans liste de colonnes, les valeurs suivent <b>l'ordre du plan</b> : id, nom, espece, num_heros."],
+        tables: [{ label: "familiers : son plan", sql: "SELECT name AS colonne, type FROM pragma_table_info('familiers')" }] },
+      { type: "build", write: "familiers", setup: "CREATE TABLE familiers (id INTEGER PRIMARY KEY, nom TEXT, espece TEXT, num_heros INTEGER)",
+        ask: "Le début est posé. Inscris Braise (salamandre de Lyra, héros 3) et Plume (hibou de Mira, héros 5).",
+        given: ["INSERT INTO", "familiers", "VALUES"], target: ["INSERT INTO", "familiers", "VALUES", "(1, 'Braise', 'Salamandre', 3)", ",", "(2, 'Plume', 'Hibou', 5)"], extra: ["(1, Braise, Salamandre, 3)"],
+        traps: { "(1, Braise, Salamandre, 3)": "Les textes ont perdu leurs boucles d'oreilles : sans apostrophes, la base croit que Braise est une colonne." },
+        why: "Deux pensionnaires inscrits. La virgule sépare les lignes, comme une liste de courses." },
+      { type: "look", title: "Ta table se relie aux autres",
+        setup: "CREATE TABLE familiers (id INTEGER PRIMARY KEY, nom TEXT, espece TEXT, num_heros INTEGER); INSERT INTO familiers VALUES (1, 'Braise', 'Salamandre', 3), (2, 'Plume', 'Hibou', 5), (3, 'Grognon', 'Crapaud', 6)",
+        text: ["Un troisième familier est arrivé : Grognon, le crapaud de Gédéon. La colonne num_heros joue le même rôle que dans l'inventaire : la <b>poignée de main</b> avec heros.id."],
+        tables: [{ label: "familiers", sql: "SELECT * FROM familiers" }, { label: "familiers reliés aux héros", sql: "SELECT heros.nom, familiers.nom, familiers.espece FROM familiers JOIN heros ON familiers.num_heros = heros.id" }] },
+      { type: "build", setup: "CREATE TABLE familiers (id INTEGER PRIMARY KEY, nom TEXT, espece TEXT, num_heros INTEGER); INSERT INTO familiers VALUES (1, 'Braise', 'Salamandre', 3), (2, 'Plume', 'Hibou', 5), (3, 'Grognon', 'Crapaud', 6)",
+        ask: "Le début est posé. Relie chaque familier à son héros.",
+        given: ["SELECT", "heros.nom", ",", "familiers.nom", "FROM", "familiers"], target: ["SELECT", "heros.nom", ",", "familiers.nom", "FROM", "familiers", "JOIN", "heros", "ON", "familiers.num_heros", "=", "heros.id"], extra: ["heros.num_heros"],
+        traps: { "heros.num_heros": "La table heros n'a pas de colonne num_heros : c'est le familier qui note le numéro de son héros. familiers.num_heros = heros.id." },
+        why: "Lyra et Braise, Mira et Plume, Gédéon et Grognon. Ta propre table se relie comme les autres." }
+    ] },
+  { part: 7, title: "Agrandir ou démolir", learned: ["ALTER TABLE … ADD COLUMN ajoute une colonne au plan ; les cases existantes valent NULL.", "DROP TABLE démolit toute la table : son plan et ses lignes.", "DELETE FROM vide les lignes mais garde la table."],
+    steps: [
+      { type: "quiz", recall: true, q: "INSERT INTO familiers VALUES (…) sans liste de colonnes : dans quel ordre vont les valeurs ?", options: [{ t: "Dans l'ordre alphabétique des colonnes", why: "Non : dans l'ordre du plan, celui du CREATE TABLE." }, { t: "Dans l'ordre du plan de la table", ok: true, why: "Oui : id, nom, espece, num_heros." }, { t: "Dans n'importe quel ordre", why: "Non : la base suit l'ordre du plan." }] },
+      { type: "look", title: "Agrandir le plan",
+        setup: "CREATE TABLE familiers (id INTEGER PRIMARY KEY, nom TEXT, espece TEXT, num_heros INTEGER); INSERT INTO familiers VALUES (1, 'Braise', 'Salamandre', 3), (2, 'Plume', 'Hibou', 5), (3, 'Grognon', 'Crapaud', 6)",
+        text: ["Mira voudrait noter l'<b>âge</b> des familiers. Pas besoin de tout démolir : on agrandit le plan.",
+          wd("ALTER TABLE", "modifie le plan de la table") + " " + wd("familiers", "familiers") + " " + wd("ADD COLUMN", "ajoute la colonne") + " " + wd("age INTEGER", "age, un nombre"),
+          "Les familiers déjà inscrits reçoivent une case vide (—) dans la nouvelle colonne."],
+        tables: [{ label: "Avant", sql: "SELECT * FROM familiers" }, { label: "Après ALTER TABLE", sql: "ALTER TABLE familiers ADD COLUMN age INTEGER; SELECT * FROM familiers" }] },
+      { type: "memo", keys: ["alter"] },
+      { type: "build", ddl: "familiers", setup: "CREATE TABLE familiers (id INTEGER PRIMARY KEY, nom TEXT, espece TEXT, num_heros INTEGER); INSERT INTO familiers VALUES (1, 'Braise', 'Salamandre', 3), (2, 'Plume', 'Hibou', 5), (3, 'Grognon', 'Crapaud', 6)",
+        ask: "Le début est posé. Ajoute au plan une colonne age, de type nombre entier.",
+        given: ["ALTER TABLE", "familiers"], target: ["ALTER TABLE", "familiers", "ADD COLUMN", "age", "INTEGER"], extra: ["INSERT INTO"],
+        traps: { "INSERT INTO": "INSERT ajoute des lignes. Pour ajouter une colonne au plan : ADD COLUMN." },
+        why: "La colonne age est au plan, vide pour les trois familiers. Un UPDATE pourrait la remplir ensuite." },
+      { type: "look", title: "Vider ou démolir ?",
+        setup: "CREATE TABLE brouillon (id INTEGER PRIMARY KEY, note TEXT); INSERT INTO brouillon VALUES (1, 'gribouillis'), (2, 'tache d''encre')",
+        text: ["L'Architecte a une vieille table brouillon, pleine de gribouillis. Deux façons de s'en débarrasser, qui n'ont rien à voir :",
+          wd("DELETE FROM brouillon", "vide les lignes, la table reste") + " ou " + wd("DROP TABLE brouillon", "démolit la table entière")],
+        tables: [{ label: "Après DELETE FROM : la table est vide mais son plan existe", sql: "DELETE FROM brouillon; SELECT name AS colonne, type FROM pragma_table_info('brouillon')" },
+                 { label: "Après DROP TABLE : les tables qui restent", sql: "DROP TABLE brouillon; SELECT name AS tables FROM sqlite_master WHERE type = 'table'" }] },
+      { type: "memo", keys: ["drop"] },
+      { type: "build", ddl: "brouillon", setup: "CREATE TABLE brouillon (id INTEGER PRIMARY KEY, note TEXT); INSERT INTO brouillon VALUES (1, 'gribouillis'), (2, 'tache d''encre')",
+        ask: "Démolis la table brouillon tout entière.",
+        target: ["DROP TABLE", "brouillon"], extra: ["DELETE FROM"],
+        traps: { "DELETE FROM": "DELETE FROM viderait les lignes, mais la table resterait debout. Pour la démolir entière : DROP TABLE." },
+        why: "La table brouillon n'existe plus : ni plan, ni lignes. Il n'y a pas de corbeille !" },
+      { type: "quiz", q: "Après DELETE FROM brouillon (sans WHERE), que reste-t-il ?", options: [
+        { t: "Rien du tout", why: "Ça, c'est DROP TABLE. DELETE garde la table." },
+        { t: "La table, vide, avec son plan", ok: true, why: "Oui : DELETE vide les lignes ; la table reste debout." },
+        { t: "Les lignes, sans le plan", why: "Non : DELETE retire les lignes, le plan reste." }] }
+    ] },
+
+  /* ===================== PARTIE 8 : le Chapitre 8 de l'aventure ===================== */
+  { part: 8, title: "Remplir les cases vides", learned: ["COALESCE(a, b) donne a, ou b si a est vide (NULL).", "On l'utilise pour afficher un texte lisible à la place des cases vides.", "IS NULL trouve les cases vides ; COALESCE les remplit à l'affichage."],
+    steps: [
+      { type: "quiz", recall: true, q: "Quelle phrase démolit une table entière ?", options: [{ t: "DELETE FROM table", why: "DELETE vide seulement les lignes." }, { t: "DROP TABLE table", ok: true, why: "Oui : plan et lignes, sans retour." }, { t: "ALTER TABLE table", why: "ALTER modifie le plan, il ne démolit pas." }] },
+      { type: "look", title: "Une tache d'encre",
+        setup: "INSERT INTO chateaux VALUES (4, 'Donjon Nuageux', 'Ciel', NULL, 0)",
+        text: ["Un nouveau château, le Donjon Nuageux, n'a pas encore de seigneur : sa case est <b>vide</b> (NULL, affiché —).",
+          wd("COALESCE(seigneur, 'Sans seigneur')", "le seigneur, ou bien « Sans seigneur » si la case est vide")],
+        tables: [{ label: "chateaux", sql: "SELECT nom, seigneur FROM chateaux" }, { label: "avec COALESCE", sql: "SELECT nom, COALESCE(seigneur, 'Sans seigneur') FROM chateaux" }] },
+      { type: "memo", keys: ["coalesce"] },
+      { type: "build", setup: "INSERT INTO chateaux VALUES (4, 'Donjon Nuageux', 'Ciel', NULL, 0)",
+        ask: "Le début est posé. Affiche le seigneur de chaque château, ou « Sans seigneur » si la case est vide.",
+        given: ["SELECT", "nom", ","], target: ["SELECT", "nom", ",", "COALESCE(", "seigneur", ",", "'Sans seigneur'", ")", "FROM", "chateaux"], extra: ["IS NULL"],
+        traps: { "IS NULL": "IS NULL sert au videur WHERE, pour trouver les cases vides. Pour les remplir à l'affichage : COALESCE." },
+        why: "Le Donjon Nuageux affiche « Sans seigneur » ; les trois autres gardent leur seigneur." },
+      { type: "type", setup: "INSERT INTO chateaux VALUES (4, 'Donjon Nuageux', 'Ciel', NULL, 0)",
+        ask: "Au clavier : affiche le seigneur (seigneur) de chaque château (chateaux), ou le texte 'Personne' si la case est vide.", expected: "SELECT COALESCE(seigneur, 'Personne') FROM chateaux",
+        words: ["SELECT", "COALESCE(", "seigneur", ",", "'Personne'", ")", "FROM", "chateaux"], why: "Plus aucune tache d'encre dans le registre." }
+    ] },
+  { part: 8, title: "Travailler le texte", learned: ["UPPER() met en majuscules, LOWER() en minuscules.", "LENGTH() compte les caractères d'un texte (espaces compris).", "SQLite ne met pas en majuscules les lettres accentuées."],
+    steps: [
+      { type: "quiz", recall: true, q: "Que donne COALESCE(seigneur, 'Sans seigneur') quand le seigneur est connu ?", options: [{ t: "Le seigneur", ok: true, why: "Oui : COALESCE ne remplace que les cases vides." }, { t: "« Sans seigneur »", why: "Non : seulement quand la case est vide." }, { t: "Les deux", why: "Non : la première valeur qui n'est pas vide." }] },
+      { type: "look", title: "Des fonctions pour le texte",
+        text: [wd("UPPER(nom)", "le nom en majuscules") + " " + wd("LENGTH(nom)", "le nombre de lettres du nom"),
+          "Elles sont calculées pour chaque ligne, comme CASE. Petite surprise : SQLite ne met pas en majuscules les lettres <b>accentuées</b> (Penchée devient PENCHéE)."],
+        tables: [{ label: "chateaux", sql: "SELECT nom, UPPER(nom), LENGTH(nom) FROM chateaux" }] },
+      { type: "memo", keys: ["textfn"] },
+      { type: "build", ask: "Montre le nom des monstres en majuscules.",
+        target: ["SELECT", "UPPER(nom)", "FROM", "monstres"], extra: ["LOWER(nom)"],
+        traps: { "LOWER(nom)": "LOWER met en minuscules (lower = plus bas). Pour les majuscules : UPPER (upper = plus haut)." },
+        why: "GOBELIN GRINCHEUX, LOUP SPECTRAL… comme sur une affiche." },
+      { type: "build", ask: "Le début est posé. Montre aussi le nombre de lettres de chaque nom.",
+        given: ["SELECT", "nom", ","], target: ["SELECT", "nom", ",", "LENGTH(nom)", "FROM", "monstres"], extra: ["COUNT(*)"],
+        traps: { "COUNT(*)": "COUNT compte les lignes de la table. Pour compter les lettres d'un texte : LENGTH." },
+        why: "Le Slime Collant fait 13 caractères : l'espace compte aussi." },
+      { type: "type", ask: "Au clavier : montre la classe (classe) des héros (heros) en majuscules.", expected: "SELECT UPPER(classe) FROM heros",
+        words: ["SELECT", "UPPER(classe)", "FROM", "heros"], why: "PALADIN, GUERRIER, MAGE…" }
+    ] },
+  { part: 8, title: "La liste préparée", learned: ["WITH nom AS ( SELECT … ) prépare une liste nommée.", "Ensuite, on l'utilise comme une table : FROM nom.", "C'est une sous-requête avec un nom : on lit la requête en étapes."],
+    steps: [
+      { type: "quiz", recall: true, q: "Que donne LENGTH('Aria') ?", options: [{ t: "ARIA", why: "Ça, c'est UPPER." }, { t: "4", ok: true, why: "Oui : 4 lettres." }, { t: "1", why: "Non : LENGTH compte les lettres, pas les lignes." }] },
+      { type: "look", title: "Préparer d'abord, utiliser ensuite",
+        text: ["Quand une phrase devient longue, on la coupe en étapes. " + wd("WITH riches AS ( … )", "prépare une liste nommée riches") + " : la boîte de l'assistant reçoit un <b>nom</b>, et on s'en sert ensuite comme d'une table.",
+          "L'étape 1 prépare la liste. L'étape 2 la lit :"],
+        tables: [{ label: "Étape 1 : la liste riches", sql: "SELECT nom, fortune FROM heros WHERE fortune >= 300" }, { label: "Étape 2 : SELECT nom FROM riches", sql: "WITH riches AS (SELECT * FROM heros WHERE fortune >= 300) SELECT nom FROM riches" }] },
+      { type: "memo", keys: ["with"] },
+      { type: "build", ask: "La liste riches est préparée. Termine la phrase : montre le nom de chacun, en lisant la liste.",
+        given: ["WITH", "riches", "AS", "(", "SELECT", "*", "FROM", "heros", "WHERE", "fortune", ">=", "300", ")"], target: ["WITH", "riches", "AS", "(", "SELECT", "*", "FROM", "heros", "WHERE", "fortune", ">=", "300", ")", "SELECT", "nom", "FROM", "riches"], extra: ["heros"],
+        traps: { "heros": "En lisant heros, tu retrouverais les 6 héros. On lit la liste préparée : FROM riches." },
+        why: "Aria, Lyra et Kael. La liste préparée s'utilise exactement comme une table." },
+      { type: "type", ask: "Au clavier : prépare une liste forts avec les monstres (monstres) de plus de 100 PV (pv), puis montre leur nom (nom) en lisant cette liste.", expected: "WITH forts AS (SELECT * FROM monstres WHERE pv > 100) SELECT nom FROM forts",
+        words: ["WITH", "forts", "AS", "(", "SELECT", "*", "FROM", "monstres", "WHERE", "pv", ">", "100", ")", "SELECT", "nom", "FROM", "forts"], why: "Le Troll, la Liche et le Dragonnet." }
+    ] },
+  { part: 8, title: "Le podium", learned: ["RANK() OVER (ORDER BY …) écrit la place de chaque ligne.", "Toutes les lignes restent : RANK classe sans regrouper.", "PARTITION BY fait un podium par tas, sans fusionner les lignes."],
+    steps: [
+      { type: "quiz", recall: true, q: "Après WITH riches AS ( … ), comment lire la liste ?", options: [{ t: "FROM riches", ok: true, why: "Oui : comme une table." }, { t: "WHERE riches", why: "Non : une liste se lit avec FROM, comme une table." }, { t: "On ne peut pas la lire", why: "Si : FROM riches." }] },
+      { type: "look", title: "Ranger ou classer ?",
+        text: ["ORDER BY <b>range</b> les lignes, mais n'écrit aucun numéro. " + wd("RANK() OVER ( ORDER BY pv DESC )", "la place de chaque ligne, du plus fort au plus faible") + " <b>écrit</b> la place dans une nouvelle colonne.",
+          "On la nomme avec AS : " + wd("AS rang", "nommé rang")],
+        tables: [{ label: "Le podium des monstres", sql: "SELECT nom, pv, RANK() OVER (ORDER BY pv DESC) AS rang FROM monstres" }] },
+      { type: "memo", keys: ["rank"] },
+      { type: "build", ask: "Le début est posé. Classe les monstres du plus fort (plus de PV) au plus faible, dans une colonne rang.",
+        given: ["SELECT", "nom", ",", "pv", ",", "RANK()", "OVER", "("], target: ["SELECT", "nom", ",", "pv", ",", "RANK()", "OVER", "(", "ORDER BY", "pv", "DESC", ")", "AS", "rang", "FROM", "monstres"], extra: ["ASC"],
+        traps: { "ASC": "ASC donnerait le rang 1 au plus faible, le Champignon. Le plus fort d'abord : DESC." },
+        why: "Le Dragonnet est 1er, le Troll 2e, la Liche 3e… et le Champignon 9e." },
+      { type: "look", title: "Un podium par tas",
+        text: [wd("PARTITION BY region", "un podium par région") + " : le classement recommence à 1 dans chaque région. C'est comme GROUP BY, mais <b>sans fusionner</b> les lignes : chaque monstre reste visible."],
+        tables: [{ label: "Un podium par région", sql: "SELECT nom, region, pv, RANK() OVER (PARTITION BY region ORDER BY pv DESC) AS rang FROM monstres", hl: { color: 1 } }] },
+      { type: "memo", keys: ["partition"] },
+      { type: "build", ask: "Le début est posé. Fais un podium par région, du plus fort au plus faible.",
+        given: ["SELECT", "nom", ",", "region", ",", "RANK()", "OVER", "("], target: ["SELECT", "nom", ",", "region", ",", "RANK()", "OVER", "(", "PARTITION BY", "region", "ORDER BY", "pv", "DESC", ")", "AS", "rang", "FROM", "monstres"], extra: ["GROUP BY"],
+        traps: { "GROUP BY": "GROUP BY fusionnerait les monstres en un tas par région. Dans OVER, on découpe sans fusionner : PARTITION BY." },
+        why: "L'Ours-Hibou est 1er de la Forêt, le Troll 1er du Marais, et la Liche et le Dragonnet sont seuls sur leur podium. C'est le boss final de l'aventure qui t'attend." }
+    ] }
+];
+
+/* ---------- Pour retenir : moyens mnémotechniques ---------- */
+const MNEMOS = {
+  table: { notion: "Ligne et colonne", hook: "La <u>L</u>igne, c'est <u>L</u>ui. La <u>C</u>olonne, c'est une <u>C</u>aractéristique.", detail: "Une ligne = un individu (un héros, un monstre). Une colonne = une information sur lui (son or, sa classe)." },
+  anglais: { notion: "Qui parle anglais ?", hook: "Les <u>mots-clés</u> parlent anglais : SELECT, FROM, WHERE. Les <u>noms</u> parlent français : heros, nom, fortune.", detail: "Les noms des tables et des colonnes s'écrivent sans accents ni espaces : heros, chateaux, num_chateau. Les valeurs, elles, gardent leurs accents : 'Forêt Sombre'." },
+  select: { notion: "SELECT", hook: "SELECT ressemble à « <u>sélectionne</u> » : je sélectionne ce que je veux voir.", detail: "Beaucoup de mots SQL ressemblent au français : SELECT = sélectionner, ORDER = ordre, GROUP = groupe, LIMIT = limite." },
+  from: { notion: "FROM", hook: "<u>FROM</u> = « de » : d'où vient l'information ? <u>F</u>ROM comme <u>F</u>ichier.", detail: "Après FROM, on écrit toujours le nom d'une table." },
+  star: { notion: "L'étoile *", hook: "L'étoile <u>*</u> brille sur <u>tout</u>.", detail: "* = toutes les colonnes. Pour n'en avoir que quelques-unes, on écrit leurs noms à sa place." },
+  virgule: { notion: "La virgule", hook: "La virgule, c'est le « <u>et</u> » de la liste de courses.", detail: "SELECT nom, fortune = montre le nom ET l'or. Pas de virgule après la dernière colonne." },
+  where: { notion: "WHERE", hook: "WHERE est le <u>videur</u> à l'entrée : seules les lignes qui respectent la condition entrent.", detail: "Where veut dire « où » : là où la condition est vraie. Le videur regarde chaque ligne, une par une." },
+  croco: { notion: "> et <", hook: "Le <u>crocodile</u> ouvre la bouche vers le plus grand : 150 <u>&gt;</u> 100.", detail: "> se lit « plus grand que », < se lit « plus petit que ». pv > 100 : la bouche est tournée vers pv, c'est pv le plus grand." },
+  quotes: { notion: "Les apostrophes", hook: "Un texte porte des <u>boucles d'oreilles</u> : 'Mage'.", detail: "Sans ses boucles d'oreilles (les apostrophes), la base ne le reconnaît pas comme un texte : elle croit que c'est une colonne. Les nombres, eux, n'en portent jamais." },
+  accents: { notion: "Les accents", hook: "La base porte des <u>lunettes</u> : elle voit chaque accent et chaque majuscule.", detail: "'Foret' n'est pas 'Forêt', 'mage' n'est pas 'Mage'. Recopie le texte exactement comme dans la table." },
+  desc: { notion: "DESC et ASC", hook: "<u>DESC</u> comme <u>DESC</u>endre : on part du plus grand et on descend. <u>ASC</u> comme <u>ASC</u>enseur : on monte.", detail: "Sans rien, c'est ASC : du plus petit au plus grand." },
+  wilda: { notion: "L'ordre de la phrase", hook: "La <u>S</u>uper <u>F</u>ée <u>W</u>ilda <u>O</u>rdonne.", detail: "Quoi ? Où ? Lesquelles ? Dans quel ordre ?", extra: "<div class=\"wilda\"><span><b>S</b><i>Super</i><code>SELECT</code><i>quoi ?</i></span><span><b>F</b><i>Fée</i><code>FROM</code><i>où ?</i></span><span><b>W</b><i>Wilda</i><code>WHERE</code><i>lesquelles ?</i></span><span><b>O</b><i>Ordonne</i><code>ORDER BY</code><i>quel ordre ?</i></span></div>" },
+  count: { notion: "COUNT", hook: "COUNT ressemble à « <u>compte</u> » : le comte Count compte ses sujets.", detail: "COUNT(*) = le nombre de lignes. Il remplace les colonnes après SELECT." },
+  groupby: { notion: "GROUP BY", hook: "GROUP BY, c'est ranger les <u>chaussettes par couleur</u>, puis compter chaque tas.", detail: "Une ligne de résultat par tas. À côté de COUNT(*), on affiche la colonne qui fait les tas." },
+  wilda2: { notion: "L'ordre de la phrase, version 2", hook: "La <u>S</u>uper <u>F</u>ée <u>W</u>ilda <u>G</u>ronde, puis <u>O</u>rdonne.", detail: "GROUP BY se glisse entre WHERE et ORDER BY : Wilda gronde avant d'ordonner.", extra: "<div class=\"wilda\"><span><b>S</b><i>Super</i><code>SELECT</code></span><span><b>F</b><i>Fée</i><code>FROM</code></span><span><b>W</b><i>Wilda</i><code>WHERE</code></span><span><b>G</b><i>Gronde</i><code>GROUP BY</code></span><span><b>O</b><i>Ordonne</i><code>ORDER BY</code></span></div>" },
+  id: { notion: "id", hook: "<u>id</u> comme <u>id</u>entité : le numéro de carte d'identité de la ligne.", detail: "Dans chaque table, id est le numéro de la ligne. Et num_chateau, chez un héros, c'est le numéro de son château : num_ annonce un numéro qui renvoie vers une autre table. Comme un castel : un château." },
+  point: { notion: "Le point", hook: "Le point se lit « <u>de</u> » : heros.nom = le nom <u>de</u> heros.", detail: "D'abord la maison (la table), puis la pièce (la colonne), comme une adresse." },
+  join: { notion: "JOIN et ON", hook: "JOIN ressemble à « <u>joindre</u> ». ON, c'est la <u>poignée de main</u> : chaque héros serre la main du château qui porte le même numéro.", detail: "ON heros.num_chateau = chateaux.id : le numéro chez le héros = le numéro du château." },
+  joinwhere: { notion: "JOIN puis WHERE", hook: "On se donne d'abord la <u>main</u>, ensuite on passe devant le <u>videur</u>.", detail: "JOIN … ON vient avant WHERE dans la phrase." },
+  sum: { notion: "SUM", hook: "SUM ressemble à « <u>somme</u> » : on additionne.", detail: "COUNT compte combien il y a de pièces ; SUM additionne leur valeur. Compter ≠ additionner." },
+  leftjoin: { notion: "LEFT JOIN", hook: "LEFT JOIN, c'est la <u>photo de classe</u> : tout le monde est sur la photo, même ceux qui n'ont pas de partenaire.", detail: "JOIN ne garde que les couples. LEFT JOIN garde toute la table de gauche ; les cases sans partenaire restent vides (NULL)." },
+  isnull: { notion: "NULL et IS NULL", hook: "NULL, c'est une <u>case vide</u>. On demande « est-ce vide ? » : <u>IS</u> NULL.", detail: "On ne peut pas être égal à du vide : = NULL ne trouve jamais rien. Toujours IS NULL." },
+  having: { notion: "HAVING", hook: "WHERE est le videur de l'<u>entrée</u> (les lignes). HAVING est le videur de la <u>sortie</u> (les tas).", detail: "HAVING passe après GROUP BY : il peut utiliser COUNT, SUM ou AVG." },
+  wilda3: { notion: "L'ordre de la phrase, version 3", hook: "La <u>S</u>uper <u>F</u>ée <u>W</u>ilda <u>G</u>ronde, <u>H</u>urle, puis <u>O</u>rdonne.", detail: "HAVING (Hurle) vient juste après GROUP BY (Gronde), avant ORDER BY (Ordonne).", extra: "<div class=\"wilda\"><span><b>S</b><i>Super</i><code>SELECT</code></span><span><b>F</b><i>Fée</i><code>FROM</code></span><span><b>W</b><i>Wilda</i><code>WHERE</code></span><span><b>G</b><i>Gronde</i><code>GROUP BY</code></span><span><b>H</b><i>Hurle</i><code>HAVING</code></span><span><b>O</b><i>Ordonne</i><code>ORDER BY</code></span></div>" },
+  avg: { notion: "AVG", hook: "AVG comme « <u>av</u>era<u>g</u>e » : la <u>moyenne</u>, comme la moyenne de ta classe.", detail: "AVG additionne toutes les valeurs, puis divise par le nombre de lignes." },
+  subquery: { notion: "La sous-requête", hook: "Les parenthèses, c'est la <u>boîte de l'assistant</u> : il fait son calcul en premier et te donne le résultat.", detail: "( SELECT AVG(pv) FROM monstres ) devient un simple nombre, que la grande phrase utilise." },
+  in: { notion: "IN", hook: "IN veut dire « <u>dans</u> » : est-ce que ce numéro est <u>dans</u> la liste ?", detail: "num_heros IN (3, 6) = le numéro vaut 3 ou 6. La liste peut venir de la boîte de l'assistant." },
+  insert: { notion: "INSERT", hook: "INSERT ressemble à « <u>insérer</u> ». On remplit un <u>formulaire</u> : les cases, puis les valeurs, dans le même ordre.", detail: "INSERT INTO table (colonnes) VALUES (valeurs). Les textes gardent leurs boucles d'oreilles." },
+  update: { notion: "UPDATE", hook: "UPDATE = mettre <u>à jour</u>. Toujours avec son <u>videur</u> WHERE, sinon tout le royaume est modifié.", detail: "SET colonne = nouvelle valeur. fortune = fortune + 100 : l'or actuel, plus 100." },
+  delete: { notion: "DELETE", hook: "DELETE ressemble à « <u>délète</u> » : effacer. <u>Regarde</u> (SELECT) avant de <u>détruire</u> (DELETE).", detail: "Pas de corbeille. Le même WHERE dans le SELECT de vérification et dans le DELETE." },
+  distinct: { notion: "DISTINCT", hook: "DISTINCT ressemble à « <u>distinct</u> » : une <u>liste d'invités</u> où chaque nom n'apparaît qu'une fois.", detail: "Il retire les doublons du résultat, pas de la table. Il compare les lignes entières affichées." },
+  like: { notion: "LIKE et %", hook: "LIKE ressemble à « <u>ressemble</u> ». Le <u>%</u> est un <u>joker</u> : il remplace n'importe quelles lettres.", detail: "'L%' : commence par L. '%L' : finit par L. '%L%' : contient un L. Sans %, LIKE cherche le texte exact." },
+  notlike: { notion: "NOT", hook: "NOT, c'est le « <u>sauf</u> » : NOT LIKE 'Tour%' = tout, sauf ce qui commence par Tour.", detail: "NOT inverse la condition qui le suit." },
+  case: { notion: "CASE", hook: "CASE se lit comme une phrase : <u>WHEN</u> (quand) … <u>THEN</u> (alors) … <u>ELSE</u> (sinon) … <u>END</u> (fin).", detail: "CASE fabrique une étiquette pour chaque ligne. Il commence par CASE et finit toujours par END." },
+  limit: { notion: "LIMIT", hook: "LIMIT ressemble à « <u>limite</u> » : les ciseaux qui coupent la liste, en <u>tout dernier</u>.", detail: "On trie d'abord (ORDER BY), on coupe ensuite (LIMIT 3). Dans la chaîne des questions, c'est « combien ? »." },
+  or: { notion: "AND et OR", hook: "AND est un <u>parent sévère</u> : il veut tout. OR est un <u>grand-parent gâteau</u> : une seule chose lui suffit.", detail: "Chaque côté du OR est une condition complète : region = 'Forêt Sombre' OR region = 'Marais Putride'." },
+  parens: { notion: "Les parenthèses", hook: "AND passe avant OR, comme <u>× avant +</u>. Les parenthèses sont une <u>boîte</u> : le OR reste enfermé dedans.", detail: "(A OR B) AND C : d'abord « A ou B », ensuite « et C ». Sans boîte, la base lit A OR (B AND C)." },
+  minmax: { notion: "MIN et MAX", hook: "MIN comme <u>min</u>imum, MAX comme <u>max</u>imum : le plus <u>petit</u> et le plus <u>grand</u>.", detail: "Un seul nombre pour toute la colonne. Pour savoir à qui il appartient : WHERE colonne = (SELECT MAX(colonne) FROM table)." },
+  between: { notion: "BETWEEN", hook: "BETWEEN = « <u>entre</u> » : une <u>fenêtre</u> avec ses deux montants. Les montants font partie de la fenêtre.", detail: "niveau BETWEEN 5 AND 10 garde 5, 6, 7, 8, 9 et 10. Le AND fait partie du BETWEEN." },
+  create: { notion: "CREATE TABLE", hook: "CREATE = « <u>créer</u> ». L'architecte dessine d'abord le <u>plan</u>, la maison est vide au début.", detail: "CREATE TABLE nom (colonne TYPE, colonne TYPE, …). Une table neuve n'a aucune ligne." },
+  types: { notion: "Les types", hook: "<u>INTEGER</u> comme <u>entier</u> (un nombre). <u>TEXT</u> comme <u>texte</u>. <u>PRIMARY KEY</u> : la <u>clé</u> de la maison, une seule par ligne.", detail: "Le type dit ce qu'on a le droit de ranger dans la colonne. PRIMARY KEY : l'identité unique de la ligne, comme id." },
+  alter: { notion: "ALTER TABLE", hook: "ALTER ressemble à « <u>altérer</u> » : on modifie le <u>plan</u>. On ajoute une <u>pièce</u> à la maison sans la démolir.", detail: "ALTER TABLE familiers ADD COLUMN age INTEGER. Les lignes déjà là reçoivent une case vide (NULL)." },
+  drop: { notion: "DROP TABLE", hook: "DROP = « <u>lâcher</u> » : on lâche la maison entière dans le vide. DELETE <u>vide les meubles</u>, DROP <u>démolit les murs</u>.", detail: "DROP TABLE détruit le plan et toutes les lignes. Pas de corbeille." },
+  coalesce: { notion: "COALESCE", hook: "COALESCE, c'est la <u>roue de secours</u> : si la case est vide, on prend la valeur de secours.", detail: "COALESCE(seigneur, 'Sans seigneur') : le seigneur, ou bien « Sans seigneur » si la case vaut NULL." },
+  textfn: { notion: "UPPER, LOWER, LENGTH", hook: "<u>UP</u>PER = vers le <u>haut</u> (majuscules). <u>LOW</u>ER = vers le <u>bas</u> (minuscules). <u>LENGTH</u> = la <u>longueur</u>.", detail: "Calculées pour chaque ligne. LENGTH compte aussi les espaces. SQLite laisse les lettres accentuées en minuscules." },
+  with: { notion: "WITH", hook: "WITH = « <u>avec</u> » : avec cette liste préparée à l'avance, comme les <u>ingrédients</u> d'une recette sortis avant de cuisiner.", detail: "WITH nom AS ( SELECT … ) puis SELECT … FROM nom. La boîte de l'assistant, avec une étiquette dessus." },
+  rank: { notion: "RANK() OVER", hook: "RANK = le <u>rang</u> sur le <u>podium</u>. OVER = « au-dessus de » : on regarde toutes les lignes d'en haut pour donner les places.", detail: "RANK() OVER (ORDER BY pv DESC) AS rang : 1 pour le plus fort. Toutes les lignes restent." },
+  partition: { notion: "PARTITION BY", hook: "PARTITION = une <u>cloison</u> : un podium par <u>compartiment</u>. GROUP BY fusionne les lignes, PARTITION BY les laisse toutes visibles.", detail: "RANK() OVER (PARTITION BY region ORDER BY pv DESC) : le classement recommence à 1 dans chaque région." },
+  casefirst: { notion: "Plusieurs WHEN", hook: "Comme une <u>file d'attente</u> : le <u>premier WHEN vrai</u> gagne, les suivants ne sont même pas lus.", detail: "Mets toujours la condition la plus stricte en premier : danger >= 7 avant danger >= 4." }
+};
+// Où placer les cartes « Pour retenir » : leçon → [position dans la leçon d'origine, clés]
+const MEMO_AT = { 0: [[1, ["table", "anglais"]]], 1: [[1, ["select", "from", "star"]]], 2: [[1, ["virgule"]]], 3: [[1, ["where", "croco"]]],
+  4: [[1, ["quotes", "accents"]]], 5: [[1, ["desc"]], [3, ["wilda"]]], 6: [[1, ["count"]]], 7: [[2, ["groupby"]], [5, ["wilda2"]]],
+  8: [[1, ["id"]], [3, ["point"]], [6, ["join"]]], 9: [[1, ["joinwhere"]]], 10: [[1, ["sum"]]] };
+// Rappel éclair au début de chaque leçon, sur la leçon d'avant
+const RECALL = {
+  1: { q: "Dans une table, une ligne, c'est…", options: [{ t: "Une caractéristique", why: "Non : la Colonne, c'est la Caractéristique." }, { t: "Un individu (un héros, un monstre)", ok: true, why: "Oui : la Ligne, c'est Lui." }, { t: "Une autre table", why: "Non : la Ligne, c'est Lui, un individu." }] },
+  2: { q: "Que veut dire l'étoile * ?", options: [{ t: "Toutes les colonnes", ok: true, why: "Oui : l'étoile brille sur tout." }, { t: "Une seule colonne", why: "Non : l'étoile brille sur tout." }, { t: "Multiplier", why: "Pas ici : après SELECT, l'étoile brille sur tout, toutes les colonnes." }] },
+  3: { q: "Comment écrire « le nom et l'or » ?", options: [{ t: "nom and fortune", why: "Non : le « et » de la liste de courses, c'est la virgule." }, { t: "nom, fortune", ok: true, why: "Oui : la virgule est le « et » de la liste de courses." }, { t: "nom + fortune", why: "Non : la virgule est le « et » de la liste de courses." }] },
+  4: { q: "Le crocodile ouvre la bouche vers le plus grand. Comment écrire « plus de 100 PV » ?", options: [{ t: "pv < 100", why: "Ici la bouche est tournée vers 100 : ça voudrait dire que 100 est plus grand." }, { t: "pv = 100", why: "= veut dire « exactement égal ». On veut plus grand." }, { t: "pv > 100", ok: true, why: "Oui : la bouche est tournée vers pv, c'est pv le plus grand." }] },
+  5: { q: "Lequel est bien écrit ?", options: [{ t: "WHERE classe = Mage", why: "Mage n'a pas ses boucles d'oreilles : la base croirait que c'est une colonne." }, { t: "WHERE classe = 'Mage'", ok: true, why: "Oui : le texte porte ses boucles d'oreilles, et la majuscule est la même que dans la table." }, { t: "WHERE classe = 'mage'", why: "La base porte des lunettes : 'mage' sans majuscule n'est pas 'Mage'." }] },
+  6: { q: "La Super Fée Wilda Ordonne. Quel est le bon ordre ?", options: [{ t: "SELECT, WHERE, FROM, ORDER BY", why: "Super, Fée, Wilda : FROM vient avant WHERE." }, { t: "SELECT, FROM, WHERE, ORDER BY", ok: true, why: "Oui : Super (SELECT), Fée (FROM), Wilda (WHERE), Ordonne (ORDER BY)." }, { t: "FROM, SELECT, WHERE, ORDER BY", why: "C'est la Super Fée : S d'abord, puis F." }] },
+  7: { q: "COUNT(*) donne…", options: [{ t: "Le nombre de lignes", ok: true, why: "Oui : le comte Count compte." }, { t: "La somme des valeurs", why: "Additionner, ce serait SUM (somme). COUNT compte." }, { t: "Toutes les colonnes", why: "Ça, c'est l'étoile seule. COUNT(*) compte les lignes." }] },
+  8: { q: "La Super Fée Wilda Gronde, puis Ordonne. Où se place GROUP BY ?", options: [{ t: "Juste après SELECT", why: "Super, Fée, Wilda, Gronde : GROUP BY vient après WHERE." }, { t: "Après WHERE, avant ORDER BY", ok: true, why: "Oui : Wilda gronde avant d'ordonner." }, { t: "Tout à la fin", why: "Elle gronde AVANT d'ordonner : GROUP BY vient avant ORDER BY." }] },
+  9: { q: "Que veut dire chateaux.id ?", options: [{ t: "Le nom du château", why: "id comme identité : c'est un numéro, pas un nom." }, { t: "Le numéro du héros", why: "Le point se lit « de » : chateaux.id = le numéro DE chateaux, les châteaux." }, { t: "Le numéro du château", ok: true, why: "Oui : id = numéro d'identité, et le point se lit « de » : le numéro de chateaux." }] },
+  10: { q: "Quelle poignée de main relie un héros à son château ?", options: [{ t: "ON heros.num_chateau = chateaux.id", ok: true, why: "Oui : le numéro de château noté chez le héros = le numéro du château." }, { t: "ON heros.id = chateaux.id", why: "heros.id est le numéro du héros lui-même : Borin (2) serrerait la main du château 2 par hasard." }, { t: "ON heros.nom = chateaux.nom", why: "Un héros ne s'appelle pas comme son château : personne ne se serrerait la main." }] }
+};
+LESSONS.forEach((L, i) => {
+  (MEMO_AT[i] || []).slice().sort((a, b) => b[0] - a[0]).forEach(([pos, keys]) => L.steps.splice(pos, 0, { type: "memo", keys }));
+  if (RECALL[i]) L.steps.unshift({ type: "quiz", recall: true, ...RECALL[i] });
+  L.memos = L.steps.filter((x) => x.type === "memo").flatMap((x) => x.keys);
+});
+LESSONS[0].steps.splice(2, 0, { type: "look", title: "Une ligne = un château", castles: true,
+  text: ["Regarde la table <code>chateaux</code>. Elle a <b>3 lignes</b> : une ligne par château. Chaque illustration ci-dessous, c'est <b>une ligne</b> du tableau.",
+    "Les <b>colonnes</b> (id, nom, region, seigneur, tresor) sont les informations qu'on note sur chaque château. Le Bastion de l'Aube, par exemple, a l'id 1, se trouve dans les Plaines Dorées et a pour seigneur la Reine Ysolde."],
+  sql: "SELECT * FROM chateaux" });
+LESSONS[0].steps.splice(2, 0, { type: "look", title: "Les 5 tables du royaume", kingdom: true,
+  text: ["Notre base de données contient <b>5 tables</b>. Leurs noms sont en français, mais <b>sans accents</b> : on écrit heros et chateaux. Chacune a son illustration et la liste de ses colonnes, pour t'aider à t'en souvenir."],
+  after: ["Tu n'as pas besoin de tout retenir maintenant : cette carte reste dans « Mon aide-mémoire », en bas de page."] });
+const memoHTML = (k) => { const m = MNEMOS[k]; return `<div class="memo"><span class="notion">${esc(m.notion)}</span><span class="hook">${m.hook}</span>${m.extra || ""}<span class="detail">${esc(m.detail)}</span></div>`; };
+
+/* ---------- Moteur ---------- */
+let SQL = null;
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+function run(q, setup) {
+  const db = new SQL.Database();
+  try { db.run(SCHEMA_SQL); if (setup) db.run(setup); const r = db.exec(q); const l = r[r.length - 1]; return l ? { columns: l.columns, values: l.values } : { columns: [], values: [] }; }
+  finally { db.close(); }
+}
+function tryRun(q, setup) { try { return { res: run(q, setup) }; } catch (e) { return { err: e.message }; } }
+const key = (r) => JSON.stringify(r);
+function sameResult(a, b, ordered) {
+  if (a.columns.length !== b.columns.length || a.values.length !== b.values.length) return false;
+  const x = a.values.map(key), y = b.values.map(key);
+  if (!ordered) { x.sort(); y.sort(); }
+  return x.join("|") === y.join("|");
+}
+const PAL = ["#f0a43a", "#66c9ff", "#6fd3b0", "#c792ea", "#e2574c"];
+function tableHTML(res, hl) {
+  if (!res.columns.length || !res.values.length) return `<p class="count">Aucune ligne ne correspond.</p>`;
+  const colorCols = hl && hl.color !== undefined ? [].concat(hl.color) : [];
+  const uniq = {}; colorCols.forEach((c) => { uniq[c] = [...new Set(res.values.map((r) => r[c]))].filter((v) => typeof v !== "number").sort(); });
+  const colorOf = (c, v) => PAL[typeof v === "number" ? (v - 1) % PAL.length : uniq[c].indexOf(v) % PAL.length];
+  const cell = (v, c) => v === null ? "—" : colorCols.includes(c) ? `<span class="tag" style="background:${colorOf(c, v)}">${esc(v)}</span>` : esc(v);
+  return `<div class="tablewrap"><table><thead><tr>${res.columns.map((c) => `<th>${esc(c)}${COL_FR[c] ? `<span class="fr">${esc(COL_FR[c])}</span>` : ""}</th>`).join("")}</tr></thead>
+    <tbody>${res.values.map((r, ri) => `<tr style="--i:${ri}" class="${hl && hl.test ? (hl.test(r[hl.col]) ? "keep" : "drop") : hl && hl.chg ? (hl.chg.includes(key(r)) ? "keep" : hl.gone.includes(key(r)) ? "drop" : "") : ""}">${r.map((v, c) => `<td>${cell(v, c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
+    <span class="count">${res.values.length} ligne(s)</span>`;
+}
+function evalQ(S, q) {      // lecture : le résultat ; écriture : la table après la phrase, lignes touchées surlignées
+  q = q.replace(/;\s*$/, "");
+  if (S.ddl) {            // architecte : on compare le plan de la table après la phrase
+    const t = S.ddl, plan = tryRun(q + `; SELECT name AS colonne, type, CASE WHEN pk THEN 'identité' ELSE '' END AS role FROM pragma_table_info('${t}')`, S.setup);
+    if (plan.err) return { err: plan.err };
+    const rows = tryRun(q + `; SELECT * FROM ${t}`, S.setup), tables = run(q + "; SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name", S.setup);
+    const html = plan.res.values.length
+      ? `<span class="zoneLabel">LE PLAN DE LA TABLE ${t.toUpperCase()} APRÈS TA PHRASE</span>${tableHTML(plan.res)}` +
+        `<div style="margin-top:14px"></div><span class="zoneLabel">SES LIGNES</span>${rows.res && rows.res.columns.length ? tableHTML(rows.res) : `<p class="count">La table est vide : 0 ligne.</p>`}`
+      : `<div class="fb info"><b>LA TABLE ${t.toUpperCase()} N'EXISTE PAS (OU PLUS)</b>Tables du royaume : ${tables.values.map((x) => x[0]).join(", ")}.</div>`;
+    return { res: plan.res, html, exists: plan.res.values.length > 0 };
+  }
+  if (!S.write) { const r = tryRun(q, S.setup); return r.err ? { err: r.err } : { res: r.res, html: tableHTML(r.res) }; }
+  const t = S.write, before = run(`SELECT * FROM ${t}`, S.setup), r = tryRun(q + `; SELECT * FROM ${t}`, S.setup);
+  if (r.err) return { err: r.err };
+  const bk = new Set(before.values.map(key)), ids = new Set(r.res.values.map((x) => x[0]));
+  const chg = r.res.values.filter((x) => !bk.has(key(x))).map(key), gone = before.values.filter((x) => !ids.has(x[0]));
+  const html = `<span class="zoneLabel">${pixIcon(t, 26)}LA TABLE ${t.toUpperCase()} APRÈS TA PHRASE</span>` +
+    tableHTML({ columns: r.res.columns, values: [...r.res.values, ...gone] }, { chg, gone: gone.map(key) }) +
+    `<div class="legend"><span class="k">ajoutée ou modifiée</span><span class="d">supprimée</span></div>`;
+  return { res: r.res, html, changed: chg.length + gone.length };
+}
+function ddlMsg(ev, tv) {
+  if (tv.exists && !ev.exists) return "La table n'existe pas après ta phrase. Vérifie le début : CREATE TABLE nom ( … ).";
+  if (!tv.exists && ev.exists) return "La table est encore debout. DELETE FROM vide seulement les lignes ; pour la démolir entière : DROP TABLE.";
+  return "Le plan ne correspond pas : vérifie le nom de chaque colonne et son type (INTEGER = nombre, TEXT = texte).";
+}
+function writeMsg(ev, tv, q) {
+  if (!ev.changed) return "Rien n'a changé dans la table : ta phrase ne fait que regarder, ou elle n'est pas finie.";
+  if (ev.changed > tv.changed) return `Ta phrase a touché ${ev.changed} ligne(s) ; il n'en fallait que ${tv.changed}. ` + (/\bWHERE\b/i.test(q) ? "Ton videur WHERE laisse passer trop de monde." : "Sans le videur WHERE, l'ordre s'applique à TOUTES les lignes !");
+  if (ev.changed < tv.changed) return `Ta phrase a touché ${ev.changed} ligne(s) ; il en fallait ${tv.changed}. Relis la question.`;
+  return "Les bonnes lignes sont touchées, mais pas avec les bonnes valeurs. Vérifie les nombres, les apostrophes et les accents.";
+}
+function friendlyError(msg) {
+  let m;
+  if (/UNIQUE constraint failed/.test(msg)) return "Ce numéro (id) est déjà pris par une autre ligne. id = identité : chaque ligne a le sien, comme une carte d'identité.";
+  if ((m = msg.match(/(\d+) values for (\d+) columns/))) return `Il y a ${m[2]} colonnes mais ${m[1]} valeurs : il en faut autant, dans le même ordre, comme dans un formulaire.`;
+  if ((m = msg.match(/table (\w+) has (\d+) columns but (\d+) values were supplied/))) return `La table ${m[1]} a ${m[2]} colonnes, mais tu donnes ${m[3]} valeurs. Liste les colonnes entre parenthèses avant VALUES.`;
+  if ((m = msg.match(/no such column: (\S+)/))) return `La base ne connaît pas de colonne « ${m[1]} ». Si c'est un texte, mets-le entre apostrophes ('${m[1]}'). Sinon, vérifie l'orthographe : les noms s'écrivent en français, sans accents (pv, fortune, num_chateau).`;
+  if ((m = msg.match(/no such table: (\S+)/))) return `La table « ${m[1]} » n'existe pas. Les tables s'appellent heros, monstres et sorts.`;
+  if ((m = msg.match(/near "([^"]*)": syntax error/))) return `La base ne comprend pas la phrase à partir de « ${m[1]} ». Vérifie l'orthographe des mots SELECT, FROM, WHERE, ORDER BY, et leur ordre.`;
+  if (/incomplete input/.test(msg)) return "La phrase n'est pas finie. Il manque peut-être le nom de la table, ou une apostrophe fermante.";
+  if (/unrecognized token/.test(msg)) return "Une apostrophe n'est pas fermée : un texte doit avoir une apostrophe au début et une à la fin.";
+  return "La base ne comprend pas cette phrase. Vérifie l'orthographe et l'ordre des mots.";
+}
+
+/* ---------- État ---------- */
+const SAVE = "grimoire-premiers-pas-v1";
+let st = { l: 0, s: 0, done: [], v: 2 };
+try { const x = JSON.parse(localStorage.getItem(SAVE)); if (x && typeof x.l === "number") { st = x; if (st.v !== 2) { st.s = 0; st.v = 2; } } } catch (e) {}
+const save = () => { try { localStorage.setItem(SAVE, JSON.stringify(st)); } catch (e) {} };
+let placed = [];   // blocs posés pour l'étape « build » en cours
+
+/* ---------- Rendu ---------- */
+function shuffleStable(arr, seed) {
+  const a = arr.map((v, i) => ({ v, k: Math.sin(seed * 97 + i * 13.7) })); a.sort((p, q) => p.k - q.k); return a.map((x) => x.v);
+}
+function dots() {
+  $("dots").innerHTML = LESSONS.map((L, i) => `<span class="dot ${st.done.includes(i) ? "done" : ""} ${i === st.l && st.s >= 0 ? "now" : ""}" title="Leçon ${i + 1} : ${esc(L.title)}"></span>`).join("");
+}
+function show(html) { const c = $("card"); c.classList.remove("pop"); void c.offsetWidth; c.classList.add("pop"); c.innerHTML = html; }
+const nextBtn = (label = "Continuer") => `<div class="btns"><button class="btn main" id="next">${label}</button></div>`;
+
+function render() {
+  dots();
+  if (typeof trainBanner === "function" && $("train").hidden && $("pocket").hidden) trainBanner();
+  if (st.l >= LESSONS.length) return renderEnd();
+  const L = LESSONS[st.l];
+  $("tag").innerHTML = `<span class="partTag">${PARTS[L.part].label}</span> · LEÇON ${st.l + 1} SUR ${LESSONS.length} · ${esc(L.title.toUpperCase())}`;
+  $("back").hidden = st.l === 0 && st.s === 0;
+  if (st.s >= L.steps.length) return renderLessonEnd(L);
+  const S = L.steps[st.s];
+  const head = `<span class="stepcount">ÉTAPE ${st.s + 1} SUR ${L.steps.length}</span>`;
+  if (S.type === "look") {
+    show(`${head}<h2>${esc(S.title)}</h2>${S.text.map((t) => `<p>${t}</p>`).join("")}
+      ${S.sql ? tableHTML(run(S.sql, S.setup), S.highlight) : ""}
+      ${S.tables ? `<div class="tables">${S.tables.map((t) => `<div><span class="zoneLabel">${(t.label.match(/^(heros|monstres|sorts|inventaire|chateaux)\b/) || [])[1] ? pixIcon(t.label.match(/^(\w+)/)[1], 26) : ""}${esc(t.label)}</span>${tableHTML(run(t.sql, t.setup || S.setup), t.hl)}</div>`).join("")}</div>` : ""}
+      ${S.kingdom ? kingdomHTML() : ""}
+      ${S.castles ? castlesHTML() : ""}
+      ${S.regions ? regionsHTML(S.regions) : ""}
+      ${S.after ? S.after.map((t) => `<p>${t}</p>`).join("") : ""}
+      ${S.highlight ? `<div class="legend"><span class="k">la ligne reste</span><span class="d">la ligne part</span></div>` : ""}
+      ${nextBtn("J'ai compris")}`);
+    $("next").onclick = advance; $("next").focus();
+  } else if (S.type === "memo") {
+    show(`${head}<h2>Pour retenir</h2><div class="memos">${S.keys.map(memoHTML).join("")}</div>
+      <p class="tip">Astuce : dis-le une fois à voix haute. Tu le retrouveras à tout moment dans « Mon aide-mémoire », en bas de page.</p>
+      ${nextBtn("C'est noté")}`);
+    $("next").onclick = advance; $("next").focus();
+  } else if (S.type === "quiz") {
+    show(`${S.recall ? `<span class="recall">RAPPEL ÉCLAIR · AS-TU RETENU ?</span>` : head}<p class="ask">${esc(S.q)}</p><div class="opts">${S.options.map((o, i) => `<button class="opt" data-o="${i}">${esc(o.t)}</button>`).join("")}</div><div id="fb"></div>`);
+    document.querySelectorAll(".opt").forEach((b) => b.onclick = () => {
+      const o = S.options[+b.dataset.o];
+      document.querySelectorAll(".opt").forEach((x) => x.classList.remove("ok", "no"));
+      b.classList.add(o.ok ? "ok" : "no");
+      if (o.ok) { FX.play("good"); burst(b, 10); } else { FX.play("bad"); shake(b); }
+      $("fb").innerHTML = `<div class="fb ${o.ok ? "ok" : "try"}"><b>${o.ok ? "BONNE RÉPONSE" : "PAS TOUT À FAIT"}</b>${esc(o.why)}</div>${o.ok ? nextBtn() : ""}`;
+      if (o.ok) { $("next").onclick = advance; $("next").focus(); }
+    });
+  } else if (S.type === "build") renderBuild(S, head);
+  else if (S.type === "type") renderType(S, head);
+}
+
+function renderBuild(S, head) {
+  const given = S.given || [];
+  const bankAll = shuffleStable([...S.target.slice(given.length), ...(S.extra || [])], st.l * 10 + st.s);
+  const full = () => [...given, ...placed];
+  show(`${head}<p class="ask">${esc(S.ask)}</p>
+    <span class="zoneLabel">${given.length ? "TA PHRASE · le début est déjà posé (en pointillés), à toi de la finir" : "TA PHRASE (clique sur un bloc posé pour le retirer)"}</span>
+    <div class="phrase" id="phrase"></div>
+    <div class="codeLine" id="codeLine" aria-label="Ta requête"></div>
+    <p class="reading" id="reading"></p>
+    <span class="zoneLabel">LES BLOCS (clique dans l'ordre de la phrase)</span>
+    <div class="bank" id="bank"></div>
+    <div class="btns"><button class="btn main" id="check">Vérifier</button><button class="btn" id="clear">Tout effacer</button></div>
+    <div id="fb"></div>
+    <span class="zoneLabel">RÉSULTAT EN DIRECT</span>
+    <div id="live"></div>`);
+  const tile = (t, i, where) => `<button class="tile" data-${where}="${i}">${PIX[t] ? pixIcon(t, 22) : ""}<span class="sql">${esc(t)}</span><span class="fr">${esc(frOf(t))}</span></button>`;
+  const draw = () => {
+    const used = placed.slice();
+    const bank = []; const counts = {};
+    used.forEach((t) => counts[t] = (counts[t] || 0) + 1);
+    bankAll.forEach((t, i) => { if (counts[t]) counts[t]--; else bank.push([t, i]); });
+    $("phrase").innerHTML = given.map((t) => `<span class="tile given">${PIX[t] ? pixIcon(t, 22) : ""}<span class="sql">${esc(t)}</span><span class="fr">${esc(frOf(t))}</span></span>`).join("") +
+      (placed.length ? placed.map((t, i) => tile(t, i, "p")).join("") : `<span class="placeholder">${given.length ? "← continue ici" : "Ta phrase apparaîtra ici."}</span>`);
+    $("bank").innerHTML = bank.map(([t, i]) => tile(t, i, "b")).join("") || `<span class="placeholder">Tous les blocs sont posés.</span>`;
+    const q = full().join(" ").replace(/ ,/g, ",");
+    $("codeLine").textContent = q || "…";
+    $("reading").innerHTML = full().length ? ("Ta phrase se lit : « " + full().map((t, i, arr) => `<em>${esc(t === "=" && arr.slice(0, i).includes("SET") && !arr.slice(0, i).includes("WHERE") ? "devient" : frOf(t))}</em>`).join(" ") + " »").replace(/est égal à <em>le /g, "est égal au <em>").replace(/<em>est égal à<\/em> <em>le /g, "<em>est égal au</em> <em>") : "";
+    const r = q ? evalQ(S, q) : {};
+    const noOn = !S.write && r.res && /\bJOIN\b/i.test(q) && !/\bON\b/i.test(q);
+    const eqJoker = /(^|[^<>!])=\s*'[^']*%[^']*'/.test(q);   // = avec un joker % : la base cherche le texte exact « L% »
+    $("live").innerHTML = r.res ? (eqJoker ? `<div class="fb info"><b>POURQUOI AUCUNE LIGNE ?</b>Avec =, la base cherche un nom qui s'écrit <b>exactement</b> « ${esc((q.match(/'([^']*%[^']*)'/) || [])[1] || "")} », avec le signe % dedans. Aucun monstre ne s'appelle comme ça ! Le joker % ne marche qu'avec <b>LIKE</b> (« ressemble à »). Clique sur le bloc = dans ta phrase pour le retirer, puis prends LIKE.</div>` : "") + (noOn ? `<div class="fb info"><b>REGARDE CE QUI SE PASSE SANS ON</b>Sans règle, la base colle chaque ligne de la première table à chaque ligne de la seconde : ${r.res.values.length} lignes, dont la plupart n'ont aucun sens. ON donne la règle pour ne garder que les bonnes paires.</div>` : "") + r.html : `<p class="count">${placed.length ? "La phrase n'est pas encore complète : pas de résultat pour l'instant." : "Pose des blocs pour voir le résultat se construire."}</p>`;
+    document.querySelectorAll("[data-b]").forEach((b) => b.onclick = () => { placed.push(bankAll[+b.dataset.b]); FX.play("click"); $("fb").innerHTML = ""; draw(); });
+    document.querySelectorAll("[data-p]").forEach((b) => b.onclick = () => { placed.splice(+b.dataset.p, 1); FX.play("unclick"); $("fb").innerHTML = ""; draw(); });
+  };
+  draw();
+  $("clear").onclick = () => { placed = []; $("fb").innerHTML = ""; draw(); };
+  $("check").onclick = () => {
+    const trap = placed.find((t) => S.traps && S.traps[t]);
+    const q = full().join(" ").replace(/ ,/g, ",");
+    const tv = evalQ(S, S.target.join(" ").replace(/ ,/g, ",")), target = tv.res;
+    const r = q ? evalQ(S, q) : {};
+    let fb;
+    if (!placed.length) fb = `<div class="fb try"><b>RIEN ENCORE</b>Clique sur les blocs, dans l'ordre, pour construire ta phrase.</div>`;
+    else if (trap) fb = `<div class="fb try"><b>REGARDE CE BLOC</b>${esc(S.traps[trap])}</div>`;
+    else if (full().join("|") === S.target.join("|") || (r.res && sameResult(r.res, target, S.ordered))) {
+      fb = `<div class="fb ok"><b>BRAVO</b>${esc(S.why)}</div>${nextBtn()}`;
+    } else if (r.res && S.ddl) {
+      fb = `<div class="fb try"><b>LA PHRASE MARCHE, MAIS…</b>${esc(ddlMsg(r, tv))}</div>`;
+    } else if (r.res && S.write) {
+      fb = `<div class="fb try"><b>LA PHRASE MARCHE, MAIS…</b>${esc(writeMsg(r, tv, q))}</div>`;
+    } else if (r.res) {
+      fb = `<div class="fb try"><b>LA PHRASE MARCHE, MAIS…</b>Elle donne ${r.res.values.length} ligne(s) et ${r.res.columns.length} colonne(s) ; la question en demande ${target.values.length} et ${target.columns.length}. Relis la question : quelles colonnes ? quelle table ? quelle condition ?</div>`;
+    } else {
+      const missing = S.target.length - full().length;
+      fb = `<div class="fb try"><b>PAS ENCORE</b>${missing > 0 ? `Il te manque ${missing} bloc(s). ` : ""}Rappel de l'ordre d'une phrase : <b>SELECT</b> (quoi montrer ?) → <b>FROM</b> (quelle table ?) → <b>WHERE</b> (quelle condition ?) → <b>ORDER BY</b> (quel ordre ?).</div>`;
+    }
+    $("fb").innerHTML = fb;
+    if (/fb ok/.test(fb)) { FX.play("good"); burst($("fb").firstElementChild); } else { FX.play("bad"); shake($("phrase")); }
+    if ($("next")) { $("next").onclick = advance; $("next").focus(); }
+  };
+}
+
+function renderType(S, head) {
+  show(`${head}<p class="ask">${esc(S.ask)}</p>
+    <textarea id="ta" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" enterkeyhint="enter" aria-label="Ta requête" placeholder="SELECT …"></textarea>
+    <div class="btns"><button class="btn main" id="check">Vérifier</button><button class="btn" id="tryit">Essayer sans vérifier</button><button class="btn" id="help">Montre-moi les blocs</button></div>
+    <div id="fb"></div><div id="live"></div>`);
+  $("ta").focus();
+  const tv = evalQ(S, S.expected), target = tv.res;
+  $("tryit").onclick = () => {
+    const q = $("ta").value.trim(); if (!q) return;
+    const r = evalQ(S, q);
+    $("fb").innerHTML = r.err ? `<div class="fb try"><b>LA BASE NE COMPREND PAS</b>${esc(friendlyError(r.err))}</div>` : "";
+    $("live").innerHTML = r.res ? (S.write || S.ddl ? r.html : `<span class="zoneLabel">CE QUE DONNE TA PHRASE</span>${r.html}`) : "";
+  };
+  $("help").onclick = () => {
+    $("fb").innerHTML = `<div class="fb info"><b>LES BLOCS DONT TU AS BESOIN, DANS LE DÉSORDRE</b>${shuffleStable(S.words, st.l + st.s + 3).map((t) => `<span class="word"><b>${esc(t)}</b><i>${esc(frOf(t))}</i></span>`).join(" ")}<br>À toi de les remettre dans l'ordre${S.write || S.ddl ? "" : " : SELECT → FROM → WHERE → GROUP BY → HAVING → ORDER BY → LIMIT"}.</div>`;
+  };
+  $("check").onclick = () => {
+    const q = $("ta").value.trim();
+    if (!q) { $("fb").innerHTML = `<div class="fb try"><b>RIEN ENCORE</b>Écris ta phrase dans le cadre. Elle commence par SELECT.</div>`; return; }
+    const first = (q.match(/^\s*([^\s*,]+)/) || [])[1] || "";
+    if (!(S.ddl ? /^(create|alter|drop)$/i : S.write ? /^(insert|update|delete)$/i : /^(select|with)$/i).test(first)) { $("fb").innerHTML = `<div class="fb try"><b>LE PREMIER MOT</b>${S.ddl ? "Pour construire ou modifier le plan d'une table, la phrase commence par CREATE TABLE, ALTER TABLE ou DROP TABLE." : S.write ? "Pour modifier la base, la phrase commence par INSERT (ajouter), UPDATE (modifier) ou DELETE (supprimer)." : "Une phrase pour lire la base commence par SELECT (« montre »), ou par WITH pour préparer une liste."} Tu as écrit « ${esc(first)} ».</div>`; $("live").innerHTML = ""; return; }
+    const r = evalQ(S, q);
+    if (r.err) { $("fb").innerHTML = `<div class="fb try"><b>LA BASE NE COMPREND PAS</b>${esc(friendlyError(r.err))}</div>`; $("live").innerHTML = ""; FX.play("bad"); shake($("ta")); return; }
+    $("live").innerHTML = S.write || S.ddl ? r.html : `<span class="zoneLabel">CE QUE DONNE TA PHRASE</span>${r.html}`;
+    if (S.ddl && !sameResult(r.res, target, false)) { FX.play("bad"); $("fb").innerHTML = `<div class="fb try"><b>LA PHRASE MARCHE, MAIS…</b>${esc(ddlMsg(r, tv))}</div>`; return; }
+    if (S.write && !sameResult(r.res, target, false)) { FX.play("bad"); $("fb").innerHTML = `<div class="fb try"><b>LA PHRASE MARCHE, MAIS…</b>${esc(writeMsg(r, tv, q))}</div>`; return; }
+    if (!sameResult(r.res, target, S.ordered)) FX.play("bad");
+    if (sameResult(r.res, target, S.ordered)) { $("fb").innerHTML = `<div class="fb ok"><b>BRAVO</b>${esc(S.why)}</div>${nextBtn()}`; FX.play("good"); burst($("fb").firstElementChild); $("next").onclick = advance; $("next").focus(); }
+    else if (!r.res.columns.length) $("fb").innerHTML = `<div class="fb try"><b>AUCUNE LIGNE</b>Ta phrase ne trouve rien. Si tu compares un texte, vérifie les apostrophes, les majuscules et les accents.</div>`;
+    else if (S.ordered && r.res.values.length === target.values.length && r.res.columns.length === target.columns.length && sameResult(r.res, target, false))
+      $("fb").innerHTML = `<div class="fb try"><b>PRESQUE</b>Les bonnes lignes sont là, mais pas dans le bon ordre. Regarde ton ORDER BY : faut-il DESC ?</div>`;
+    else $("fb").innerHTML = `<div class="fb try"><b>LA PHRASE MARCHE, MAIS…</b>Elle donne ${r.res.values.length} ligne(s) et ${r.res.columns.length} colonne(s) ; la question en demande ${target.values.length} et ${target.columns.length}. Relis la question : quelles colonnes ? quelle table ? quelle condition ?</div>`;
+  };
+  $("ta").addEventListener("keydown", (e) => { if ((e.ctrlKey || e.metaKey) && e.key === "Enter") { e.preventDefault(); $("check").click(); } });
+}
+
+function renderLessonEnd(L) {
+  if (!st.done.includes(st.l)) { st.done.push(st.l); save(); dots(); }
+  setTimeout(() => { FX.play("win"); burst($("card"), 22); }, 80);
+  show(`<h2>Leçon ${st.l + 1} réussie</h2><p>Ce que tu sais maintenant :</p>
+    <ul class="learned">${L.learned.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
+    ${L.memos.length ? `<p>Et pour t'en souvenir :</p><div class="memos">${L.memos.map((k) => `<div class="memo"><span class="notion">${esc(MNEMOS[k].notion)}</span><span class="hook">${MNEMOS[k].hook}</span></div>`).join("")}</div>` : ""}
+    ${LESSONS[st.l + 1] && LESSONS[st.l + 1].part !== L.part ? `<div class="fb info"><b>PARTIE ${L.part} TERMINÉE</b>${PARTS[L.part].end}</div>` : ""}
+    ${nextBtn(st.l + 1 < LESSONS.length ? (LESSONS[st.l + 1].part !== L.part ? `Commencer la partie ${LESSONS[st.l + 1].part}` : "Leçon suivante") : "Terminer")}`);
+  $("next").insertAdjacentHTML("afterend", `<button class="btn" id="endTrain">S'entraîner 3 minutes</button>`);
+  $("endTrain").onclick = openTrain;
+  $("next").onclick = () => { st.l++; st.s = 0; save(); render(); }; $("next").focus();
+}
+function renderEnd() {
+  $("tag").textContent = "PREMIERS PAS TERMINÉS";
+  show(`<img src="assets/logo-480.webp" alt="" style="width:160px;margin:0 auto">
+    <h2 style="text-align:center">Tu sais interroger une base de données</h2>
+    <p>Tu sais montrer une table, choisir des colonnes, garder certaines lignes, les ranger, compter, faire des paquets, relier deux tables et additionner. Tu sais aussi trouver ce qui manque, filtrer des tas, poser une question dans la question, et ajouter, modifier ou supprimer des lignes. Et tu sais retirer les doublons, chercher un motif, fabriquer des étiquettes, couper une liste, dire « ou bien », trouver le plus petit et le plus grand, construire et démolir des tables, remplir les cases vides, préparer des listes et classer sur un podium. C'est tout le programme de l'aventure, du Chapitre 1 au boss final du Chapitre 8.</p>
+    <div class="fb info"><b>L'ORDRE : DES QUESTIONS, TOUJOURS DANS LE MÊME ORDRE</b>${ORDER_CHAIN_HTML}</div>
+    <div class="fb info" hidden><b>LA PHRASE COMPLÈTE</b><span class="word"><b>SELECT</b><i>quoi montrer</i></span> <span class="word"><b>FROM</b><i>quelle table</i></span> <span class="word"><b>WHERE</b><i>quelles lignes</i></span> <span class="word"><b>ORDER BY</b><i>dans quel ordre</i></span></div>
+    <div class="fb info"><b>ET POUR LE CHAPITRE 2</b><span class="word"><b>COUNT(*)</b><i>compter</i></span> <span class="word"><b>GROUP BY</b><i>par paquets</i></span> <span class="word"><b>JOIN … ON</b><i>relier deux tables</i></span> <span class="word"><b>SUM( )</b><i>additionner</i></span></div>
+    <div class="fb info"><b>ET POUR LES CHAPITRES 3 ET 4</b><span class="word"><b>LEFT JOIN</b><i>photo de classe</i></span> <span class="word"><b>IS NULL</b><i>case vide</i></span> <span class="word"><b>HAVING</b><i>videur des tas</i></span> <span class="word"><b>( … )</b><i>boîte de l'assistant</i></span> <span class="word"><b>IN</b><i>dans la liste</i></span> <span class="word"><b>INSERT</b><i>ajouter</i></span> <span class="word"><b>UPDATE</b><i>modifier</i></span> <span class="word"><b>DELETE</b><i>supprimer</i></span></div>
+    <div class="fb info"><b>ET POUR LE CHAPITRE 5</b><span class="word"><b>DISTINCT</b><i>liste d'invités</i></span> <span class="word"><b>LIKE '%'</b><i>le joker</i></span> <span class="word"><b>NOT</b><i>sauf</i></span> <span class="word"><b>CASE … END</b><i>quand, alors, sinon, fin</i></span></div>
+    <div class="fb info"><b>ET POUR LE CHAPITRE 6</b><span class="word"><b>LIMIT</b><i>les ciseaux</i></span> <span class="word"><b>OR</b><i>ou bien</i></span> <span class="word"><b>( … )</b><i>la boîte du OR</i></span> <span class="word"><b>MIN / MAX</b><i>le plus petit, le plus grand</i></span> <span class="word"><b>BETWEEN</b><i>la fenêtre</i></span></div>
+    <div class="fb info"><b>ET POUR LE CHAPITRE 7</b><span class="word"><b>CREATE TABLE</b><i>dessiner le plan</i></span> <span class="word"><b>INTEGER / TEXT</b><i>nombre / texte</i></span> <span class="word"><b>ALTER TABLE</b><i>ajouter une pièce</i></span> <span class="word"><b>DROP TABLE</b><i>démolir les murs</i></span></div>
+    <div class="fb info"><b>ET POUR LE CHAPITRE 8</b><span class="word"><b>COALESCE</b><i>la roue de secours</i></span> <span class="word"><b>UPPER / LENGTH</b><i>majuscules / longueur</i></span> <span class="word"><b>WITH</b><i>la liste préparée</i></span> <span class="word"><b>RANK() OVER</b><i>le podium</i></span> <span class="word"><b>PARTITION BY</b><i>un podium par tas</i></span></div>
+    <p>Tu es prêt·e : toute l'aventure, jusqu'au boss final, va te sembler familière.</p>
+    <div class="btns"><button class="btn main" id="endTrain2">S'entraîner 3 minutes</button><a class="btn" href="index.html" target="_blank" rel="noopener" style="text-decoration:none">Partir à l'aventure</a></div>`);
+  $("endTrain2").onclick = openTrain;
+}
+function seenMemos() {
+  const keys = [];
+  LESSONS.forEach((L, i) => L.steps.forEach((S, j) => { if (S.type === "memo" && (i < st.l || (i === st.l && j <= st.s) || st.l >= LESSONS.length)) keys.push(...S.keys); }));
+  return keys;
+}
+function togglePocket(open) {
+  const p = $("pocket");
+  if (!open) { p.hidden = true; $("card").hidden = false; $("pocketBtn").textContent = "Mon aide-mémoire"; return; }
+  const keys = seenMemos();
+  $("train").hidden = true; $("trainBanner").hidden = true;
+  p.innerHTML = `<h2>Mon aide-mémoire</h2><span class="zoneLabel">L'ORDRE DE LA PHRASE : DES QUESTIONS, TOUJOURS DANS LE MÊME ORDRE</span>${ORDER_CHAIN_HTML}<span class="zoneLabel">LES 5 TABLES DU ROYAUME</span>${kingdomHTML()}
+    ${keys.length ? `<p>Toutes les images que tu as rencontrées jusqu'ici. Relis-les à voix haute : quelques secondes suffisent.</p><div class="memos">${keys.map(memoHTML).join("")}</div>` : `<p>Il se remplira au fil des leçons, avec une image pour chaque notion.</p>`}
+    <div class="btns"><button class="btn main" id="pocketClose">Revenir à la leçon</button></div>`;
+  p.hidden = false; $("card").hidden = true; $("pocketBtn").textContent = "Revenir à la leçon";
+  $("pocketClose").onclick = () => togglePocket(false); $("pocketClose").focus(); window.scrollTo({ top: 0 });
+}
+/* =====================================================================
+   ENTRAÎNEMENT DU JOUR : répétition espacée (boîtes de Leitner)
+   Un mot raté revient vite et souvent ; un mot su revient de plus en plus rarement.
+   ===================================================================== */
+const CARDS = [
+  { k: "SELECT", fr: "montre (quoi ?)", hint: "SELECT ressemble à « sélectionne » : je sélectionne ce que je veux voir.", l: 1 },
+  { k: "FROM", fr: "dans la table (où ?)", hint: "FROM = « de » : d'où vient l'information ?", l: 1 },
+  { k: "*", fr: "toutes les colonnes", hint: "L'étoile brille sur tout.", l: 1 },
+  { k: "WHERE", fr: "seulement si (quelles lignes ?)", hint: "WHERE est le videur à l'entrée : il ne laisse passer que certaines lignes.", l: 3 },
+  { k: "ORDER BY", fr: "trie par", hint: "ORDER ressemble à « ordre ».", l: 5 },
+  { k: "DESC", fr: "du plus grand au plus petit", hint: "DESC comme DESCendre.", l: 5 },
+  { k: "COUNT(*)", fr: "le nombre de lignes", hint: "COUNT ressemble à « compte ».", l: 6 },
+  { k: "GROUP BY", fr: "range en tas par", hint: "Ranger les chaussettes par couleur, puis compter chaque tas.", l: 7 },
+  { k: "JOIN", fr: "relie à une autre table", hint: "JOIN ressemble à « joindre ».", l: 8 },
+  { k: "ON", fr: "la règle pour relier (numéro = numéro)", hint: "ON, c'est la poignée de main entre deux numéros égaux.", l: 8 },
+  { k: "SUM", fr: "la somme (additionner)", hint: "SUM ressemble à « somme ».", l: 10 },
+  { k: "LEFT JOIN", fr: "relie en gardant tout le monde", hint: "La photo de classe : tout le monde y est, même sans partenaire.", l: 11 },
+  { k: "IS NULL", fr: "est vide", hint: "NULL = une case vide. On demande « est-ce vide ? » : IS NULL.", l: 11 },
+  { k: "HAVING", fr: "garde seulement les tas où", hint: "HAVING est le videur de la sortie : il regarde les tas.", l: 12 },
+  { k: "AVG", fr: "la moyenne", hint: "AVG comme « average » : la moyenne.", l: 13 },
+  { k: "IN", fr: "fait partie de la liste", hint: "IN veut dire « dans ».", l: 14 },
+  { k: "INSERT INTO", fr: "ajoute une ligne dans", hint: "INSERT ressemble à « insérer » : on remplit un formulaire.", l: 15 },
+  { k: "VALUES", fr: "les valeurs à écrire", hint: "VALUES = valeurs, dans l'ordre des colonnes.", l: 15 },
+  { k: "UPDATE", fr: "modifie des lignes de", hint: "UPDATE = mettre à jour.", l: 16 },
+  { k: "SET", fr: "change la colonne en", hint: "SET : je règle la colonne sur une nouvelle valeur.", l: 16 },
+  { k: "DELETE FROM", fr: "supprime des lignes de", hint: "DELETE = effacer. Regarde (SELECT) avant de détruire.", l: 17 },
+  { k: "DISTINCT", fr: "sans doublons", hint: "DISTINCT : la liste d'invités, chaque nom une seule fois.", l: 18 },
+  { k: "LIKE", fr: "ressemble au motif", hint: "LIKE ressemble à « ressemble ». Le % est un joker.", l: 19 },
+  { k: "NOT LIKE", fr: "ne ressemble pas au motif (sauf)", hint: "NOT, c'est le « sauf ».", l: 19 },
+  { k: "CASE", fr: "début d'une étiquette (si… alors…)", hint: "CASE WHEN … THEN … ELSE … END : quand, alors, sinon, fin.", l: 20 },
+  { k: "WHEN", fr: "quand", hint: "WHEN = quand. Le premier WHEN vrai gagne.", l: 20 },
+  { k: "THEN", fr: "alors", hint: "THEN = alors : l'étiquette à donner.", l: 20 },
+  { k: "ELSE", fr: "sinon", hint: "ELSE = sinon : l'étiquette par défaut.", l: 20 },
+  { k: "END", fr: "fin de l'étiquette", hint: "Un CASE se termine toujours par END.", l: 20 },
+  { k: "LIMIT", fr: "garde seulement les premières lignes", hint: "LIMIT = la limite : les ciseaux, en tout dernier.", l: 22 },
+  { k: "OR", fr: "ou bien (une condition suffit)", hint: "OR, le grand-parent gâteau : une seule chose lui suffit.", l: 23 },
+  { k: "( … OR … )", fr: "la boîte qui garde le OR à part", hint: "AND passe avant OR, comme × avant + : on met le OR dans une boîte.", l: 23 },
+  { k: "MIN", fr: "la plus petite valeur", hint: "MIN comme minimum.", l: 24 },
+  { k: "MAX", fr: "la plus grande valeur", hint: "MAX comme maximum.", l: 24 },
+  { k: "BETWEEN", fr: "entre deux bornes (comprises)", hint: "BETWEEN = entre : une fenêtre avec ses deux montants.", l: 25 },
+  { k: "CREATE TABLE", fr: "construis une nouvelle table", hint: "CREATE = créer : l'architecte dessine le plan.", l: 26 },
+  { k: "INTEGER", fr: "type : nombre entier", hint: "INTEGER comme entier.", l: 26 },
+  { k: "TEXT", fr: "type : texte", hint: "TEXT = texte.", l: 26 },
+  { k: "PRIMARY KEY", fr: "l'identité unique de la ligne", hint: "La clé de la maison : une seule par ligne.", l: 26 },
+  { k: "ALTER TABLE", fr: "modifie le plan d'une table", hint: "ALTER = altérer : on ajoute une pièce sans démolir.", l: 28 },
+  { k: "ADD COLUMN", fr: "ajoute une colonne", hint: "ADD = ajouter, COLUMN = colonne.", l: 28 },
+  { k: "DROP TABLE", fr: "démolis la table entière", hint: "DELETE vide les meubles, DROP démolit les murs.", l: 28 },
+  { k: "COALESCE", fr: "la valeur, ou bien la roue de secours si elle est vide", hint: "COALESCE, la roue de secours des cases vides.", l: 29 },
+  { k: "UPPER", fr: "en majuscules", hint: "UP = vers le haut : les grandes lettres.", l: 30 },
+  { k: "LENGTH", fr: "le nombre de caractères", hint: "LENGTH = la longueur.", l: 30 },
+  { k: "WITH", fr: "prépare une liste nommée", hint: "WITH = avec : les ingrédients sortis avant de cuisiner.", l: 31 },
+  { k: "RANK() OVER", fr: "la place de chaque ligne sur le podium", hint: "RANK = le rang sur le podium.", l: 32 },
+  { k: "PARTITION BY", fr: "un podium par tas, sans fusionner", hint: "PARTITION = une cloison : un podium par compartiment.", l: 32 }
+];
+// L'ordre : chaque mot répond à une question, et les questions viennent toujours dans le même ordre.
+const QFR = { SELECT: "quoi ?", FROM: "dans quelle table ?", JOIN: "reliée à quelle table ?", ON: "avec quelle règle ?", WHERE: "quelles lignes ?",
+  "GROUP BY": "en quels tas ?", HAVING: "quels tas ?", "ORDER BY": "dans quel ordre ?", LIMIT: "combien ?" };
+const ORDERS = [
+  { id: "ordre-3", seq: ["SELECT", "FROM", "WHERE"], l: 3 },
+  { id: "ordre-4", seq: ["SELECT", "FROM", "WHERE", "ORDER BY"], l: 5 },
+  { id: "ordre-5", seq: ["SELECT", "FROM", "WHERE", "GROUP BY", "ORDER BY"], l: 7 },
+  { id: "ordre-join", seq: ["SELECT", "FROM", "JOIN", "ON", "WHERE"], l: 8 },
+  { id: "ordre-6", seq: ["SELECT", "FROM", "WHERE", "GROUP BY", "HAVING", "ORDER BY"], l: 12 },
+  { id: "ordre-limit", seq: ["SELECT", "FROM", "WHERE", "ORDER BY", "LIMIT"], l: 22 },
+  { id: "ordre-complet", seq: ["SELECT", "FROM", "JOIN", "ON", "WHERE", "GROUP BY", "HAVING", "ORDER BY", "LIMIT"], l: 12 }
+];
+// Phrases à trou : chaque mot-clé est un morceau qu'on peut cacher
+const SAMPLES = [
+  ["SELECT", "nom", "FROM", "heros", "WHERE", "fortune > 100"],
+  ["SELECT", "*", "FROM", "monstres"],
+  ["SELECT", "nom, pv", "FROM", "monstres", "ORDER BY", "pv", "DESC"],
+  ["SELECT", "COUNT(*)", "FROM", "heros", "WHERE", "classe = 'Mage'"],
+  ["SELECT", "region, COUNT(*)", "FROM", "monstres", "GROUP BY", "region"],
+  ["SELECT", "heros.nom, chateaux.nom", "FROM", "heros", "JOIN", "chateaux", "ON", "heros.num_chateau = chateaux.id"],
+  ["SELECT", "chateaux.nom,", "SUM", "(heros.fortune)", "FROM", "chateaux", "JOIN", "heros", "ON", "heros.num_chateau = chateaux.id", "GROUP BY", "chateaux.nom"],
+  ["SELECT", "heros.nom", "FROM", "heros", "LEFT JOIN", "sorts", "ON", "sorts.num_heros = heros.id", "WHERE", "sorts.id", "IS NULL"],
+  ["SELECT", "region, COUNT(*)", "FROM", "monstres", "GROUP BY", "region", "HAVING", "COUNT(*) >= 2"],
+  ["SELECT", "nom", "FROM", "monstres", "WHERE", "pv > (SELECT", "AVG", "(pv) FROM monstres)"],
+  ["SELECT", "objet", "FROM", "inventaire", "WHERE", "num_heros", "IN", "(3, 6)"],
+  ["INSERT INTO", "chateaux (id, nom)", "VALUES", "(4, 'Donjon Nuageux')"],
+  ["UPDATE", "heros", "SET", "fortune = fortune + 100", "WHERE", "nom = 'Borin Barbe-de-Fer'"],
+  ["DELETE FROM", "inventaire", "WHERE", "rarete = 'Commun'"],
+  ["SELECT", "DISTINCT", "ecole", "FROM", "sorts"],
+  ["SELECT", "nom", "FROM", "monstres", "WHERE", "nom", "LIKE", "'L%'"],
+  ["SELECT", "nom", "FROM", "chateaux", "WHERE", "nom", "NOT LIKE", "'Tour%'"],
+  ["SELECT", "nom,", "CASE", "WHEN", "danger >= 7", "THEN", "'Mortel'", "ELSE", "'Calme'", "END", "FROM", "monstres"],
+  ["SELECT", "nom", "FROM", "heros", "ORDER BY", "fortune", "DESC", "LIMIT", "1"],
+  ["SELECT", "nom", "FROM", "monstres", "WHERE", "region = 'Forêt Sombre'", "OR", "region = 'Marais Putride'"],
+  ["SELECT", "nom", "FROM", "heros", "WHERE", "niveau", "BETWEEN", "5 AND 10"],
+  ["CREATE TABLE", "familiers (id", "INTEGER", "PRIMARY KEY, nom", "TEXT", ")"],
+  ["ALTER TABLE", "familiers", "ADD COLUMN", "age INTEGER"],
+  ["DROP TABLE", "brouillon"],
+  ["SELECT", "nom,", "COALESCE", "(seigneur, 'Sans seigneur')", "FROM", "chateaux"],
+  ["WITH", "riches AS (SELECT * FROM heros WHERE fortune >= 300)", "SELECT", "nom", "FROM", "riches"],
+  ["SELECT", "nom,", "RANK() OVER", "(", "PARTITION BY", "region ORDER BY pv DESC) AS rang", "FROM", "monstres"]
+];
+const ORDER_CHAIN_HTML = `<div class="chain">${["SELECT", "FROM", "JOIN", "WHERE", "GROUP BY", "HAVING", "ORDER BY", "LIMIT"].map((k, i) =>
+  `<span><b>${i + 1}</b><code>${k}${k === "JOIN" ? " … ON" : ""}</code><i>${QFR[k]}</i></span>`).join("")}</div>`;
+
+const TSAVE = "grimoire-entrainement-v1";
+let TR = { box: {}, last: "", streak: 0, sessions: 0 };
+try { const x = JSON.parse(localStorage.getItem(TSAVE)); if (x && x.box) TR = x; } catch (e) {}
+const tsave = () => { try { localStorage.setItem(TSAVE, JSON.stringify(TR)); } catch (e) {} };
+const dayStr = (d) => d.toISOString().slice(0, 10);
+const today = () => dayStr(new Date());
+const unlockedAt = (l) => st.done.includes(l) || st.l > l;
+const trainPool = () => [...CARDS.filter((c) => unlockedAt(c.l)).map((c) => c.k), ...ORDERS.filter((o) => unlockedAt(o.l)).map((o) => o.id)];
+const boxOf = (id) => TR.box[id] || 0;
+const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+let session = null;
+function buildSession(n = 10) {
+  const pool = trainPool(), q = [];
+  let last = null;
+  for (let i = 0; i < n; i++) {
+    const cand = pool.filter((id) => id !== last);
+    const weights = cand.map((id) => 6 - boxOf(id));      // jamais vu = 6, maîtrisé = 1
+    let r = Math.random() * weights.reduce((a, b) => a + b, 0), pick = cand[0];
+    for (let j = 0; j < cand.length; j++) { r -= weights[j]; if (r <= 0) { pick = cand[j]; break; } }
+    q.push(makeItem(pick)); last = pick;
+  }
+  return { q, i: 0, ok: 0, requeued: new Set(), missed: new Set() };
+}
+function makeItem(id, avoidType) {
+  const o = ORDERS.find((x) => x.id === id);
+  if (o) return { id, type: "order", seq: o.seq };
+  const types = ["toSql", "toFr"];
+  if (SAMPLES.some((s) => s.includes(id))) types.push("complete", "complete");
+  const t = shuffle(types.filter((x) => x !== avoidType))[0] || "toSql";
+  if (t === "complete") { const s = shuffle(SAMPLES.filter((x) => x.includes(id)))[0]; return { id, type: t, sample: s }; }
+  return { id, type: t };
+}
+function distractors(id, field) {
+  const pool = CARDS.filter((c) => c.k !== id && unlockedAt(c.l));
+  const others = (pool.length >= 3 ? pool : CARDS.filter((c) => c.k !== id));
+  return shuffle(others).slice(0, 3).map((c) => c[field]);
+}
+
+function masteryHTML() {
+  const pool = trainPool();
+  return `<div class="mastery">${pool.map((id) => {
+    const b = boxOf(id), c = CARDS.find((x) => x.k === id), o = ORDERS.find((x) => x.id === id);
+    const label = c ? c.k : o.seq.includes("JOIN") && o.seq.length < 9 ? "ordre avec JOIN" : o.seq.length === 9 ? "ordre complet" : `ordre de ${o.seq.length} mots`;
+    return `<span class="mk ${b >= 4 ? "won" : ""}" title="${esc(c ? c.fr : o.seq.join(" → "))}"><code>${esc(label)}</code><span class="pips">${[1, 2, 3, 4, 5].map((k) => `<i class="${k <= b ? "on" : ""}"></i>`).join("")}</span></span>`;
+  }).join("")}</div>`;
+}
+
+function openTrain() {
+  $("card").hidden = true; $("pocket").hidden = true; $("train").hidden = false; $("trainBanner").hidden = true;
+  $("pocketBtn").textContent = "Mon aide-mémoire";
+  trainHome(); window.scrollTo({ top: 0 });
+}
+function closeTrain() { $("train").hidden = true; $("card").hidden = false; render(); }
+
+function trainHome() {
+  const pool = trainPool(), mastered = pool.filter((id) => boxOf(id) >= 4).length;
+  $("train").innerHTML = `<h2>Entraînement du jour</h2>
+    <p>Dix questions, environ trois minutes. Les mots que tu oublies reviennent plus souvent, ceux que tu connais s'espacent : c'est comme ça que la mémoire retient. <b>Un peu chaque jour</b> vaut mieux que beaucoup une seule fois.</p>
+    <div class="fb info"><b>LE SECRET DE L'ORDRE : DES QUESTIONS, TOUJOURS DANS LE MÊME ORDRE</b>
+      Une phrase SQL, c'est ta demande dite en français, dans l'ordre naturel : « Montre-moi <i>quoi</i>, pris dans <i>quelle table</i>, seulement <i>quelles lignes</i>, rangées dans <i>quel ordre</i>. »
+      ${ORDER_CHAIN_HTML}</div>
+    ${pool.length < 3 ? `<p>Termine d'abord les trois premières leçons : l'entraînement se débloque avec WHERE.</p>` : `
+      <span class="zoneLabel">TA MAÎTRISE · ${mastered} SUR ${pool.length} MOTS ET ORDRES BIEN ANCRÉS ${TR.streak ? `· ${TR.streak} JOUR${TR.streak > 1 ? "S" : ""} D'AFFILÉE` : ""}</span>
+      ${masteryHTML()}`}
+    <div class="btns">${pool.length >= 3 ? `<button class="btn main" id="tStart">Commencer (10 questions)</button>` : ""}<button class="btn" id="tClose">Revenir aux leçons</button></div>`;
+  if ($("tStart")) { $("tStart").onclick = () => { FX.play("page"); session = buildSession(); trainQuestion(); }; $("tStart").focus(); }
+  $("tClose").onclick = closeTrain;
+}
+
+function trainQuestion() {
+  const it = session.q[session.i], total = session.q.length;
+  const c = CARDS.find((x) => x.k === it.id);
+  const head = `<div class="tprog"><span class="stepcount">QUESTION ${session.i + 1} SUR ${total}</span><span class="tbar"><i style="width:${(session.i / total) * 100}%"></i></span></div>`;
+  let body = "";
+  if (it.type === "toSql") body = `<p class="ask">Comment dit-on « ${esc(c.fr)} » en SQL ?</p>${optsHTML(shuffle([c.k, ...distractors(c.k, "k")]), true)}`;
+  else if (it.type === "toFr") body = `<p class="ask">Que veut dire <code>${esc(c.k)}</code> ?</p>${optsHTML(shuffle([c.fr, ...distractors(c.k, "fr")]), false)}`;
+  else if (it.type === "complete") {
+    const idx = it.sample.indexOf(it.id);
+    body = `<p class="ask">Quel mot manque dans cette phrase ?</p>
+      <div class="codeLine">${it.sample.map((t, i) => i === idx ? `<span class="blank">?</span>` : esc(t)).join(" ")}</div>${optsHTML(shuffle([c.k, ...distractors(c.k, "k")]), true)}`;
+  } else {
+    body = `<p class="ask">Remets ces mots dans l'ordre de la phrase.</p>
+      <div class="phrase" id="tPhrase"><span class="placeholder">Clique sur les mots, du premier au dernier.</span></div>
+      <div class="bank" id="tBank">${shuffle(it.seq.map((k, i) => ({ k, i }))).map((x) => `<button class="tile" data-k="${esc(x.k)}"><span class="sql">${esc(x.k)}</span></button>`).join("")}</div>`;
+  }
+  $("train").innerHTML = head + body + `<div id="tFb"></div>`;
+  if (it.type === "order") wireOrder(it);
+  else document.querySelectorAll("#train .opt").forEach((b) => b.onclick = () => answer(it, b.dataset.v === (it.type === "toFr" ? c.fr : c.k), b));
+}
+const optsHTML = (vals, code) => `<div class="opts">${vals.map((v) => `<button class="opt" data-v="${esc(v)}">${code ? `<code>${esc(v)}</code>` : esc(v)}</button>`).join("")}</div>`;
+
+function wireOrder(it) {
+  let pos = 0, mistakes = 0;
+  document.querySelectorAll("#tBank .tile").forEach((b) => b.onclick = () => {
+    if (b.disabled) return;
+    if (b.dataset.k === it.seq[pos]) {
+      FX.play("click"); b.disabled = true; b.style.visibility = "hidden";
+      if (pos === 0) $("tPhrase").innerHTML = "";
+      $("tPhrase").insertAdjacentHTML("beforeend", `<span class="tile placed"><span class="sql">${esc(b.dataset.k)}</span><span class="fr">${esc(QFR[b.dataset.k] || "")}</span></span>`);
+      pos++;
+      $("tFb").innerHTML = "";
+      if (pos === it.seq.length) answer(it, mistakes === 0, null, mistakes);
+    } else {
+      mistakes++; FX.play("bad"); shake(b);
+      const prev = it.seq[pos - 1], next = it.seq[pos];
+      $("tFb").innerHTML = `<div class="fb try"><b>PAS ENCORE</b>${pos === 0 ? "Une phrase commence toujours par la question « quoi ? »." : `Après ${esc(prev)} (« ${esc(QFR[prev] || "")} »), la question suivante est : « ${esc(QFR[next] || "")} »`}</div>`;
+    }
+  });
+}
+
+function answer(it, ok, btn, mistakes) {
+  const c = CARDS.find((x) => x.k === it.id);
+  document.querySelectorAll("#train .opt").forEach((b) => { b.disabled = true; if (b.dataset.v === (it.type === "toFr" ? c && c.fr : c && c.k)) b.classList.add("ok"); });
+  if (btn && !ok) btn.classList.add("no");
+  if (ok) { session.ok++; TR.box[it.id] = Math.min(5, boxOf(it.id) + 1); FX.play("good"); burst(btn || $("tPhrase"), 10); }
+  else {
+    TR.box[it.id] = 1; session.missed.add(it.id); FX.play("bad");
+    if (!session.requeued.has(it.id)) { session.requeued.add(it.id); session.q.push(makeItem(it.id, it.type)); }   // il revient avant la fin
+  }
+  tsave();
+  const why = it.type === "order"
+    ? (ok ? "Parfait, sans une erreur." : `Terminé, avec ${mistakes} erreur(s) : cet ordre reviendra bientôt.`) + ` Les questions : ${it.seq.map((k) => `${k} (${QFR[k]})`).join(" → ")}.`
+    : `${ok ? "" : `La réponse : ${c.k} = ${c.fr}. `}${c.hint}`;
+  $("tFb").innerHTML = `<div class="fb ${ok ? "ok" : "try"}"><b>${ok ? "BRAVO" : "À RETENIR"}</b>${esc(why)}</div>
+    <div class="btns"><button class="btn main" id="tNext">${session.i + 1 < session.q.length ? "Question suivante" : "Voir mon bilan"}</button></div>`;
+  $("tNext").onclick = () => { session.i++; FX.play("page"); if (session.i < session.q.length) trainQuestion(); else trainEnd(); };
+  $("tNext").focus();
+}
+
+function trainEnd() {
+  const t = today(), y = dayStr(new Date(Date.now() - 864e5));
+  if (TR.last !== t) { TR.streak = TR.last === y ? TR.streak + 1 : 1; TR.last = t; }
+  TR.sessions++; tsave();
+  const total = session.q.length, missed = [...session.missed];
+  FX.play("win"); setTimeout(() => burst($("train"), 22), 50);
+  $("train").innerHTML = `<h2>Entraînement terminé</h2>
+    <p><b>${session.ok} bonne(s) réponse(s) sur ${total}.</b> ${TR.streak > 1 ? `Tu t'entraînes depuis ${TR.streak} jours d'affilée : c'est exactement ce qui fait retenir.` : "Reviens demain : c'est la régularité qui fait retenir."}</p>
+    ${missed.length ? `<div class="fb info"><b>CES MOTS REVIENDRONT SOUVENT</b>${missed.map((id) => { const c = CARDS.find((x) => x.k === id); return c ? `<span class="word"><b>${esc(c.k)}</b><i>${esc(c.fr)}</i></span>` : `<span class="word"><b>ordre</b><i>${esc(ORDERS.find((o) => o.id === id).seq.join(" → "))}</i></span>`; }).join(" ")}</div>` : `<div class="fb ok"><b>SANS FAUTE</b>Les mots que tu connais vont s'espacer ; de nouveaux reviendront.</div>`}
+    <span class="zoneLabel">TA MAÎTRISE</span>${masteryHTML()}
+    <div class="btns"><button class="btn main" id="tAgain">Encore 10 questions</button><button class="btn" id="tClose">Revenir aux leçons</button></div>`;
+  $("tAgain").onclick = () => { session = buildSession(); trainQuestion(); };
+  $("tClose").onclick = closeTrain;
+}
+function trainBanner() {
+  const show = trainPool().length >= 3 && TR.last !== today() && $("train").hidden;
+  $("trainBanner").hidden = !show;
+}
+$("trainBtn").onclick = openTrain;
+$("bannerGo").onclick = openTrain;
+
+function soundLabel() { $("sound").textContent = FX.on ? "SON : OUI" : "SON : NON"; $("sound").setAttribute("aria-pressed", FX.on ? "true" : "false"); }
+$("sound").onclick = () => { FX.toggle(); soundLabel(); };
+soundLabel();
+$("pocketBtn").onclick = () => togglePocket($("pocket").hidden);
+
+function advance() { FX.play("page"); placed = []; st.s++; save(); render(); window.scrollTo({ top: 0 }); }
+
+$("back").onclick = () => {
+  if (!$("train").hidden) { closeTrain(); return; }
+  if (!$("pocket").hidden) { togglePocket(false); return; }
+  placed = [];
+  if (st.l >= LESSONS.length) { st.l = LESSONS.length - 1; st.s = LESSONS[st.l].steps.length - 1; }
+  else if (st.s > 0) st.s--;
+  else if (st.l > 0) { st.l--; st.s = LESSONS[st.l].steps.length - 1; }
+  save(); render();
+};
+let armed = false;
+$("restart").onclick = () => {
+  if (!armed) { armed = true; $("restart").textContent = "Clique encore pour confirmer"; setTimeout(() => { armed = false; $("restart").textContent = "Recommencer"; }, 3000); return; }
+  st = { l: 0, s: 0, done: [] }; placed = []; armed = false; $("restart").textContent = "Recommencer"; save(); render();
+};
+
+(async function boot() {
+  try {
+    SQL = await initSqlJs({ wasmBinary: Uint8Array.from(atob(WASM_B64), (c) => c.charCodeAt(0)) });
+    render();
+  } catch (e) { $("card").innerHTML = `<p>Le moteur n'a pas pu démarrer dans ce navigateur : ${esc(e.message)}</p>`; }
+})();
+</script>
+
+</body>
+</html>

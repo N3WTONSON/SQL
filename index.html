@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Le Grimoire des Requêtes</title>
+<link rel="icon" href="assets/logo-128.webp" type="image/webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Alegreya:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;600&family=Cinzel:wght@700&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="hud" aria-label="État du héros">
+    <div class="brand"><img src="assets/logo-128.webp" alt="" width="52" height="55"><div>Le Grimoire des Requêtes<small>L'aventure SQL</small></div></div>
+    <div class="stat">PV <div class="hearts" id="hearts" aria-live="polite"></div></div>
+    <div class="stat">NIV <span class="num" id="plevel">1</span> <div class="xpbar" title="Expérience"><i id="xpfill"></i></div> <span class="num" id="xp">0</span> XP</div>
+    <div class="stat"><span class="scroll-ico" aria-hidden="true"></span> <span class="num" id="scrolls">3</span> <span class="lbl">parchemins</span></div>
+    <div class="hudBtns"><a class="switchBtn" id="switchMode" href="premiers-pas.html" data-switch title="Passer au mode débutant, avec des blocs à cliquer"><span class="arr">⇄</span>Premiers pas</a>
+    <button class="soundBtn" id="sound" aria-pressed="true">SON : OUI</button></div>
+  </header>
+
+  <div class="grid">
+    <main class="col">
+      <section class="story" aria-live="polite">
+        <div class="label" id="lvlTag">Tutoriel</div>
+        <h1 id="lvlTitle">Chargement du grimoire…</h1>
+        <div id="lvlArt" class="lvlart"></div>
+        <p class="pitch" id="lvlPitch">Le moteur SQLite s'éveille dans ton navigateur.</p>
+        <div class="mission">
+          <div class="label">Mission</div>
+          <p id="lvlMission"></p>
+          <p id="lvlTables" class="tfr" style="margin-top:6px;font-style:normal"></p>
+        </div>
+        <div class="concept" id="lvlConcept"></div>
+        <details class="lesson" id="lesson" open>
+          <summary>Le savoir du grimoire : comprendre avant d'écrire</summary>
+          <div class="body" id="lessonBody"></div>
+        </details>
+      </section>
+
+      <section class="spellbox" aria-label="Éditeur de sortilèges">
+        <div class="spellbar">
+          <span class="label">Formule du sort</span>
+          <div class="kw" id="kw"></div>
+        </div>
+        <textarea id="sql" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" enterkeyhint="enter" aria-label="Requête SQL" placeholder="SELECT …"></textarea>
+        <div class="translate" id="translate" aria-live="polite"></div>
+        <div class="actions">
+          <button class="btn btn-cast" id="cast" disabled>Lancer le sort</button>
+          <button class="btn btn-ghost" id="hintBtn">Lire un parchemin</button>
+          <button class="btn btn-ghost" id="peek">Explorer (sans risque)</button>
+          <button class="btn btn-ghost" id="whyBtn" hidden>Pourquoi ? Décomposer</button>
+          <span class="kbd">Ctrl + Entrée pour lancer</span>
+        </div>
+      </section>
+
+      <section class="console" aria-label="Console de résultats">
+        <div class="head"><span class="label">Boule de cristal</span><span class="label" id="consoleMode"></span></div>
+        <div id="out"><div class="msg info">Écris ta formule puis lance le sort. Le bouton « Explorer » exécute une requête sans valider la mission et sans coûter de PV.</div></div>
+      </section>
+    </main>
+
+    <aside class="col">
+      <section class="panel" aria-label="Carte des quêtes">
+        <h2>Carte</h2>
+        <div class="map" id="map"></div>
+      </section>
+      <section class="panel" aria-label="Tables de la base">
+        <h2>Tables du royaume</h2>
+        <p class="about" style="margin:0;font-size:13px;color:var(--ink-dim)">Les noms sont en français, sans accents. Seuls les mots-clés (SELECT, FROM…) sont en anglais. Une flèche → indique un numéro qui renvoie vers une autre table.</p>
+        <div id="schema"></div>
+      </section>
+      <section class="panel" aria-label="Inventaire et badges">
+        <h2>Besace</h2>
+        <div class="loot" id="loot"></div>
+        <a class="reset" href="premiers-pas.html" target="_blank" rel="noopener" style="color:var(--arcane)">Revoir les bases : Premiers pas</a>
+        <button class="reset" id="reset">Recommencer l'aventure</button>
+      </section>
+    </aside>
+  </div>
+</div>
+
+<div class="overlay" id="overlay" hidden></div>
+
+<!-- Moteur SQLite (sql.js 1.10.3). Le binaire WebAssembly est aussi fourni en base64
+     pour que le jeu marche en ouvrant index.html directement (file://). -->
+<script src="vendor/sql-wasm.js"></script>
+<script src="vendor/sql-wasm-binary.js"></script>
+<!-- Jeu : scripts classiques (pas de modules), chargés dans cet ordre -->
+<script src="js/data/schema.js"></script>
+<script src="js/data/levels.js"></script>
+<script src="js/state.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/render.js"></script>
+<script src="js/actions.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
