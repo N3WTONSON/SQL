@@ -28,6 +28,7 @@ function cast() {
   try { got = write ? runWorld(L, q) : run(q, worldSetup(L)); }
   catch (e) {                                    // erreur de syntaxe : -1 PV
     attempt.fails += 1; if (L.daily) renderDailyBar();
+    if (L.blitz) { FX.play("bad"); $("out").innerHTML = `<div class="msg warn"><b>PRESQUE !</b>${esc(translateError(e.message))} Aucun PV perdu en défi éclair.</div>`; return; }
     state.hp -= 1; save(); renderHUD(true); FX.play("hit");
     document.querySelector(".spellbox").classList.remove("shake"); void document.body.offsetWidth;
     document.querySelector(".spellbox").classList.add("shake");
@@ -72,6 +73,7 @@ function cast() {
 }
 
 function victory(L) {
+  if (L.blitz) return blitzRight();
   if (L.daily) return dailyWin(L);
   const first = !state.completed.includes(L.id);
   const lvlBefore = playerLevel();
@@ -92,7 +94,10 @@ function victory(L) {
   const chapterEnd = !next || next.chapter !== L.chapter;
   if (first && chapterEnd) state.scrolls += 2;   // bonus de fin de chapitre
   ev.newCards = ALBUM.filter((c) => cardOwned(c) && !ownedBefore.has(c.k));
-  const extra = afterSuccess(ev);
+  let extra = afterSuccess(ev);
+  const gear = syncEquipment();
+  if (gear.length) extra += `<div class="xtra card">${avatarImg(40)} <b>Nouvel équipement pour ton héros :</b> ${gear.map((g) => `${g.ico} ${esc(g.name)}`).join(", ")}</div>`;
+  extra += nextStepsHTML();
   save(); renderHUD(); renderMap(); renderLoot();
   const levelUp = playerLevel() > lvlBefore;
   const chName = L.chapter.split(" · ")[0];
@@ -154,7 +159,7 @@ function showIntro() {
 
 function readScroll() {
   const L = curL();
-  if (L.daily) return;
+  if (L.daily || L.blitz) return;
   const used = state.hintsUsed[L.id] || 0;
   if (state.completed.includes(L.id) && attempt.hints < used) {      // mission rejouée : relire un parchemin déjà lu est gratuit (mais coûte les étoiles)
     attempt.hints += 1; FX.play("scroll");
@@ -261,19 +266,29 @@ function todayDaily() {
     mission: D.m, concept: D.c, starter: "", expected: D.q + ";", ordered: !!D.o, hints: [], xp: DAILY_XP, item: null, badge: null };
 }
 const daily = { active: false, L: null, started: 0 };
-const curL = () => (daily.active ? daily.L : LEVELS[state.current]);
+const curL = () => (blitz.active ? blitz.L : daily.active ? daily.L : LEVELS[state.current]);
+function stopModes() { daily.active = false; if (blitz.active) { blitz.active = false; clearInterval(blitz.timer); } }
 function dailyDone() { return state.daily && state.daily.date === dayKey() && state.daily.done ? state.daily : null; }
 function renderDailyBar() {
+  if (blitz.active) {
+    $("dailyBar").className = "dailybar blitzbar";
+    $("dailyBar").innerHTML = `<span class="dI" aria-hidden="true">⚡</span><div><b>Défi éclair · <span id="blitzScore">${blitz.score}</span> juste${blitz.score > 1 ? "s" : ""}</b><span>Question ${blitz.i + 1} · record ${(state.blitz && state.blitz.best) || 0} · aucun PV en jeu</span><div class="btime"><i id="blitzBar"></i></div></div>
+      <span class="bclock" id="blitzTime">3:00</span><button class="dbtn alt" id="blitzSkip">Passer ›</button><button class="dbtn alt" id="blitzQuit">Arrêter</button>`;
+    $("blitzSkip").onclick = blitzSkip; $("blitzQuit").onclick = () => endBlitz(true); tickBlitz(); return;
+  }
+  $("dailyBar").className = "dailybar";
   const D = todayDaily(), done = dailyDone();
   $("dailyBar").innerHTML = daily.active
     ? `<span class="dI" aria-hidden="true">🎯</span><div><b>Tu relèves le défi du jour</b><span>${esc(D.title)} · ${attempt.fails} essai(s) raté(s)</span></div><button class="dbtn alt" id="dailyLeave">← Revenir à ma mission</button>`
     : `<span class="dI" aria-hidden="true">🎯</span><div><b>Défi du jour : ${esc(D.title)}</b><span>${done ? `✅ Réussi ${done.tries === 0 ? "du premier coup" : `après ${done.tries} essai(s) raté(s)`} · reviens demain pour un nouveau défi` : `+${DAILY_XP} XP, +${DAILY_FIRST_TRY} XP si tu le réussis du premier coup · le même pour tous les joueurs`}</span></div>
-       ${done ? `<button class="dbtn alt" id="dailyRank">🏆 Classement du jour</button><button class="dbtn alt" id="dailyGo">Rejouer</button>` : `<button class="dbtn" id="dailyGo">Relever le défi</button>`}`;
+       ${done ? `<button class="dbtn alt" id="dailyRank">🏆 Classement du jour</button><button class="dbtn alt" id="dailyGo">Rejouer</button>` : `<button class="dbtn" id="dailyGo">Relever le défi</button>`}
+       ${daily.active ? "" : `<button class="dbtn alt blitzbtn" id="blitzGo" title="Facultatif : combien de requêtes justes en 3 minutes ?">⚡ Défi éclair${state.blitz && state.blitz.best ? ` · record ${state.blitz.best}` : ""}</button>`}`;
   $("dailyBar").classList.toggle("done", !!done && !daily.active);
   const go = $("dailyGo"), lv = $("dailyLeave"), rk = $("dailyRank");
-  if (go) go.onclick = () => { FX.play("cast"); daily.active = true; daily.L = todayDaily(); daily.started = Date.now(); renderLevel(); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  if (go) go.onclick = () => { FX.play("cast"); stopModes(); daily.active = true; daily.L = todayDaily(); daily.started = Date.now(); renderLevel(); window.scrollTo({ top: 0, behavior: "smooth" }); };
   if (lv) lv.onclick = () => { FX.play("page"); daily.active = false; renderLevel(); };
   if (rk) rk.onclick = () => openDailyRanking();
+  if ($("blitzGo")) $("blitzGo").onclick = () => { FX.play("page"); openBlitzIntro(); };
 }
 function dailyWin(L) {
   const prev = dailyDone(), secs = Math.max(1, Math.round((Date.now() - daily.started) / 1000)), tries = attempt.fails;
@@ -283,7 +298,9 @@ function dailyWin(L) {
     state.daily = { date: L.date, done: true, tries, secs };
     state.dailyCount = (state.dailyCount || 0) + 1;
   } else if (tries < prev.tries || (tries === prev.tries && secs < prev.secs)) state.daily = { date: L.date, done: true, tries, secs };   // meilleur score de la journée
-  const extra = afterSuccess({ daily: true, firstTry: tries === 0 });
+  let extra = afterSuccess({ daily: true, firstTry: tries === 0 });
+  const gear = syncEquipment(); if (gear.length) extra += `<div class="xtra card">🎒 Nouvel équipement : ${gear.map((g) => `${g.ico} ${esc(g.name)}`).join(", ")}</div>`;
+  extra += nextStepsHTML();
   save(); pushDaily(); renderHUD(); renderLoot();
   $("overlay").innerHTML = `<div class="card" role="dialog" aria-modal="true" aria-labelledby="vt">
       <h3 id="vt">🎯 Défi du jour réussi !</h3>
@@ -442,5 +459,157 @@ function renderEngage() {
   $("streak").textContent = n; $("streakStat").classList.toggle("off", n === 0);
   $("streakStat").title = n ? `Série de ${n} jour(s) d'affilée · record ${(state.streak && state.streak.best) || n} · joker ${state.streak && state.streak.jokerWeek === weekKey() ? "déjà utilisé cette semaine" : "disponible cette semaine"}` : "Réussis une mission aujourd'hui pour lancer ta série de jours";
   $("albumCount").textContent = `${albumCount()}/${ALBUM.length}`;
-  renderQuests(); renderDailyBar();
+  renderQuests(); renderDailyBar(); renderNextStep();
 }
+
+/* ---------- 6. AVATAR : le héros choisi par le joueur, et son équipement qui évolue avec le niveau ---------- */
+const AVATAR_HEROES = { 1: "Paladin", 2: "Guerrier", 3: "Mage", 4: "Voleur", 5: "Druide", 6: "Mage" };
+const HERO_NAMES = { 1: "Aria Lamebrume", 2: "Borin Barbe-de-Fer", 3: "Lyra Murmure-Vent", 4: "Kael Pas-Feutré", 5: "Mira Chantelune", 6: "Gédéon le Distrait" };
+const WEAPON = { Paladin: ["⚔️", "Épée bénie"], Guerrier: ["🪓", "Hache de guerre"], Mage: ["🪄", "Bâton de cristal"], Voleur: ["🗡️", "Dagues de l'ombre"], Druide: ["🌿", "Bâton de lierre"] };
+const ARMOR = { Paladin: "Armure de lumière", Guerrier: "Cotte de mailles", Mage: "Robe étoilée", Voleur: "Armure de cuir souple", Druide: "Armure d'écorce" };
+const gearFor = (cls) => [
+  { lvl: 3, slot: "Cape", ico: "🧥", name: "Cape de voyageur" },
+  { lvl: 6, slot: "Arme", ico: WEAPON[cls][0], name: WEAPON[cls][1] },
+  { lvl: 10, slot: "Armure", ico: "🛡️", name: ARMOR[cls] },
+  { lvl: 15, slot: "Amulette", ico: "📿", name: "Amulette des requêtes" },
+  { lvl: 20, slot: "Couronne", ico: "👑", name: "Couronne du Grimoire" },
+  { lvl: 30, slot: "Aura", ico: "✨", name: "Aura du Maître" }
+];
+const avatarTier = (lv) => (lv >= 30 ? "legend" : lv >= 15 ? "gold" : lv >= 6 ? "silver" : "bronze");
+const TIER_FR = { bronze: "cadre de bronze", silver: "cadre d'argent", gold: "cadre d'or", legend: "cadre légendaire" };
+const myGear = () => (state.avatar ? gearFor(AVATAR_HEROES[state.avatar]) : []);
+function syncEquipment() {        // donne dans la Besace l'équipement mérité par le niveau ; renvoie les nouvelles pièces
+  if (!state.avatar) return [];
+  const lv = playerLevel(), got = [];
+  myGear().forEach((g) => { if (lv >= g.lvl && !state.loot.some((l) => l.kind === "equip" && l.slot === g.slot)) { state.loot.push({ kind: "equip", slot: g.slot, name: `${g.ico} ${g.name}` }); got.push(g); } });
+  return got;
+}
+function avatarImg(size, cls = "") { return state.avatar ? `<img class="ava ${avatarTier(playerLevel())} ${cls}" src="${HERO_ART[state.avatar]}" alt="" style="width:${size}px;height:${size}px">` : ""; }
+function avatarHTML() {
+  if (!state.avatar) return `<button class="dbtn alt" id="pickAvatar">Choisir mon héros</button>`;
+  const lv = playerLevel(), gear = myGear(), tier = avatarTier(lv), next = gear.find((g) => lv < g.lvl);
+  return `<div class="avacard ${tier}">
+    <div class="avaimg">${avatarImg(96)}</div>
+    <div class="avainfo"><b>${esc(Players.current || "")}</b><span>joue ${esc(HERO_NAMES[state.avatar])} · ${esc(AVATAR_HEROES[state.avatar])} · niveau ${lv}</span>
+      <span class="tier">${TIER_FR[tier]}</span>
+      <div class="slots">${gear.map((g) => `<span class="slot ${lv >= g.lvl ? "on" : ""}" title="${esc(g.slot)} : ${esc(g.name)} (niveau ${g.lvl})">${lv >= g.lvl ? g.ico : "🔒"}</span>`).join("")}</div>
+      ${next ? `<span class="nextgear">Prochain équipement : ${next.ico} ${esc(next.name)} au niveau ${next.lvl}</span>` : `<span class="nextgear">Équipement complet !</span>`}
+      <button class="plink" id="changeAvatar">Changer de héros</button></div></div>`;
+}
+function openAvatarPicker(then) {
+  const old = document.getElementById("playerGate"); if (old) old.remove();
+  const g = document.createElement("div"); g.id = "playerGate"; g.className = "pgate";
+  g.innerHTML = `<div class="pcard albumcard" role="dialog" aria-modal="true" aria-labelledby="avTitle">
+    <h2 id="avTitle">Choisis ton héros</h2>
+    <p>Il t'accompagne dans toute l'aventure. En montant de niveau, il gagne une cape, une arme, une armure… qui arrivent dans ta Besace. Tu pourras en changer plus tard.</p>
+    <div class="agrid avagrid">${Object.keys(AVATAR_HEROES).map((id) => `<button class="avapick ${+id === state.avatar ? "sel" : ""}" data-ava="${id}"><img src="${HERO_ART[id]}" alt=""><b>${esc(HERO_NAMES[id])}</b><span>${esc(AVATAR_HEROES[id])}</span></button>`).join("")}</div>
+  </div>`;
+  document.body.appendChild(g);
+  g.querySelectorAll("[data-ava]").forEach((b) => b.onclick = () => {
+    const keep = state.loot.filter((l) => l.kind !== "equip");     // nouveau héros : son propre équipement
+    state.avatar = +b.dataset.ava; state.loot = keep; syncEquipment(); save(); FX.play("levelup");
+    g.remove(); showPlayer(); renderLoot(); renderHUD(); if (then) then();
+  });
+  setTimeout(() => g.querySelector(".avapick").focus(), 50);
+}
+
+/* ---------- 7. DÉFI ÉCLAIR ⚡ (facultatif) : un maximum de requêtes justes en 3 minutes ---------- */
+const BLITZ_SECS = 180, BLITZ_XP = 10;
+const NEED = [   // à partir de quelle mission chaque mot-clé est connu (calculé depuis les missions elles-mêmes)
+  /\bRANK\(\)/i, /\bUPPER\(/i, /\bMIN\(/i, /\bOR\b/i, /\bBETWEEN\b/i, /\bCASE\b/i, /\bLIKE\b/i, /\bDISTINCT\b/i, /\bIN \(/i,
+  /\bAVG\(/i, /\bHAVING\b/i, /\bLEFT JOIN\b/i, /\bSUM\(/i, /\bJOIN\b/i, /\bGROUP BY\b/i, /\bCOUNT\(/i, /\bLIMIT\b/i, /\bORDER BY\b/i, /\bWHERE\b/i
+].map((re) => ({ re, at: (LEVELS.find((L) => re.test(L.expected)) || { id: 99 }).id }));
+const blitzPool = () => {
+  const reach = Math.max(0, ...state.completed.map((x) => x + 1));
+  return DAILY_BANK.filter((D) => NEED.every((n) => !n.re.test(D.q) || n.at <= reach));
+};
+const blitz = { active: false, end: 0, score: 0, skips: 0, order: [], i: 0, timer: null, L: null };
+function blitzLevel() {
+  const D = blitz.order[blitz.i % blitz.order.length];
+  return { blitz: true, id: "eclair", kwId: 39, chapter: "⚡ Défi éclair · 3 minutes", title: D.t, pitch: "Le sablier est retourné ! Enchaîne un maximum de requêtes justes. Aucun PV perdu ici, et tu peux passer une question.",
+    mission: D.m, concept: D.c, starter: "", expected: D.q + ";", ordered: !!D.o, hints: [], xp: 0, item: null, badge: null };
+}
+function openBlitzIntro() {
+  const old = document.getElementById("playerGate"); if (old) old.remove();
+  const pool = blitzPool(), b = state.blitz || { best: 0, plays: 0 };
+  const g = document.createElement("div"); g.id = "playerGate"; g.className = "pgate";
+  g.innerHTML = `<div class="pcard" role="dialog" aria-modal="true" aria-labelledby="bzTitle">
+    <h2 id="bzTitle">⚡ Défi éclair</h2>
+    <p><b>Combien de requêtes justes en 3 minutes ?</b> Les questions sont tirées parmi les notions que tu as déjà vues (${pool.length} possibles).</p>
+    <p class="pnote">C'est facultatif et sans risque : aucun PV perdu, tu peux passer une question, et chaque bonne réponse rapporte ${BLITZ_XP} XP. Ton record : <b>${b.best}</b>.</p>
+    ${pool.length < 3 ? `<p class="perr">Réussis encore quelques missions pour débloquer le défi éclair.</p>` : `<div class="pbtns"><button class="pgo" id="bzGo">C'est parti !</button></div>`}
+    <button class="pclose" id="bzClose">Pas maintenant</button></div>`;
+  document.body.appendChild(g);
+  $("bzClose").onclick = () => g.remove();
+  if ($("bzGo")) { $("bzGo").onclick = () => { g.remove(); startBlitz(); }; setTimeout(() => $("bzGo").focus(), 50); }
+}
+function startBlitz() {
+  const pool = blitzPool().slice();
+  for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+  Object.assign(blitz, { active: true, end: Date.now() + BLITZ_SECS * 1000, score: 0, skips: 0, order: pool, i: 0 });
+  daily.active = false; blitz.L = blitzLevel(); FX.play("cast"); renderLevel(); $("sql").focus();
+  clearInterval(blitz.timer); blitz.timer = setInterval(tickBlitz, 250); tickBlitz();
+}
+function tickBlitz() {
+  if (!blitz.active) return;
+  const left = Math.max(0, Math.ceil((blitz.end - Date.now()) / 1000));
+  const t = $("blitzTime"); if (t) { t.textContent = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`; t.classList.toggle("hurry", left <= 20); }
+  const bar = $("blitzBar"); if (bar) bar.style.width = (left / BLITZ_SECS * 100) + "%";
+  if (left <= 0) endBlitz();
+}
+function blitzRight() { blitz.score += 1; FX.play("good"); burst($("dailyBar"), 12); blitz.i += 1; blitz.L = blitzLevel(); renderLevel(); $("sql").focus(); }
+function blitzSkip() { blitz.skips += 1; FX.play("unclick"); blitz.i += 1; blitz.L = blitzLevel(); renderLevel(); $("sql").focus(); }
+function endBlitz(quit) {
+  if (!blitz.active) return;
+  clearInterval(blitz.timer); blitz.active = false;
+  const b = state.blitz || (state.blitz = { best: 0, plays: 0 }), record = blitz.score > b.best;
+  b.plays += 1; if (record) b.best = blitz.score;
+  const gained = blitz.score * BLITZ_XP; state.xp += gained;
+  const gear = syncEquipment(); save(); renderHUD(); renderLoot(); renderLevel();
+  $("overlay").innerHTML = `<div class="card" role="dialog" aria-modal="true" aria-labelledby="bzEnd">
+    <h3 id="bzEnd">${quit ? "Défi éclair arrêté" : "⏳ Temps écoulé !"}</h3>
+    <div class="bigscore">${blitz.score}</div><p>requête${blitz.score > 1 ? "s" : ""} juste${blitz.score > 1 ? "s" : ""} en 3 minutes${blitz.skips ? ` · ${blitz.skips} passée(s)` : ""}</p>
+    <div class="rewards">${gained ? `<span class="x">+${gained} XP</span>` : ""}${record && blitz.score ? `<span class="b">Nouveau record !</span>` : `<span class="i">Record : ${b.best}</span>`}</div>
+    ${gear.length ? `<div class="xtra card">🎒 Nouvel équipement : ${gear.map((g) => `${g.ico} ${esc(g.name)}`).join(", ")}</div>` : ""}
+    <div class="btns"><button class="btn btn-cast" id="bzAgain">Rejouer</button><button class="btn btn-ghost" id="bzBack">Revenir à ma mission</button></div></div>`;
+  $("overlay").hidden = false;
+  setTimeout(() => { FX.play(record ? "levelup" : "win"); if (record) burst(document.querySelector("#overlay .card"), 24); }, 200);
+  $("bzAgain").onclick = () => { $("overlay").hidden = true; startBlitz(); };
+  $("bzBack").onclick = () => { $("overlay").hidden = true; renderLevel(); };
+  $("bzBack").focus();
+}
+
+/* ---------- 8. PROCHAIN PAS 🧭 : toujours un petit objectif visible ---------- */
+function nextSteps() {
+  const out = [], lv = playerLevel(), toNext = 150 - (state.xp % 150);
+  out.push({ ico: "⬆️", txt: `Il te manque ${toNext} XP pour le niveau ${lv + 1} !` });
+  const g = myGear().find((x) => lv < x.lvl);
+  if (g) out.push({ ico: g.ico, txt: `Encore ${g.lvl - lv} niveau${g.lvl - lv > 1 ? "x" : ""} pour gagner ${g.name}.` });
+  if (!state.avatar) out.push({ ico: "🛡️", txt: "Choisis ton héros dans la Besace : il gagnera de l'équipement en montant de niveau." });
+  const s = state.streak, today = dayKey();
+  if (s && s.last !== today && streakNow() > 0) out.push({ ico: "🔥", txt: `Réussis une mission aujourd'hui pour garder ta série de ${streakNow()} jour${streakNow() > 1 ? "s" : ""}.` });
+  else if (s && s.last === today && s.n % 7) out.push({ ico: "🔥", txt: `Encore ${7 - (s.n % 7)} jour${7 - (s.n % 7) > 1 ? "s" : ""} d'affilée pour la récompense de la série.` });
+  if (!dailyDone()) out.push({ ico: "🎯", txt: `Le défi du jour t'attend : +${DAILY_XP} XP.` });
+  const Q = state.quests && state.quests.week === weekKey() ? state.quests : null;
+  if (Q) Q.list.filter((q) => !q.done).sort((a, b) => (b.n / b.goal) - (a.n / a.goal)).slice(0, 1).forEach((q) => out.push({ ico: "📋", txt: `Quête : encore ${q.goal - q.n} pour « ${q.txt} ».` }));
+  const missing = ALBUM.filter((c) => !cardOwned(c));
+  ["monstres", "heros", "chateaux"].forEach((kind) => {
+    const m = missing.filter((c) => c.kind === kind); if (!m.length || m.length > 2) return;
+    const word = { monstres: ["monstre", "monstres"], heros: ["héros", "héros"], chateaux: ["château", "châteaux"] }[kind];
+    out.push({ ico: "📒", txt: `Encore ${m.length} ${word[m.length > 1 ? 1 : 0]} pour compléter l'album : réussis « ${LEVELS[m[0].lv].title} ».` });
+  });
+  if (missing.length > 2) out.push({ ico: "📒", txt: `Prochaine carte de l'album : réussis « ${LEVELS[Math.min(...missing.map((c) => c.lv))].title} ».` });
+  const low = LEVELS.filter((L) => state.completed.includes(L.id) && levelStars(L.id) < 3);
+  if (low.length) out.push({ ico: "⭐", txt: `${low.length} mission${low.length > 1 ? "s" : ""} à rejouer pour les 3 étoiles, par exemple « ${low[0].title} ».` });
+  return out;
+}
+let stepIdx = 0, stepTimer = null;
+function renderNextStep() {
+  const el = $("nextStep"); if (!el) return;
+  const steps = nextSteps(); if (!steps.length) { el.hidden = true; return; }
+  el.hidden = false; stepIdx = stepIdx % steps.length; const s = steps[stepIdx];
+  el.innerHTML = `<span class="nsI" aria-hidden="true">🧭</span><span class="nsT"><b>Prochain pas</b> ${s.ico} ${esc(s.txt)}</span>${steps.length > 1 ? `<button class="nsB" id="nsMore" title="Objectif suivant" aria-label="Objectif suivant">${stepIdx + 1}/${steps.length} ›</button>` : ""}`;
+  if ($("nsMore")) $("nsMore").onclick = () => { stepIdx += 1; FX.play("click"); renderNextStep(); };
+  clearInterval(stepTimer); stepTimer = setInterval(() => { stepIdx += 1; renderNextStep(); }, 9000);
+}
+const nextStepsHTML = () => { const s = nextSteps().slice(0, 2); return s.length ? `<div class="xtra next">🧭 <b>Prochain pas :</b> ${s.map((x) => `${x.ico} ${esc(x.txt)}`).join("<br>")}</div>` : ""; };

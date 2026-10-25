@@ -11,7 +11,7 @@ function wire() {
       $("out").scrollIntoView({ block: "nearest" }); return; }
     if (e.target.closest("#whyNext")) { const n = LEVELS[state.current + 1]; if (n) { daily.active = false; state.current = n.id; save(); renderMap(); renderLevel(); window.scrollTo({ top: 0 }); } return; }
     const lv = e.target.closest(".lvl[data-lvl]:not(.locked)");
-    if (lv) { daily.active = false; state.current = +lv.dataset.lvl; save(); renderMap(); renderLevel(); }
+    if (lv) { stopModes(); state.current = +lv.dataset.lvl; save(); renderMap(); renderLevel(); }
   });
   $("cast").onclick = cast;
   // Colonne de droite : épinglée (toujours visible) ou repliée en barre d'icônes ; chaque appareil s'en souvient
@@ -80,6 +80,7 @@ function wire() {
     $("cast").disabled = false;
     if (Players.current) pushScore(true);          // le classement en ligne connaît le dernier score
     if (!Players.current) openPlayers(true);       // premier accès : on demande le nom du joueur
+    else if (!state.avatar) openAvatarPicker(() => { if (!state.seenIntro) showIntro(); });
     else if (!state.seenIntro) showIntro();
   } catch (e) {
     $("lvlTitle").textContent = "Le grimoire refuse de s'ouvrir";

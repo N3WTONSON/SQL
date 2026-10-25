@@ -238,11 +238,12 @@ async function openRanking() {
   $("rkClose").onclick = close; g.addEventListener("click", (e) => { if (e.target === g) close(); });
   setTimeout(() => $("rkClose").focus(), 50);
 }
-function showPlayer() { $("playerName").textContent = Players.current || "Joueur"; }
+function showPlayer() { $("playerName").textContent = Players.current || "Joueur"; $("playerIco").innerHTML = state.avatar ? avatarImg(26, "mini") : "👤"; }
 function openPlayers(first) {
   playerGate({ summary: gameSummary, bases: [SAVE_KEY], legacy: [SAVE_KEY], canClose: !first,
-    onChoose: () => { daily.active = false; attempt = { key: null, fails: 0, hints: 0 }; loadState(); showPlayer(); pushScore(true); buildDictionary(LEVELS[state.current]); renderHUD(); renderMap(); renderLoot(); renderSchema(); renderLevel(); FX.play("levelup");
-      if (!state.seenIntro) showIntro(); } });
+    onChoose: () => { stopModes(); attempt = { key: null, fails: 0, hints: 0 }; loadState(); showPlayer(); pushScore(true); buildDictionary(LEVELS[state.current]); renderHUD(); renderMap(); renderLoot(); renderSchema(); renderLevel(); FX.play("levelup");
+      const intro = () => { if (!state.seenIntro) showIntro(); };
+      if (!state.avatar) openAvatarPicker(intro); else intro(); } });
 }
 
 let SQL = null;

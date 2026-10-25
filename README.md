@@ -198,6 +198,17 @@ Les pages publiées sur claude.ai restent en classement local (elles ne peuvent 
 - **📒 Album** : 18 cartes (6 héros, 9 monstres, 3 châteaux) débloquées par des missions ; les cartes manquantes
   sont floues avec « ? » et disent quelle mission réussir. Une nouvelle carte s'affiche sur l'écran de victoire.
 
+- **🛡️ Avatar** : au premier accès, le joueur choisit son héros parmi les 6 (Paladin, Guerrier, Mage, Voleur,
+  Druide). Son portrait s'affiche à côté de son nom, avec un cadre qui change avec le niveau (bronze, argent au
+  niveau 6, or au niveau 15, légendaire au niveau 30). L'équipement arrive dans la Besace en montant de niveau :
+  cape (niveau 3), arme selon la classe (6), armure (10), amulette (15), couronne (20), aura (30).
+  « Changer de héros » est possible à tout moment dans la Besace.
+- **⚡ Défi éclair (facultatif)** : « Combien de requêtes justes en 3 minutes ? ». Les questions sont tirées parmi
+  les notions déjà vues ; aucun PV perdu, on peut passer une question ; 10 XP par bonne réponse et un record personnel.
+- **🧭 Prochain pas** : un bandeau sous le défi du jour montre toujours un petit objectif (« Il te manque 40 XP pour
+  le niveau 12 ! », « Encore 1 monstre pour compléter l'album », « Encore 2 niveaux pour l'armure »…), avec un
+  bouton pour passer au suivant ; les deux plus proches s'affichent aussi sur l'écran de victoire.
+
 Ces informations font partie de la partie du joueur : elles voyagent avec le code de sauvegarde.
 Pour le classement du défi du jour en ligne, il faut la **nouvelle version** de `classement/Code.gs` : remplace le
 code dans Apps Script, puis **Déployer → Gérer les déploiements → Modifier → Nouvelle version** (l'adresse ne change pas).

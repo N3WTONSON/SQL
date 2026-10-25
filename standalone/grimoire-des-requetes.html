@@ -116,7 +116,8 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .pcard.albumcard h2, .pcard.albumcard > p { text-align: center; }
 .asec { margin: 8px 0 0; font-family: var(--f-display); font-weight: 400; font-size: 22px; color: var(--torch); }
 .agrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
-.agrid.mini { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); margin-top: 8px; }
+.agrid.mini { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); margin-top: 8px; }
+.agrid.mini .acard figcaption span { display: none; }
 .acard { margin: 0; position: relative; border: 2px solid var(--torch-deep); border-radius: 8px; overflow: hidden; background: var(--night); }
 .acard img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
 .acard.chateaux img { aspect-ratio: 720 / 411; }
@@ -131,6 +132,52 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .anew { position: absolute; top: 6px; right: 6px; font-family: var(--f-hud); font-size: 10px; padding: 2px 6px; background: var(--torch); color: #1a1206; }
 @keyframes cardIn { from { transform: rotateY(90deg) scale(0.8); opacity: 0; } to { transform: none; opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .bigstars span, .acard.new { animation: none; } }
+.ava { border-radius: 50%; object-fit: cover; object-position: center 20%; border: 3px solid #b07440; box-shadow: 0 0 0 2px var(--night); flex: none; }
+.ava.silver { border-color: #c9d1e0; box-shadow: 0 0 10px rgba(201, 209, 224, 0.5); }
+.ava.gold { border-color: #f7d36b; box-shadow: 0 0 14px rgba(247, 211, 107, 0.7); }
+.ava.legend { border-color: #c792ea; box-shadow: 0 0 18px rgba(199, 146, 234, 0.9), 0 0 4px #66c9ff; animation: auraPulse 2.4s ease-in-out infinite; }
+.ava.mini { border-width: 2px; vertical-align: middle; }
+@keyframes auraPulse { 50% { box-shadow: 0 0 26px rgba(199, 146, 234, 1), 0 0 8px #66c9ff; } }
+.avacard { grid-column: 1 / -1; display: flex; gap: 12px; align-items: center; padding: 10px; border: 1px solid var(--seam); background: var(--stone-2); margin-bottom: 8px; }
+.avaimg { flex: none; }
+.avagrid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+@media (max-width: 520px) { .avagrid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } }
+#loot > .dbtn { grid-column: 1 / -1; }
+.avainfo { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.avainfo b { color: var(--torch); font-size: 18px; }
+.avainfo span { font-size: 13px; color: var(--ink-dim); }
+.avainfo .tier { font-family: var(--f-hud); font-size: 11px; letter-spacing: 1px; color: var(--ink); }
+.slots { display: flex; gap: 4px; flex-wrap: wrap; margin: 2px 0; }
+.slot { width: 30px; height: 30px; display: grid; place-items: center; border: 1px dashed var(--seam); font-size: 16px; opacity: 0.5; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+.slot.on { border-style: solid; border-color: var(--torch); opacity: 1; background: var(--night); }
+.nextgear { font-size: 12px !important; color: var(--arcane) !important; }
+.plink { align-self: flex-start; background: none; border: 0; padding: 0; color: var(--arcane); text-decoration: underline; cursor: pointer; font: inherit; font-size: 13px; min-height: 28px; }
+.item.equip { border-color: var(--torch-deep); }
+.avapick { display: flex; flex-direction: column; gap: 4px; padding: 0 0 8px; background: var(--night); border: 2px solid var(--seam); border-radius: 8px; overflow: hidden; cursor: pointer; color: var(--ink); font: inherit; text-align: center; }
+.avapick img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.avapick b { color: var(--torch); font-size: 15px; padding: 0 6px; }
+.avapick span { font-family: var(--f-code); font-size: 12px; color: var(--ink-dim); }
+.avapick:hover, .avapick:focus-visible { border-color: var(--torch); outline: none; transform: translateY(-2px); }
+.avapick.sel { border-color: var(--rune); }
+.blitzbar { border-color: var(--arcane); background: linear-gradient(90deg, rgba(102, 201, 255, 0.14), rgba(102, 201, 255, 0.02)); }
+.blitzbar b { color: var(--arcane) !important; }
+.btime { height: 6px; background: var(--stone-2); border: 1px solid var(--seam); position: relative; margin-top: 4px; }
+.btime i { position: absolute; inset: 0 auto 0 0; background: var(--arcane); transition: width .25s linear; }
+.bclock { font-family: var(--f-code); font-size: 30px; font-weight: 700; color: var(--ink); min-width: 74px; text-align: center; }
+.bclock.hurry { color: var(--blood); animation: hurry 1s ease-in-out infinite; }
+@keyframes hurry { 50% { transform: scale(1.08); } }
+.blitzbtn { border-color: var(--arcane) !important; color: var(--arcane) !important; }
+.bigscore { font-family: var(--f-display); font-size: 72px; line-height: 1; color: var(--arcane); }
+.nextstep { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border: 1px dashed var(--seam); background: var(--stone); font-size: 15px; animation: rise 0.4s ease-out; }
+.nextstep .nsI { font-size: 20px; }
+.nextstep .nsT { flex: 1; }
+.nextstep .nsT b { color: var(--arcane); font-family: var(--f-hud); font-size: 12px; letter-spacing: 1px; margin-right: 6px; }
+.nsB { background: none; border: 1px solid var(--seam); color: var(--ink-dim); cursor: pointer; min-height: 32px; padding: 0 10px; font-family: var(--f-code); font-size: 12px; }
+.nsB:hover { border-color: var(--arcane); color: var(--arcane); }
+.xtra.next { border-color: var(--arcane); border-style: dashed; }
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (pointer: coarse) { .nsB { min-height: 44px; } .plink { min-height: 40px; } }
+@media (prefers-reduced-motion: reduce) { .ava.legend, .bclock.hurry, .nextstep { animation: none; } }
 /* ---------- Colonne de droite : épinglée, ou repliée en barre sur le côté ---------- */
 .railBar { display: flex; gap: 6px; }
 .railBtn { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 4px 10px; background: var(--stone); border: 1px solid var(--seam); color: var(--ink); cursor: pointer; font-family: var(--f-hud); font-size: 12px; letter-spacing: 0.8px; }
@@ -351,7 +398,10 @@ table.res tr.chg td:first-child { box-shadow: inset 3px 0 0 var(--arcane); }
 .reset { align-self: flex-start; font-family: var(--f-hud); font-size: 11px; color: var(--ink-dim); background: none; border: 0; cursor: pointer; text-decoration: underline; padding: 0; }
 
 /* ---------- victoire / KO ---------- */
-.overlay { position: fixed; inset: 0; background: rgba(8,9,13,.82); display: grid; place-items: center; z-index: 20; padding: 16px; }
+.overlay { position: fixed; inset: 0; background: rgba(8,9,13,.82); display: flex; z-index: 20; padding: 16px; overflow-y: auto; overscroll-behavior: contain; }
+.overlay > .card { margin: auto; }
+.pgate { display: flex !important; overflow-y: auto; }
+.pgate > .pcard { margin: auto; }
 .card { background: var(--stone); border: 2px solid var(--torch); max-width: 460px; width: 100%; padding: 26px; display: flex; flex-direction: column; gap: 12px; text-align: center; animation: rise .4s ease-out; }
 .card.ko { border-color: var(--blood); }
 .card h3 { font-family: var(--f-display); font-weight: 400; font-size: 34px; margin: 0; color: var(--torch); line-height: 1; }
@@ -491,13 +541,14 @@ table.rank .you { font-family: var(--f-hud); font-size: 11px; color: var(--night
     <div class="stat streakStat" id="streakStat"><span class="fireI" aria-hidden="true">🔥</span> <span class="num" id="streak">0</span></div>
     <div class="stat" title="Parchemins : chacun donne un indice"><span class="scroll-emo" aria-hidden="true">📜</span> <span class="num" id="scrolls">3</span> <span class="lbl">parchemins</span></div>
     </div>
-    <div class="hudBtns"><button class="playerBtn" id="albumBtn" title="Mon album de cartes" aria-label="Mon album de cartes"><span aria-hidden="true">📒</span><b>Album <span id="albumCount"></span></b></button><button class="playerBtn" id="rankBtn" title="Classement des joueurs" aria-label="Classement des joueurs"><span aria-hidden="true">🏆</span><b>Classement</b></button><button class="playerBtn" id="playerBtn" title="Changer de joueur" aria-label="Changer de joueur"><span aria-hidden="true">👤</span><b id="playerName">…</b></button><a class="switchBtn" id="switchMode" href="premiers-pas.html" target="_blank" rel="noopener" data-switch title="Passer au mode débutant, avec des blocs à cliquer"><span class="arr">⇄</span>Premiers pas</a>
+    <div class="hudBtns"><button class="playerBtn" id="albumBtn" title="Mon album de cartes" aria-label="Mon album de cartes"><span aria-hidden="true">📒</span><b>Album <span id="albumCount"></span></b></button><button class="playerBtn" id="rankBtn" title="Classement des joueurs" aria-label="Classement des joueurs"><span aria-hidden="true">🏆</span><b>Classement</b></button><button class="playerBtn" id="playerBtn" title="Changer de joueur" aria-label="Changer de joueur"><span aria-hidden="true" id="playerIco">👤</span><b id="playerName">…</b></button><a class="switchBtn" id="switchMode" href="premiers-pas.html" target="_blank" rel="noopener" data-switch title="Passer au mode débutant, avec des blocs à cliquer"><span class="arr">⇄</span>Premiers pas</a>
     <button class="soundBtn" id="sound" aria-pressed="true">SON : OUI</button></div>
   </header>
 
   <div class="grid">
     <main class="col">
       <div class="dailybar" id="dailyBar"></div>
+      <div class="nextstep" id="nextStep" hidden aria-live="polite"></div>
       <section class="story" aria-live="polite">
         <div class="label" id="lvlTag">Tutoriel</div>
         <h1 id="lvlTitle">Chargement du grimoire…</h1>
@@ -2113,11 +2164,12 @@ async function openRanking() {
   $("rkClose").onclick = close; g.addEventListener("click", (e) => { if (e.target === g) close(); });
   setTimeout(() => $("rkClose").focus(), 50);
 }
-function showPlayer() { $("playerName").textContent = Players.current || "Joueur"; }
+function showPlayer() { $("playerName").textContent = Players.current || "Joueur"; $("playerIco").innerHTML = state.avatar ? avatarImg(26, "mini") : "👤"; }
 function openPlayers(first) {
   playerGate({ summary: gameSummary, bases: [SAVE_KEY], legacy: [SAVE_KEY], canClose: !first,
-    onChoose: () => { daily.active = false; attempt = { key: null, fails: 0, hints: 0 }; loadState(); showPlayer(); pushScore(true); buildDictionary(LEVELS[state.current]); renderHUD(); renderMap(); renderLoot(); renderSchema(); renderLevel(); FX.play("levelup");
-      if (!state.seenIntro) showIntro(); } });
+    onChoose: () => { stopModes(); attempt = { key: null, fails: 0, hints: 0 }; loadState(); showPlayer(); pushScore(true); buildDictionary(LEVELS[state.current]); renderHUD(); renderMap(); renderLoot(); renderSchema(); renderLevel(); FX.play("levelup");
+      const intro = () => { if (!state.seenIntro) showIntro(); };
+      if (!state.avatar) openAvatarPicker(intro); else intro(); } });
 }
 
 let SQL = null;
@@ -2761,10 +2813,11 @@ function renderHUD(hit) {
   $("railMap").textContent = `${state.completed.length}/${LEVELS.length}`;
   $("railLoot").textContent = state.loot.length ? `${state.loot.length}` : "";
   $("lootInfo").textContent = `${state.loot.filter((l) => l.kind === "item").length} objets · ${state.loot.filter((l) => l.kind === "badge").length} badges`;
+  if (state.avatar && document.getElementById("playerIco")) showPlayer();
   $("tablesInfo").textContent = LEVELS[state.current].id >= 25 ? "6 tables" : "5 tables";
   renderEngage();
   { const L = curL(), used = state.hintsUsed[L.id] || 0;
-    $("hintBtn").disabled = !!L.daily || (state.scrolls <= 0 && !(state.completed.includes(L.id) && attempt.hints < used)); }
+    $("hintBtn").disabled = !!L.daily || !!L.blitz || (state.scrolls <= 0 && !(state.completed.includes(L.id) && attempt.hints < used)); }
 }
 
 function renderTranslate() {
@@ -2826,7 +2879,7 @@ function showWhy(L) {
 
 function renderLevel() {
   const L = curL();
-  startAttempt(L.daily ? "defi-" + L.date : L.id);
+  startAttempt(L.blitz ? "eclair-" + blitz.i : L.daily ? "defi-" + L.date : L.id);
   $("dailyBar").hidden = false; renderDailyBar();
   $("lvlTag").textContent = L.chapter;
   $("lvlTitle").textContent = L.title;
@@ -2860,7 +2913,9 @@ function renderLevel() {
   renderTranslate();
   $("kw").innerHTML = keywordsFor(L).map((k) => `<button data-ins="${k}">${k}</button>`).join("");
   const used = state.hintsUsed[L.id] || 0, replay = state.completed.includes(L.id), st = levelStars(L.id);
-  $("out").innerHTML = L.daily
+  $("out").innerHTML = L.blitz
+    ? `<div class="msg info"><b>DÉFI ÉCLAIR</b>Écris la requête et lance le sort. Une erreur ne coûte rien : corrige ou passe la question.</div>`
+    : L.daily
     ? `<div class="msg info"><b>DÉFI DU JOUR</b>Pas de parchemin aujourd'hui : utilise le traducteur sous l'éditeur et « Explorer » pour tester. Chaque sort raté compte comme un essai.</div>`
     : replay
     ? `<div class="msg info"><b>${st === 3 ? "⭐⭐⭐ MISSION PARFAITE" : `REJOUE POUR LES 3 ÉTOILES · TON RECORD : ${starsTxt(st)}`}</b>${st === 3 ? "Tu peux la rejouer pour t'entraîner." : "⭐ réussir · ⭐⭐ sans parchemin · ⭐⭐⭐ sans parchemin et du premier coup."}${used ? " Tes parchemins déjà lus se relisent gratuitement, mais ils font perdre les étoiles." : ""}</div>`
@@ -2948,9 +3003,11 @@ function renderSchema() {
 }
 
 function renderLoot() {
-  $("loot").innerHTML = state.loot.length
-    ? state.loot.map((l) => `<div class="item ${l.kind === "badge" ? "badge" : ""}"><span class="k">${l.kind === "badge" ? "BADGE" : "OBJET"}</span>${esc(l.name)}</div>`).join("")
-    : `<p class="empty">Ta besace est vide. Réussis une mission pour la remplir.</p>`;
+  const order = { equip: 0, badge: 1, item: 2 };
+  $("loot").innerHTML = avatarHTML() + (state.loot.length
+    ? state.loot.slice().sort((a, b) => order[a.kind] - order[b.kind]).map((l) => `<div class="item ${l.kind === "badge" ? "badge" : l.kind === "equip" ? "equip" : ""}"><span class="k">${l.kind === "badge" ? "BADGE" : l.kind === "equip" ? "ÉQUIPEMENT · " + esc(l.slot).toUpperCase() : "OBJET"}</span>${esc(l.name)}</div>`).join("")
+    : `<p class="empty">Ta besace est vide. Réussis une mission pour la remplir.</p>`);
+  const pa = $("pickAvatar") || $("changeAvatar"); if (pa) pa.onclick = () => openAvatarPicker();
 }
 
 function table(res) {
@@ -3005,6 +3062,7 @@ function cast() {
   try { got = write ? runWorld(L, q) : run(q, worldSetup(L)); }
   catch (e) {                                    // erreur de syntaxe : -1 PV
     attempt.fails += 1; if (L.daily) renderDailyBar();
+    if (L.blitz) { FX.play("bad"); $("out").innerHTML = `<div class="msg warn"><b>PRESQUE !</b>${esc(translateError(e.message))} Aucun PV perdu en défi éclair.</div>`; return; }
     state.hp -= 1; save(); renderHUD(true); FX.play("hit");
     document.querySelector(".spellbox").classList.remove("shake"); void document.body.offsetWidth;
     document.querySelector(".spellbox").classList.add("shake");
@@ -3049,6 +3107,7 @@ function cast() {
 }
 
 function victory(L) {
+  if (L.blitz) return blitzRight();
   if (L.daily) return dailyWin(L);
   const first = !state.completed.includes(L.id);
   const lvlBefore = playerLevel();
@@ -3069,7 +3128,10 @@ function victory(L) {
   const chapterEnd = !next || next.chapter !== L.chapter;
   if (first && chapterEnd) state.scrolls += 2;   // bonus de fin de chapitre
   ev.newCards = ALBUM.filter((c) => cardOwned(c) && !ownedBefore.has(c.k));
-  const extra = afterSuccess(ev);
+  let extra = afterSuccess(ev);
+  const gear = syncEquipment();
+  if (gear.length) extra += `<div class="xtra card">${avatarImg(40)} <b>Nouvel équipement pour ton héros :</b> ${gear.map((g) => `${g.ico} ${esc(g.name)}`).join(", ")}</div>`;
+  extra += nextStepsHTML();
   save(); renderHUD(); renderMap(); renderLoot();
   const levelUp = playerLevel() > lvlBefore;
   const chName = L.chapter.split(" · ")[0];
@@ -3131,7 +3193,7 @@ function showIntro() {
 
 function readScroll() {
   const L = curL();
-  if (L.daily) return;
+  if (L.daily || L.blitz) return;
   const used = state.hintsUsed[L.id] || 0;
   if (state.completed.includes(L.id) && attempt.hints < used) {      // mission rejouée : relire un parchemin déjà lu est gratuit (mais coûte les étoiles)
     attempt.hints += 1; FX.play("scroll");
@@ -3238,19 +3300,29 @@ function todayDaily() {
     mission: D.m, concept: D.c, starter: "", expected: D.q + ";", ordered: !!D.o, hints: [], xp: DAILY_XP, item: null, badge: null };
 }
 const daily = { active: false, L: null, started: 0 };
-const curL = () => (daily.active ? daily.L : LEVELS[state.current]);
+const curL = () => (blitz.active ? blitz.L : daily.active ? daily.L : LEVELS[state.current]);
+function stopModes() { daily.active = false; if (blitz.active) { blitz.active = false; clearInterval(blitz.timer); } }
 function dailyDone() { return state.daily && state.daily.date === dayKey() && state.daily.done ? state.daily : null; }
 function renderDailyBar() {
+  if (blitz.active) {
+    $("dailyBar").className = "dailybar blitzbar";
+    $("dailyBar").innerHTML = `<span class="dI" aria-hidden="true">⚡</span><div><b>Défi éclair · <span id="blitzScore">${blitz.score}</span> juste${blitz.score > 1 ? "s" : ""}</b><span>Question ${blitz.i + 1} · record ${(state.blitz && state.blitz.best) || 0} · aucun PV en jeu</span><div class="btime"><i id="blitzBar"></i></div></div>
+      <span class="bclock" id="blitzTime">3:00</span><button class="dbtn alt" id="blitzSkip">Passer ›</button><button class="dbtn alt" id="blitzQuit">Arrêter</button>`;
+    $("blitzSkip").onclick = blitzSkip; $("blitzQuit").onclick = () => endBlitz(true); tickBlitz(); return;
+  }
+  $("dailyBar").className = "dailybar";
   const D = todayDaily(), done = dailyDone();
   $("dailyBar").innerHTML = daily.active
     ? `<span class="dI" aria-hidden="true">🎯</span><div><b>Tu relèves le défi du jour</b><span>${esc(D.title)} · ${attempt.fails} essai(s) raté(s)</span></div><button class="dbtn alt" id="dailyLeave">← Revenir à ma mission</button>`
     : `<span class="dI" aria-hidden="true">🎯</span><div><b>Défi du jour : ${esc(D.title)}</b><span>${done ? `✅ Réussi ${done.tries === 0 ? "du premier coup" : `après ${done.tries} essai(s) raté(s)`} · reviens demain pour un nouveau défi` : `+${DAILY_XP} XP, +${DAILY_FIRST_TRY} XP si tu le réussis du premier coup · le même pour tous les joueurs`}</span></div>
-       ${done ? `<button class="dbtn alt" id="dailyRank">🏆 Classement du jour</button><button class="dbtn alt" id="dailyGo">Rejouer</button>` : `<button class="dbtn" id="dailyGo">Relever le défi</button>`}`;
+       ${done ? `<button class="dbtn alt" id="dailyRank">🏆 Classement du jour</button><button class="dbtn alt" id="dailyGo">Rejouer</button>` : `<button class="dbtn" id="dailyGo">Relever le défi</button>`}
+       ${daily.active ? "" : `<button class="dbtn alt blitzbtn" id="blitzGo" title="Facultatif : combien de requêtes justes en 3 minutes ?">⚡ Défi éclair${state.blitz && state.blitz.best ? ` · record ${state.blitz.best}` : ""}</button>`}`;
   $("dailyBar").classList.toggle("done", !!done && !daily.active);
   const go = $("dailyGo"), lv = $("dailyLeave"), rk = $("dailyRank");
-  if (go) go.onclick = () => { FX.play("cast"); daily.active = true; daily.L = todayDaily(); daily.started = Date.now(); renderLevel(); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  if (go) go.onclick = () => { FX.play("cast"); stopModes(); daily.active = true; daily.L = todayDaily(); daily.started = Date.now(); renderLevel(); window.scrollTo({ top: 0, behavior: "smooth" }); };
   if (lv) lv.onclick = () => { FX.play("page"); daily.active = false; renderLevel(); };
   if (rk) rk.onclick = () => openDailyRanking();
+  if ($("blitzGo")) $("blitzGo").onclick = () => { FX.play("page"); openBlitzIntro(); };
 }
 function dailyWin(L) {
   const prev = dailyDone(), secs = Math.max(1, Math.round((Date.now() - daily.started) / 1000)), tries = attempt.fails;
@@ -3260,7 +3332,9 @@ function dailyWin(L) {
     state.daily = { date: L.date, done: true, tries, secs };
     state.dailyCount = (state.dailyCount || 0) + 1;
   } else if (tries < prev.tries || (tries === prev.tries && secs < prev.secs)) state.daily = { date: L.date, done: true, tries, secs };   // meilleur score de la journée
-  const extra = afterSuccess({ daily: true, firstTry: tries === 0 });
+  let extra = afterSuccess({ daily: true, firstTry: tries === 0 });
+  const gear = syncEquipment(); if (gear.length) extra += `<div class="xtra card">🎒 Nouvel équipement : ${gear.map((g) => `${g.ico} ${esc(g.name)}`).join(", ")}</div>`;
+  extra += nextStepsHTML();
   save(); pushDaily(); renderHUD(); renderLoot();
   $("overlay").innerHTML = `<div class="card" role="dialog" aria-modal="true" aria-labelledby="vt">
       <h3 id="vt">🎯 Défi du jour réussi !</h3>
@@ -3419,8 +3493,160 @@ function renderEngage() {
   $("streak").textContent = n; $("streakStat").classList.toggle("off", n === 0);
   $("streakStat").title = n ? `Série de ${n} jour(s) d'affilée · record ${(state.streak && state.streak.best) || n} · joker ${state.streak && state.streak.jokerWeek === weekKey() ? "déjà utilisé cette semaine" : "disponible cette semaine"}` : "Réussis une mission aujourd'hui pour lancer ta série de jours";
   $("albumCount").textContent = `${albumCount()}/${ALBUM.length}`;
-  renderQuests(); renderDailyBar();
+  renderQuests(); renderDailyBar(); renderNextStep();
 }
+
+/* ---------- 6. AVATAR : le héros choisi par le joueur, et son équipement qui évolue avec le niveau ---------- */
+const AVATAR_HEROES = { 1: "Paladin", 2: "Guerrier", 3: "Mage", 4: "Voleur", 5: "Druide", 6: "Mage" };
+const HERO_NAMES = { 1: "Aria Lamebrume", 2: "Borin Barbe-de-Fer", 3: "Lyra Murmure-Vent", 4: "Kael Pas-Feutré", 5: "Mira Chantelune", 6: "Gédéon le Distrait" };
+const WEAPON = { Paladin: ["⚔️", "Épée bénie"], Guerrier: ["🪓", "Hache de guerre"], Mage: ["🪄", "Bâton de cristal"], Voleur: ["🗡️", "Dagues de l'ombre"], Druide: ["🌿", "Bâton de lierre"] };
+const ARMOR = { Paladin: "Armure de lumière", Guerrier: "Cotte de mailles", Mage: "Robe étoilée", Voleur: "Armure de cuir souple", Druide: "Armure d'écorce" };
+const gearFor = (cls) => [
+  { lvl: 3, slot: "Cape", ico: "🧥", name: "Cape de voyageur" },
+  { lvl: 6, slot: "Arme", ico: WEAPON[cls][0], name: WEAPON[cls][1] },
+  { lvl: 10, slot: "Armure", ico: "🛡️", name: ARMOR[cls] },
+  { lvl: 15, slot: "Amulette", ico: "📿", name: "Amulette des requêtes" },
+  { lvl: 20, slot: "Couronne", ico: "👑", name: "Couronne du Grimoire" },
+  { lvl: 30, slot: "Aura", ico: "✨", name: "Aura du Maître" }
+];
+const avatarTier = (lv) => (lv >= 30 ? "legend" : lv >= 15 ? "gold" : lv >= 6 ? "silver" : "bronze");
+const TIER_FR = { bronze: "cadre de bronze", silver: "cadre d'argent", gold: "cadre d'or", legend: "cadre légendaire" };
+const myGear = () => (state.avatar ? gearFor(AVATAR_HEROES[state.avatar]) : []);
+function syncEquipment() {        // donne dans la Besace l'équipement mérité par le niveau ; renvoie les nouvelles pièces
+  if (!state.avatar) return [];
+  const lv = playerLevel(), got = [];
+  myGear().forEach((g) => { if (lv >= g.lvl && !state.loot.some((l) => l.kind === "equip" && l.slot === g.slot)) { state.loot.push({ kind: "equip", slot: g.slot, name: `${g.ico} ${g.name}` }); got.push(g); } });
+  return got;
+}
+function avatarImg(size, cls = "") { return state.avatar ? `<img class="ava ${avatarTier(playerLevel())} ${cls}" src="${HERO_ART[state.avatar]}" alt="" style="width:${size}px;height:${size}px">` : ""; }
+function avatarHTML() {
+  if (!state.avatar) return `<button class="dbtn alt" id="pickAvatar">Choisir mon héros</button>`;
+  const lv = playerLevel(), gear = myGear(), tier = avatarTier(lv), next = gear.find((g) => lv < g.lvl);
+  return `<div class="avacard ${tier}">
+    <div class="avaimg">${avatarImg(96)}</div>
+    <div class="avainfo"><b>${esc(Players.current || "")}</b><span>joue ${esc(HERO_NAMES[state.avatar])} · ${esc(AVATAR_HEROES[state.avatar])} · niveau ${lv}</span>
+      <span class="tier">${TIER_FR[tier]}</span>
+      <div class="slots">${gear.map((g) => `<span class="slot ${lv >= g.lvl ? "on" : ""}" title="${esc(g.slot)} : ${esc(g.name)} (niveau ${g.lvl})">${lv >= g.lvl ? g.ico : "🔒"}</span>`).join("")}</div>
+      ${next ? `<span class="nextgear">Prochain équipement : ${next.ico} ${esc(next.name)} au niveau ${next.lvl}</span>` : `<span class="nextgear">Équipement complet !</span>`}
+      <button class="plink" id="changeAvatar">Changer de héros</button></div></div>`;
+}
+function openAvatarPicker(then) {
+  const old = document.getElementById("playerGate"); if (old) old.remove();
+  const g = document.createElement("div"); g.id = "playerGate"; g.className = "pgate";
+  g.innerHTML = `<div class="pcard albumcard" role="dialog" aria-modal="true" aria-labelledby="avTitle">
+    <h2 id="avTitle">Choisis ton héros</h2>
+    <p>Il t'accompagne dans toute l'aventure. En montant de niveau, il gagne une cape, une arme, une armure… qui arrivent dans ta Besace. Tu pourras en changer plus tard.</p>
+    <div class="agrid avagrid">${Object.keys(AVATAR_HEROES).map((id) => `<button class="avapick ${+id === state.avatar ? "sel" : ""}" data-ava="${id}"><img src="${HERO_ART[id]}" alt=""><b>${esc(HERO_NAMES[id])}</b><span>${esc(AVATAR_HEROES[id])}</span></button>`).join("")}</div>
+  </div>`;
+  document.body.appendChild(g);
+  g.querySelectorAll("[data-ava]").forEach((b) => b.onclick = () => {
+    const keep = state.loot.filter((l) => l.kind !== "equip");     // nouveau héros : son propre équipement
+    state.avatar = +b.dataset.ava; state.loot = keep; syncEquipment(); save(); FX.play("levelup");
+    g.remove(); showPlayer(); renderLoot(); renderHUD(); if (then) then();
+  });
+  setTimeout(() => g.querySelector(".avapick").focus(), 50);
+}
+
+/* ---------- 7. DÉFI ÉCLAIR ⚡ (facultatif) : un maximum de requêtes justes en 3 minutes ---------- */
+const BLITZ_SECS = 180, BLITZ_XP = 10;
+const NEED = [   // à partir de quelle mission chaque mot-clé est connu (calculé depuis les missions elles-mêmes)
+  /\bRANK\(\)/i, /\bUPPER\(/i, /\bMIN\(/i, /\bOR\b/i, /\bBETWEEN\b/i, /\bCASE\b/i, /\bLIKE\b/i, /\bDISTINCT\b/i, /\bIN \(/i,
+  /\bAVG\(/i, /\bHAVING\b/i, /\bLEFT JOIN\b/i, /\bSUM\(/i, /\bJOIN\b/i, /\bGROUP BY\b/i, /\bCOUNT\(/i, /\bLIMIT\b/i, /\bORDER BY\b/i, /\bWHERE\b/i
+].map((re) => ({ re, at: (LEVELS.find((L) => re.test(L.expected)) || { id: 99 }).id }));
+const blitzPool = () => {
+  const reach = Math.max(0, ...state.completed.map((x) => x + 1));
+  return DAILY_BANK.filter((D) => NEED.every((n) => !n.re.test(D.q) || n.at <= reach));
+};
+const blitz = { active: false, end: 0, score: 0, skips: 0, order: [], i: 0, timer: null, L: null };
+function blitzLevel() {
+  const D = blitz.order[blitz.i % blitz.order.length];
+  return { blitz: true, id: "eclair", kwId: 39, chapter: "⚡ Défi éclair · 3 minutes", title: D.t, pitch: "Le sablier est retourné ! Enchaîne un maximum de requêtes justes. Aucun PV perdu ici, et tu peux passer une question.",
+    mission: D.m, concept: D.c, starter: "", expected: D.q + ";", ordered: !!D.o, hints: [], xp: 0, item: null, badge: null };
+}
+function openBlitzIntro() {
+  const old = document.getElementById("playerGate"); if (old) old.remove();
+  const pool = blitzPool(), b = state.blitz || { best: 0, plays: 0 };
+  const g = document.createElement("div"); g.id = "playerGate"; g.className = "pgate";
+  g.innerHTML = `<div class="pcard" role="dialog" aria-modal="true" aria-labelledby="bzTitle">
+    <h2 id="bzTitle">⚡ Défi éclair</h2>
+    <p><b>Combien de requêtes justes en 3 minutes ?</b> Les questions sont tirées parmi les notions que tu as déjà vues (${pool.length} possibles).</p>
+    <p class="pnote">C'est facultatif et sans risque : aucun PV perdu, tu peux passer une question, et chaque bonne réponse rapporte ${BLITZ_XP} XP. Ton record : <b>${b.best}</b>.</p>
+    ${pool.length < 3 ? `<p class="perr">Réussis encore quelques missions pour débloquer le défi éclair.</p>` : `<div class="pbtns"><button class="pgo" id="bzGo">C'est parti !</button></div>`}
+    <button class="pclose" id="bzClose">Pas maintenant</button></div>`;
+  document.body.appendChild(g);
+  $("bzClose").onclick = () => g.remove();
+  if ($("bzGo")) { $("bzGo").onclick = () => { g.remove(); startBlitz(); }; setTimeout(() => $("bzGo").focus(), 50); }
+}
+function startBlitz() {
+  const pool = blitzPool().slice();
+  for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+  Object.assign(blitz, { active: true, end: Date.now() + BLITZ_SECS * 1000, score: 0, skips: 0, order: pool, i: 0 });
+  daily.active = false; blitz.L = blitzLevel(); FX.play("cast"); renderLevel(); $("sql").focus();
+  clearInterval(blitz.timer); blitz.timer = setInterval(tickBlitz, 250); tickBlitz();
+}
+function tickBlitz() {
+  if (!blitz.active) return;
+  const left = Math.max(0, Math.ceil((blitz.end - Date.now()) / 1000));
+  const t = $("blitzTime"); if (t) { t.textContent = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`; t.classList.toggle("hurry", left <= 20); }
+  const bar = $("blitzBar"); if (bar) bar.style.width = (left / BLITZ_SECS * 100) + "%";
+  if (left <= 0) endBlitz();
+}
+function blitzRight() { blitz.score += 1; FX.play("good"); burst($("dailyBar"), 12); blitz.i += 1; blitz.L = blitzLevel(); renderLevel(); $("sql").focus(); }
+function blitzSkip() { blitz.skips += 1; FX.play("unclick"); blitz.i += 1; blitz.L = blitzLevel(); renderLevel(); $("sql").focus(); }
+function endBlitz(quit) {
+  if (!blitz.active) return;
+  clearInterval(blitz.timer); blitz.active = false;
+  const b = state.blitz || (state.blitz = { best: 0, plays: 0 }), record = blitz.score > b.best;
+  b.plays += 1; if (record) b.best = blitz.score;
+  const gained = blitz.score * BLITZ_XP; state.xp += gained;
+  const gear = syncEquipment(); save(); renderHUD(); renderLoot(); renderLevel();
+  $("overlay").innerHTML = `<div class="card" role="dialog" aria-modal="true" aria-labelledby="bzEnd">
+    <h3 id="bzEnd">${quit ? "Défi éclair arrêté" : "⏳ Temps écoulé !"}</h3>
+    <div class="bigscore">${blitz.score}</div><p>requête${blitz.score > 1 ? "s" : ""} juste${blitz.score > 1 ? "s" : ""} en 3 minutes${blitz.skips ? ` · ${blitz.skips} passée(s)` : ""}</p>
+    <div class="rewards">${gained ? `<span class="x">+${gained} XP</span>` : ""}${record && blitz.score ? `<span class="b">Nouveau record !</span>` : `<span class="i">Record : ${b.best}</span>`}</div>
+    ${gear.length ? `<div class="xtra card">🎒 Nouvel équipement : ${gear.map((g) => `${g.ico} ${esc(g.name)}`).join(", ")}</div>` : ""}
+    <div class="btns"><button class="btn btn-cast" id="bzAgain">Rejouer</button><button class="btn btn-ghost" id="bzBack">Revenir à ma mission</button></div></div>`;
+  $("overlay").hidden = false;
+  setTimeout(() => { FX.play(record ? "levelup" : "win"); if (record) burst(document.querySelector("#overlay .card"), 24); }, 200);
+  $("bzAgain").onclick = () => { $("overlay").hidden = true; startBlitz(); };
+  $("bzBack").onclick = () => { $("overlay").hidden = true; renderLevel(); };
+  $("bzBack").focus();
+}
+
+/* ---------- 8. PROCHAIN PAS 🧭 : toujours un petit objectif visible ---------- */
+function nextSteps() {
+  const out = [], lv = playerLevel(), toNext = 150 - (state.xp % 150);
+  out.push({ ico: "⬆️", txt: `Il te manque ${toNext} XP pour le niveau ${lv + 1} !` });
+  const g = myGear().find((x) => lv < x.lvl);
+  if (g) out.push({ ico: g.ico, txt: `Encore ${g.lvl - lv} niveau${g.lvl - lv > 1 ? "x" : ""} pour gagner ${g.name}.` });
+  if (!state.avatar) out.push({ ico: "🛡️", txt: "Choisis ton héros dans la Besace : il gagnera de l'équipement en montant de niveau." });
+  const s = state.streak, today = dayKey();
+  if (s && s.last !== today && streakNow() > 0) out.push({ ico: "🔥", txt: `Réussis une mission aujourd'hui pour garder ta série de ${streakNow()} jour${streakNow() > 1 ? "s" : ""}.` });
+  else if (s && s.last === today && s.n % 7) out.push({ ico: "🔥", txt: `Encore ${7 - (s.n % 7)} jour${7 - (s.n % 7) > 1 ? "s" : ""} d'affilée pour la récompense de la série.` });
+  if (!dailyDone()) out.push({ ico: "🎯", txt: `Le défi du jour t'attend : +${DAILY_XP} XP.` });
+  const Q = state.quests && state.quests.week === weekKey() ? state.quests : null;
+  if (Q) Q.list.filter((q) => !q.done).sort((a, b) => (b.n / b.goal) - (a.n / a.goal)).slice(0, 1).forEach((q) => out.push({ ico: "📋", txt: `Quête : encore ${q.goal - q.n} pour « ${q.txt} ».` }));
+  const missing = ALBUM.filter((c) => !cardOwned(c));
+  ["monstres", "heros", "chateaux"].forEach((kind) => {
+    const m = missing.filter((c) => c.kind === kind); if (!m.length || m.length > 2) return;
+    const word = { monstres: ["monstre", "monstres"], heros: ["héros", "héros"], chateaux: ["château", "châteaux"] }[kind];
+    out.push({ ico: "📒", txt: `Encore ${m.length} ${word[m.length > 1 ? 1 : 0]} pour compléter l'album : réussis « ${LEVELS[m[0].lv].title} ».` });
+  });
+  if (missing.length > 2) out.push({ ico: "📒", txt: `Prochaine carte de l'album : réussis « ${LEVELS[Math.min(...missing.map((c) => c.lv))].title} ».` });
+  const low = LEVELS.filter((L) => state.completed.includes(L.id) && levelStars(L.id) < 3);
+  if (low.length) out.push({ ico: "⭐", txt: `${low.length} mission${low.length > 1 ? "s" : ""} à rejouer pour les 3 étoiles, par exemple « ${low[0].title} ».` });
+  return out;
+}
+let stepIdx = 0, stepTimer = null;
+function renderNextStep() {
+  const el = $("nextStep"); if (!el) return;
+  const steps = nextSteps(); if (!steps.length) { el.hidden = true; return; }
+  el.hidden = false; stepIdx = stepIdx % steps.length; const s = steps[stepIdx];
+  el.innerHTML = `<span class="nsI" aria-hidden="true">🧭</span><span class="nsT"><b>Prochain pas</b> ${s.ico} ${esc(s.txt)}</span>${steps.length > 1 ? `<button class="nsB" id="nsMore" title="Objectif suivant" aria-label="Objectif suivant">${stepIdx + 1}/${steps.length} ›</button>` : ""}`;
+  if ($("nsMore")) $("nsMore").onclick = () => { stepIdx += 1; FX.play("click"); renderNextStep(); };
+  clearInterval(stepTimer); stepTimer = setInterval(() => { stepIdx += 1; renderNextStep(); }, 9000);
+}
+const nextStepsHTML = () => { const s = nextSteps().slice(0, 2); return s.length ? `<div class="xtra next">🧭 <b>Prochain pas :</b> ${s.map((x) => `${x.ico} ${esc(x.txt)}`).join("<br>")}</div>` : ""; };
 
 /* =====================================================================
    7. DÉMARRAGE
@@ -3434,7 +3660,7 @@ function wire() {
       $("out").scrollIntoView({ block: "nearest" }); return; }
     if (e.target.closest("#whyNext")) { const n = LEVELS[state.current + 1]; if (n) { daily.active = false; state.current = n.id; save(); renderMap(); renderLevel(); window.scrollTo({ top: 0 }); } return; }
     const lv = e.target.closest(".lvl[data-lvl]:not(.locked)");
-    if (lv) { daily.active = false; state.current = +lv.dataset.lvl; save(); renderMap(); renderLevel(); }
+    if (lv) { stopModes(); state.current = +lv.dataset.lvl; save(); renderMap(); renderLevel(); }
   });
   $("cast").onclick = cast;
   // Colonne de droite : épinglée (toujours visible) ou repliée en barre d'icônes ; chaque appareil s'en souvient
@@ -3503,6 +3729,7 @@ function wire() {
     $("cast").disabled = false;
     if (Players.current) pushScore(true);          // le classement en ligne connaît le dernier score
     if (!Players.current) openPlayers(true);       // premier accès : on demande le nom du joueur
+    else if (!state.avatar) openAvatarPicker(() => { if (!state.seenIntro) showIntro(); });
     else if (!state.seenIntro) showIntro();
   } catch (e) {
     $("lvlTitle").textContent = "Le grimoire refuse de s'ouvrir";

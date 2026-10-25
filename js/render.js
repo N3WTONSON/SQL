@@ -90,10 +90,11 @@ function renderHUD(hit) {
   $("railMap").textContent = `${state.completed.length}/${LEVELS.length}`;
   $("railLoot").textContent = state.loot.length ? `${state.loot.length}` : "";
   $("lootInfo").textContent = `${state.loot.filter((l) => l.kind === "item").length} objets · ${state.loot.filter((l) => l.kind === "badge").length} badges`;
+  if (state.avatar && document.getElementById("playerIco")) showPlayer();
   $("tablesInfo").textContent = LEVELS[state.current].id >= 25 ? "6 tables" : "5 tables";
   renderEngage();
   { const L = curL(), used = state.hintsUsed[L.id] || 0;
-    $("hintBtn").disabled = !!L.daily || (state.scrolls <= 0 && !(state.completed.includes(L.id) && attempt.hints < used)); }
+    $("hintBtn").disabled = !!L.daily || !!L.blitz || (state.scrolls <= 0 && !(state.completed.includes(L.id) && attempt.hints < used)); }
 }
 
 function renderTranslate() {
@@ -155,7 +156,7 @@ function showWhy(L) {
 
 function renderLevel() {
   const L = curL();
-  startAttempt(L.daily ? "defi-" + L.date : L.id);
+  startAttempt(L.blitz ? "eclair-" + blitz.i : L.daily ? "defi-" + L.date : L.id);
   $("dailyBar").hidden = false; renderDailyBar();
   $("lvlTag").textContent = L.chapter;
   $("lvlTitle").textContent = L.title;
@@ -189,7 +190,9 @@ function renderLevel() {
   renderTranslate();
   $("kw").innerHTML = keywordsFor(L).map((k) => `<button data-ins="${k}">${k}</button>`).join("");
   const used = state.hintsUsed[L.id] || 0, replay = state.completed.includes(L.id), st = levelStars(L.id);
-  $("out").innerHTML = L.daily
+  $("out").innerHTML = L.blitz
+    ? `<div class="msg info"><b>DÉFI ÉCLAIR</b>Écris la requête et lance le sort. Une erreur ne coûte rien : corrige ou passe la question.</div>`
+    : L.daily
     ? `<div class="msg info"><b>DÉFI DU JOUR</b>Pas de parchemin aujourd'hui : utilise le traducteur sous l'éditeur et « Explorer » pour tester. Chaque sort raté compte comme un essai.</div>`
     : replay
     ? `<div class="msg info"><b>${st === 3 ? "⭐⭐⭐ MISSION PARFAITE" : `REJOUE POUR LES 3 ÉTOILES · TON RECORD : ${starsTxt(st)}`}</b>${st === 3 ? "Tu peux la rejouer pour t'entraîner." : "⭐ réussir · ⭐⭐ sans parchemin · ⭐⭐⭐ sans parchemin et du premier coup."}${used ? " Tes parchemins déjà lus se relisent gratuitement, mais ils font perdre les étoiles." : ""}</div>`
@@ -277,9 +280,11 @@ function renderSchema() {
 }
 
 function renderLoot() {
-  $("loot").innerHTML = state.loot.length
-    ? state.loot.map((l) => `<div class="item ${l.kind === "badge" ? "badge" : ""}"><span class="k">${l.kind === "badge" ? "BADGE" : "OBJET"}</span>${esc(l.name)}</div>`).join("")
-    : `<p class="empty">Ta besace est vide. Réussis une mission pour la remplir.</p>`;
+  const order = { equip: 0, badge: 1, item: 2 };
+  $("loot").innerHTML = avatarHTML() + (state.loot.length
+    ? state.loot.slice().sort((a, b) => order[a.kind] - order[b.kind]).map((l) => `<div class="item ${l.kind === "badge" ? "badge" : l.kind === "equip" ? "equip" : ""}"><span class="k">${l.kind === "badge" ? "BADGE" : l.kind === "equip" ? "ÉQUIPEMENT · " + esc(l.slot).toUpperCase() : "OBJET"}</span>${esc(l.name)}</div>`).join("")
+    : `<p class="empty">Ta besace est vide. Réussis une mission pour la remplir.</p>`);
+  const pa = $("pickAvatar") || $("changeAvatar"); if (pa) pa.onclick = () => openAvatarPicker();
 }
 
 function table(res) {

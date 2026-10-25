@@ -19,13 +19,14 @@
     <div class="stat streakStat" id="streakStat"><span class="fireI" aria-hidden="true">🔥</span> <span class="num" id="streak">0</span></div>
     <div class="stat" title="Parchemins : chacun donne un indice"><span class="scroll-emo" aria-hidden="true">📜</span> <span class="num" id="scrolls">3</span> <span class="lbl">parchemins</span></div>
     </div>
-    <div class="hudBtns"><button class="playerBtn" id="albumBtn" title="Mon album de cartes" aria-label="Mon album de cartes"><span aria-hidden="true">📒</span><b>Album <span id="albumCount"></span></b></button><button class="playerBtn" id="rankBtn" title="Classement des joueurs" aria-label="Classement des joueurs"><span aria-hidden="true">🏆</span><b>Classement</b></button><button class="playerBtn" id="playerBtn" title="Changer de joueur" aria-label="Changer de joueur"><span aria-hidden="true">👤</span><b id="playerName">…</b></button><a class="switchBtn" id="switchMode" href="premiers-pas.html" data-switch title="Passer au mode débutant, avec des blocs à cliquer"><span class="arr">⇄</span>Premiers pas</a>
+    <div class="hudBtns"><button class="playerBtn" id="albumBtn" title="Mon album de cartes" aria-label="Mon album de cartes"><span aria-hidden="true">📒</span><b>Album <span id="albumCount"></span></b></button><button class="playerBtn" id="rankBtn" title="Classement des joueurs" aria-label="Classement des joueurs"><span aria-hidden="true">🏆</span><b>Classement</b></button><button class="playerBtn" id="playerBtn" title="Changer de joueur" aria-label="Changer de joueur"><span aria-hidden="true" id="playerIco">👤</span><b id="playerName">…</b></button><a class="switchBtn" id="switchMode" href="premiers-pas.html" data-switch title="Passer au mode débutant, avec des blocs à cliquer"><span class="arr">⇄</span>Premiers pas</a>
     <button class="soundBtn" id="sound" aria-pressed="true">SON : OUI</button></div>
   </header>
 
   <div class="grid">
     <main class="col">
       <div class="dailybar" id="dailyBar"></div>
+      <div class="nextstep" id="nextStep" hidden aria-live="polite"></div>
       <section class="story" aria-live="polite">
         <div class="label" id="lvlTag">Tutoriel</div>
         <h1 id="lvlTitle">Chargement du grimoire…</h1>
