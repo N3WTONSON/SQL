@@ -11,7 +11,7 @@
   --rune: #6fd3b0;       /* succès : rune verdie */
   --blood: #e2574c;      /* PV, erreurs */
   --arcane: #66c9ff;     /* XP */
-  --f-display: "Pirata One", "UnifrakturMaguntia", Georgia, serif;
+  --f-display: "MedievalSharp", "Uncial Antiqua", Georgia, serif;
   --f-body: "Alegreya", Georgia, "Times New Roman", serif;
   --f-code: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
   --f-hud: "Cinzel", "Trajan Pro", Georgia, serif;
@@ -42,7 +42,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
   padding-block: 14px; background: var(--night);
   border-bottom: 2px solid var(--seam);
 }
-.brand { display: flex; align-items: center; gap: 12px; margin-right: auto; font-family: var(--f-display); font-size: 30px; line-height: 1; color: var(--torch); letter-spacing: .5px; }
+.brand { display: flex; align-items: center; gap: 12px; margin-right: auto; font-family: var(--f-display); font-size: 27px; line-height: 1; color: var(--torch); letter-spacing: .5px; }
 .brand img { width: 52px; height: auto; flex: none; filter: drop-shadow(0 0 10px rgba(102,201,255,.35)); }
 .card .logo { width: min(220px, 60vw); height: auto; margin: -8px auto 0; filter: drop-shadow(0 0 24px rgba(102,201,255,.3)); }
 .card .logo.sm { width: 120px; }
@@ -57,7 +57,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .xpbar { width: 120px; height: 10px; background: var(--stone-2); border: 1px solid var(--seam); position: relative; }
 .xpbar i { position: absolute; inset: 0 auto 0 0; background: var(--arcane); width: 0; transition: width .6s; }
 .num { font-variant-numeric: tabular-nums; color: var(--ink); }
-.scroll-ico { width: 12px; height: 15px; background: var(--torch); display: inline-block; border-radius: 2px 2px 6px 6px; }
+.scroll-emo { font-size: 16px; line-height: 1; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
 
 /* ---------- grille ---------- */
 .grid { display: grid; grid-template-columns: minmax(0,1fr) 300px; gap: 22px; align-items: start; }
@@ -68,7 +68,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 
 /* ---------- récit ---------- */
 .story { display: flex; flex-direction: column; gap: 10px; padding-block: 6px; }
-.story h1 { font-family: var(--f-display); font-weight: 400; font-size: clamp(30px, 5vw, 44px); line-height: 1.05; margin: 0; text-wrap: balance; }
+.story h1 { font-family: var(--f-display); font-weight: 400; font-size: clamp(28px, 4.4vw, 40px); line-height: 1.05; margin: 0; text-wrap: balance; }
 .story .pitch { margin: 0; max-width: 64ch; color: var(--ink); }
 .story .pitch em { color: var(--torch); font-style: italic; }
 .mission { border-left: 3px solid var(--torch); padding: 10px 14px; background: linear-gradient(90deg, rgba(240,164,58,.08), transparent); max-width: 70ch; }
@@ -179,6 +179,17 @@ table.res tr.chg td:first-child { box-shadow: inset 3px 0 0 var(--arcane); }
 
 /* ---------- grimoire latéral ---------- */
 .panel { background: var(--stone); border: 1px solid var(--seam); padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.fold { display: block; padding: 0; }
+.fold > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 14px; min-height: 52px; user-select: none; -webkit-user-select: none; }
+.fold > summary::-webkit-details-marker { display: none; }
+.fold > summary:focus-visible { outline: 2px solid var(--torch); outline-offset: -2px; }
+.fold > summary h2 { flex: 1; }
+.foldInfo { font-family: var(--f-hud); font-size: 12px; letter-spacing: 1px; color: var(--arcane); white-space: nowrap; }
+.chev { width: 26px; height: 26px; flex: none; display: grid; place-items: center; border: 1px solid var(--seam); transition: transform 0.2s ease; }
+.chev::before { content: ""; width: 7px; height: 7px; border-right: 2px solid var(--torch); border-bottom: 2px solid var(--torch); transform: translateY(-2px) rotate(45deg); }
+.fold:not([open]) .chev { transform: rotate(-90deg); }
+.fold > summary:hover .chev { border-color: var(--torch); }
+.foldBody { display: flex; flex-direction: column; gap: 10px; padding: 0 14px 14px; }
 .panel h2 { font-family: var(--f-display); font-weight: 400; font-size: 24px; margin: 0; color: var(--ink); line-height: 1; }
 .map { display: flex; flex-direction: column; gap: 4px; }
 .lvl { display: grid; grid-template-columns: 26px 1fr auto; align-items: center; gap: 8px; padding: 6px 8px; background: transparent; border: 1px solid transparent; color: var(--ink); text-align: left; font-family: var(--f-body); font-size: 15px; cursor: pointer; width: 100%; }
@@ -242,7 +253,7 @@ table.res tr.chg td:first-child { box-shadow: inset 3px 0 0 var(--arcane); }
 .overlay { position: fixed; inset: 0; background: rgba(8,9,13,.82); display: grid; place-items: center; z-index: 20; padding: 16px; }
 .card { background: var(--stone); border: 2px solid var(--torch); max-width: 460px; width: 100%; padding: 26px; display: flex; flex-direction: column; gap: 12px; text-align: center; animation: rise .4s ease-out; }
 .card.ko { border-color: var(--blood); }
-.card h3 { font-family: var(--f-display); font-weight: 400; font-size: 38px; margin: 0; color: var(--torch); line-height: 1; }
+.card h3 { font-family: var(--f-display); font-weight: 400; font-size: 34px; margin: 0; color: var(--torch); line-height: 1; }
 .card.ko h3 { color: var(--blood); }
 .card p { margin: 0; }
 .rewards { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
@@ -300,12 +311,56 @@ textarea { font-size: max(16px, 1em); }            /* sous 16 px, l'iPad zoome d
 /* HUD compact : une seule ligne sur tablette, pour garder de la place au clavier virtuel */
 @media (max-width: 1400px) and (min-width: 521px) {
   .hud { gap: 10px 18px; padding-block: 10px; }
-  .brand { font-size: 24px; gap: 10px; }
+  .brand { font-size: 22px; gap: 10px; }
   .brand img { width: 42px; }
   .brand small { display: none; }
   .xpbar { width: 70px; }
   .stat .lbl { display: none; }
 }
 @media (max-width: 1000px) and (min-width: 521px) { .stat .xpbar { display: none; } }
+
+.pcard.rankcard { max-width: 720px; }
+.rankcard .tablewrap { padding: 0; }
+table.rank { font-size: 14px; } table.rank td, table.rank th { padding: 8px 10px; }
+table.rank td, table.rank th { text-align: center; }
+table.rank td:nth-child(2), table.rank th:nth-child(2) { text-align: left; }
+table.rank tr.me td { background: rgba(240, 164, 58, 0.14); }
+table.rank .rk { font-size: 20px; }
+table.rank .you { font-family: var(--f-hud); font-size: 11px; color: var(--night); background: var(--torch); padding: 1px 6px; margin-left: 4px; }
+.rksql { text-align: left; border: 1px solid var(--seam); padding: 8px 12px; }
+.rksql summary { cursor: pointer; color: var(--arcane); min-height: 32px; display: flex; align-items: center; }
+.rksql pre { margin: 8px 0; padding: 10px; background: var(--night); overflow-x: auto; font-size: 13px; }
+.rksql p { font-size: 14px; }
+/* ---------- Écran « Qui joue ? » ---------- */
+.pgate { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 16px; background: rgba(8, 9, 13, 0.88); overflow-y: auto; }
+.pcard { width: 100%; max-width: 460px; background: var(--stone); border: 2px solid var(--torch); padding: 24px; display: flex; flex-direction: column; gap: 12px; text-align: center; animation: pgIn 0.35s ease-out; }
+@keyframes pgIn { from { opacity: 0; transform: translateY(12px) scale(0.98); } to { opacity: 1; transform: none; } }
+.plogo { width: 120px; height: auto; margin: 0 auto; filter: drop-shadow(0 0 18px rgba(102, 201, 255, 0.3)); }
+.pcard h2 { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 32px; color: var(--torch); line-height: 1.1; }
+.pcard p { margin: 0; line-height: 1.45; }
+.plist { display: flex; flex-direction: column; gap: 8px; text-align: left; }
+.prow { display: flex; gap: 6px; }
+.pbtn { flex: 1; min-height: 52px; display: flex; flex-direction: column; justify-content: center; gap: 2px; padding: 8px 14px; background: var(--stone-2); border: 1px solid var(--seam); color: var(--ink); cursor: pointer; text-align: left; font: inherit; }
+.pbtn b { font-size: 18px; color: var(--torch); }
+.pbtn span { font-family: var(--f-code); font-size: 12px; color: var(--ink-dim); }
+.pbtn:hover, .pbtn:focus-visible { border-color: var(--torch); outline: none; }
+.pdel { min-width: 48px; background: none; border: 1px solid var(--seam); color: var(--ink-dim); cursor: pointer; font: inherit; font-size: 13px; }
+.pdel.armed { color: var(--blood); border-color: var(--blood); }
+.psep { color: var(--ink-dim); font-size: 14px; }
+.pform { display: flex; flex-direction: column; gap: 6px; text-align: left; }
+.pform label { font-family: var(--f-hud); font-size: 12px; letter-spacing: 1.2px; color: var(--ink-dim); text-transform: uppercase; }
+.pline { display: flex; gap: 8px; }
+.pline input { flex: 1; min-width: 0; min-height: 48px; font-family: var(--f-body); font-size: 18px; padding: 8px 12px; background: var(--night); color: var(--ink); border: 1px solid var(--seam); }
+.pline input:focus { outline: none; border-color: var(--torch); }
+.pgo { min-height: 48px; padding: 0 18px; font-family: var(--f-hud); font-size: 14px; letter-spacing: 1px; background: var(--torch); color: #1a1206; border: 0; cursor: pointer; }
+.perr { color: var(--blood); font-size: 14px; }
+.pnote { font-size: 13px; color: var(--ink-dim); }
+.pclose { align-self: center; background: none; border: 0; color: var(--arcane); text-decoration: underline; cursor: pointer; font: inherit; min-height: 40px; }
+.playerBtn { display: inline-flex; align-items: center; gap: 6px; max-width: 200px; min-height: 32px; font-family: var(--f-body); font-size: 15px; background: none; border: 1px solid var(--seam); color: var(--ink); padding: 4px 10px; cursor: pointer; }
+.playerBtn b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--torch); font-weight: 600; }
+.playerBtn:hover { border-color: var(--torch); }
+@media (pointer: coarse) { .playerBtn { min-height: 42px; } }
+@media (max-width: 1400px) and (min-width: 521px) { .playerBtn { max-width: 140px; } #rankBtn b { display: none; } }
+@media (max-width: 520px) { #rankBtn b { display: none; } }
 @media (prefers-reduced-motion: reduce) { *, *::before { animation: none !important; transition: none !important; } }
 @media (max-width: 520px) { .brand { font-size: 22px; width: 100%; } .brand img { width: 44px; } .kbd { display: none; } body { font-size: 16px; } }

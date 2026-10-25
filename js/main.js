@@ -14,6 +14,14 @@ function wire() {
     if (lv) { state.current = +lv.dataset.lvl; save(); renderMap(); renderLevel(); }
   });
   $("cast").onclick = cast;
+  // panneaux pliables : chaque appareil se souvient de ce qui est plié
+  ["foldMap", "foldTables", "foldLoot"].forEach((id) => {
+    const el = $(id);
+    try { if (localStorage.getItem("grimoire-pli-" + id) === "ferme") el.open = false; } catch (e) {}
+    el.addEventListener("toggle", () => { FX.play(el.open ? "page" : "unclick"); try { localStorage.setItem("grimoire-pli-" + id, el.open ? "ouvert" : "ferme"); } catch (e) {} });
+  });
+  $("playerBtn").onclick = () => { FX.play("page"); openPlayers(false); };
+  $("rankBtn").onclick = () => { if (!SQL) return; FX.play("levelup"); openRanking(); };
   $("peek").onclick = () => { FX.play("page"); explore(); };
   const soundLabel = () => { $("sound").textContent = FX.on ? "SON : OUI" : "SON : NON"; $("sound").setAttribute("aria-pressed", FX.on ? "true" : "false"); };
   $("sound").onclick = () => { FX.toggle(); soundLabel(); }; soundLabel();
@@ -32,7 +40,7 @@ function wire() {
 }
 
 (async function boot() {
-  wire(); renderHUD(); renderMap(); renderLoot();
+  wire(); showPlayer(); renderHUD(); renderMap(); renderLoot();
   try {
     const bin = Uint8Array.from(atob(WASM_B64), (c) => c.charCodeAt(0));
     SQL = await initSqlJs({ wasmBinary: bin });
@@ -42,7 +50,8 @@ function wire() {
     });
     renderSchema(); renderLevel();
     $("cast").disabled = false;
-    if (!state.seenIntro) showIntro();
+    if (!Players.current) openPlayers(true);       // premier accès : on demande le nom du joueur
+    else if (!state.seenIntro) showIntro();
   } catch (e) {
     $("lvlTitle").textContent = "Le grimoire refuse de s'ouvrir";
     $("lvlPitch").textContent = "Le moteur SQLite n'a pas pu démarrer dans ce navigateur : " + e.message;

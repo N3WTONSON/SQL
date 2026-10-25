@@ -6,7 +6,7 @@
 <title>Le Grimoire des Requêtes</title>
 <link rel="icon" href="assets/logo-128.webp" type="image/webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Alegreya:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;600&family=Cinzel:wght@700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Alegreya:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;600&family=Cinzel:wght@700&display=swap">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -15,8 +15,8 @@
     <div class="brand"><img src="assets/logo-128.webp" alt="" width="52" height="55"><div>Le Grimoire des Requêtes<small>L'aventure SQL</small></div></div>
     <div class="stat">PV <div class="hearts" id="hearts" aria-live="polite"></div></div>
     <div class="stat">NIV <span class="num" id="plevel">1</span> <div class="xpbar" title="Expérience"><i id="xpfill"></i></div> <span class="num" id="xp">0</span> XP</div>
-    <div class="stat"><span class="scroll-ico" aria-hidden="true"></span> <span class="num" id="scrolls">3</span> <span class="lbl">parchemins</span></div>
-    <div class="hudBtns"><a class="switchBtn" id="switchMode" href="premiers-pas.html" data-switch title="Passer au mode débutant, avec des blocs à cliquer"><span class="arr">⇄</span>Premiers pas</a>
+    <div class="stat"><span class="scroll-emo" aria-hidden="true">📜</span> <span class="num" id="scrolls">3</span> <span class="lbl">parchemins</span></div>
+    <div class="hudBtns"><button class="playerBtn" id="rankBtn" title="Classement des joueurs" aria-label="Classement des joueurs"><span aria-hidden="true">🏆</span><b>Classement</b></button><button class="playerBtn" id="playerBtn" title="Changer de joueur" aria-label="Changer de joueur"><span aria-hidden="true">👤</span><b id="playerName">…</b></button><a class="switchBtn" id="switchMode" href="premiers-pas.html" data-switch title="Passer au mode débutant, avec des blocs à cliquer"><span class="arr">⇄</span>Premiers pas</a>
     <button class="soundBtn" id="sound" aria-pressed="true">SON : OUI</button></div>
   </header>
 
@@ -48,7 +48,7 @@
         <div class="translate" id="translate" aria-live="polite"></div>
         <div class="actions">
           <button class="btn btn-cast" id="cast" disabled>Lancer le sort</button>
-          <button class="btn btn-ghost" id="hintBtn">Lire un parchemin</button>
+          <button class="btn btn-ghost" id="hintBtn"><span aria-hidden="true">📜</span> Lire un parchemin</button>
           <button class="btn btn-ghost" id="peek">Explorer (sans risque)</button>
           <button class="btn btn-ghost" id="whyBtn" hidden>Pourquoi ? Décomposer</button>
           <span class="kbd">Ctrl + Entrée pour lancer</span>
@@ -62,21 +62,25 @@
     </main>
 
     <aside class="col">
-      <section class="panel" aria-label="Carte des quêtes">
-        <h2>Carte</h2>
-        <div class="map" id="map"></div>
-      </section>
-      <section class="panel" aria-label="Tables de la base">
-        <h2>Tables du royaume</h2>
+      <details class="panel fold" id="foldMap" open>
+        <summary><h2>Carte</h2><span class="foldInfo" id="mapInfo"></span><span class="chev" aria-hidden="true"></span></summary>
+        <div class="foldBody"><div class="map" id="map"></div></div>
+      </details>
+      <details class="panel fold" id="foldTables" open>
+        <summary><h2>Tables du royaume</h2><span class="foldInfo" id="tablesInfo"></span><span class="chev" aria-hidden="true"></span></summary>
+        <div class="foldBody">
         <p class="about" style="margin:0;font-size:13px;color:var(--ink-dim)">Les noms sont en français, sans accents. Seuls les mots-clés (SELECT, FROM…) sont en anglais. Une flèche → indique un numéro qui renvoie vers une autre table.</p>
         <div id="schema"></div>
-      </section>
-      <section class="panel" aria-label="Inventaire et badges">
-        <h2>Besace</h2>
+        </div>
+      </details>
+      <details class="panel fold" id="foldLoot" open>
+        <summary><h2>Besace</h2><span class="foldInfo" id="lootInfo"></span><span class="chev" aria-hidden="true"></span></summary>
+        <div class="foldBody">
         <div class="loot" id="loot"></div>
         <a class="reset" href="premiers-pas.html" target="_blank" rel="noopener" style="color:var(--arcane)">Revoir les bases : Premiers pas</a>
         <button class="reset" id="reset">Recommencer l'aventure</button>
-      </section>
+        </div>
+      </details>
     </aside>
   </div>
 </div>

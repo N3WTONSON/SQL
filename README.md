@@ -139,6 +139,27 @@ Ensuite, l'aventure complète (`index.html`) reprend ces notions dès le Chapitr
   bonne et mauvaise réponse, fanfare de fin de leçon, sort lancé, coup reçu (−1 PV), niveau supérieur, K.O.,
   parchemin déroulé. Le bouton **SON : OUI / NON** coupe tout et s'en souvient.
 
+## Joueurs
+
+Au premier accès, chaque jeu demande un **nom de joueur** (écran « Qui joue ? »). Chaque joueur a sa propre
+partie : mission en cours, XP, objets, leçons de Premiers pas et boîtes de l'entraînement. Le bouton 👤 en haut
+permet de changer de joueur ; l'écran liste les joueurs de ce navigateur avec leur avancement
+(« mission 12 · 12/40 réussies · 1500 XP »), et un double toucher sur ✕ efface une partie.
+
+- Le bouton 🏆 **Classement** (dans l'aventure) classe les joueurs de ce navigateur par niveau, puis par XP,
+  avec leurs missions et badges. Le classement est calculé par une vraie requête SQL,
+  `RANK() OVER (ORDER BY niveau DESC, xp DESC)`, affichée sous le tableau.
+- Le nom ne tient pas compte des majuscules : « tom » retrouve la partie de « Tom ».
+- Une partie commencée avant cette mise à jour est confiée au premier joueur créé.
+- Tout reste dans le navigateur (localStorage), sur cet appareil : pas de compte, rien n'est envoyé.
+  Dans le dossier du zip, l'aventure et Premiers pas partagent la même liste de joueurs.
+
+## Panneaux pliables
+
+Dans l'aventure, la **Carte**, les **Tables du royaume** et la **Besace** se plient et se déplient en touchant
+leur titre. Repliés, ils affichent un résumé (« 13/40 », « 5 tables », « 4 objets · 2 badges »). Chaque appareil
+se souvient de ce qui est plié.
+
 ## Sur tablette
 
 Les deux jeux sont pensés pour iPad et tablettes Android, en portrait comme en paysage :
@@ -349,4 +370,4 @@ Vercel ou n'importe quel hébergement web.
 ## Licences
 
 - sql.js : MIT (voir `vendor/LICENSE-sql.js.txt`).
-- Polices chargées depuis Google Fonts : Pirata One, Alegreya, IBM Plex Mono, Cinzel (licence SIL OFL).
+- Polices chargées depuis Google Fonts : MedievalSharp, Alegreya, IBM Plex Mono, Cinzel (licence SIL OFL).

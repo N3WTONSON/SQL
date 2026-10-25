@@ -107,6 +107,9 @@ function renderHUD(hit) {
   $("plevel").textContent = playerLevel();
   $("xpfill").style.width = ((state.xp % 150) / 150 * 100) + "%";
   $("scrolls").textContent = state.scrolls;
+  $("mapInfo").textContent = `${state.completed.length}/${LEVELS.length}`;
+  $("lootInfo").textContent = `${state.loot.filter((l) => l.kind === "item").length} objets · ${state.loot.filter((l) => l.kind === "badge").length} badges`;
+  $("tablesInfo").textContent = LEVELS[state.current].id >= 25 ? "6 tables" : "5 tables";
   $("hintBtn").disabled = state.scrolls <= 0;
 }
 

@@ -7,14 +7,14 @@
 <link rel="icon" href="assets/logo-128.webp" type="image/webp">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Alegreya:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;600&family=Cinzel:wght@700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Alegreya:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;600&family=Cinzel:wght@700&display=swap">
 <style>
 /* Layout : une seule carte au centre, une seule chose à faire à la fois. Même monde que le Grimoire, en plus calme. */
 :root {
   --night: #11132a; --stone: #191c36; --stone-2: #222644; --seam: #343a62;
   --ink: #ece7da; --ink-dim: #a3a3b8; --torch: #f0a43a; --torch-deep: #b8701a;
   --rune: #6fd3b0; --blood: #e2574c; --arcane: #66c9ff;
-  --f-display: "Pirata One", Georgia, serif;
+  --f-display: "MedievalSharp", "Uncial Antiqua", Georgia, serif;
   --f-body: "Alegreya", Georgia, "Times New Roman", serif;
   --f-code: "IBM Plex Mono", ui-monospace, Menlo, monospace;
   --f-hud: "Cinzel", "Trajan Pro", Georgia, serif;
@@ -31,7 +31,7 @@ img { max-width: 100%; }
 
 header { display: flex; align-items: center; gap: 12px; padding-block: 14px; border-bottom: 2px solid var(--seam); flex-wrap: wrap; }
 header img { width: 44px; height: auto; }
-header h1 { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 28px; color: var(--torch); line-height: 1; margin-right: auto; }
+header h1 { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 26px; color: var(--torch); line-height: 1; margin-right: auto; }
 header h1 small { display: block; font-family: var(--f-hud); font-size: 12px; color: var(--ink-dim); letter-spacing: 1.5px; margin-top: 4px; }
 .dots { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; max-width: 360px; }
 .dot { width: 16px; height: 8px; background: var(--seam); }
@@ -40,7 +40,7 @@ header h1 small { display: block; font-family: var(--f-hud); font-size: 12px; co
 
 .lessonTag { font-family: var(--f-hud); font-size: 13px; letter-spacing: 1.6px; color: var(--arcane); }
 .card { background: var(--stone); border: 1px solid var(--seam); padding: 24px; display: flex; flex-direction: column; gap: 16px; }
-.card h2 { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: clamp(28px, 5vw, 38px); line-height: 1.1; text-wrap: balance; }
+.card h2 { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: clamp(26px, 4.5vw, 34px); line-height: 1.1; text-wrap: balance; }
 .card p { margin: 0; max-width: 62ch; }
 .ask { font-size: 22px; line-height: 1.4; border-left: 4px solid var(--torch); padding: 6px 0 6px 14px; }
 .stepcount { font-family: var(--f-hud); font-size: 12px; letter-spacing: 1.4px; color: var(--ink-dim); }
@@ -222,6 +222,37 @@ textarea { font-size: max(16px, 1em); }            /* sous 16 px, l'iPad zoome d
   .tile { min-height: 52px; min-width: 48px; }
   .opt { min-height: 52px; }
 }
+
+/* ---------- Écran « Qui joue ? » ---------- */
+.pgate { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 16px; background: rgba(8, 9, 13, 0.88); overflow-y: auto; }
+.pcard { width: 100%; max-width: 460px; background: var(--stone); border: 2px solid var(--torch); padding: 24px; display: flex; flex-direction: column; gap: 12px; text-align: center; animation: pgIn 0.35s ease-out; }
+@keyframes pgIn { from { opacity: 0; transform: translateY(12px) scale(0.98); } to { opacity: 1; transform: none; } }
+.plogo { width: 120px; height: auto; margin: 0 auto; filter: drop-shadow(0 0 18px rgba(102, 201, 255, 0.3)); }
+.pcard h2 { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 32px; color: var(--torch); line-height: 1.1; }
+.pcard p { margin: 0; line-height: 1.45; }
+.plist { display: flex; flex-direction: column; gap: 8px; text-align: left; }
+.prow { display: flex; gap: 6px; }
+.pbtn { flex: 1; min-height: 52px; display: flex; flex-direction: column; justify-content: center; gap: 2px; padding: 8px 14px; background: var(--stone-2); border: 1px solid var(--seam); color: var(--ink); cursor: pointer; text-align: left; font: inherit; }
+.pbtn b { font-size: 18px; color: var(--torch); }
+.pbtn span { font-family: var(--f-code); font-size: 12px; color: var(--ink-dim); }
+.pbtn:hover, .pbtn:focus-visible { border-color: var(--torch); outline: none; }
+.pdel { min-width: 48px; background: none; border: 1px solid var(--seam); color: var(--ink-dim); cursor: pointer; font: inherit; font-size: 13px; }
+.pdel.armed { color: var(--blood); border-color: var(--blood); }
+.psep { color: var(--ink-dim); font-size: 14px; }
+.pform { display: flex; flex-direction: column; gap: 6px; text-align: left; }
+.pform label { font-family: var(--f-hud); font-size: 12px; letter-spacing: 1.2px; color: var(--ink-dim); text-transform: uppercase; }
+.pline { display: flex; gap: 8px; }
+.pline input { flex: 1; min-width: 0; min-height: 48px; font-family: var(--f-body); font-size: 18px; padding: 8px 12px; background: var(--night); color: var(--ink); border: 1px solid var(--seam); }
+.pline input:focus { outline: none; border-color: var(--torch); }
+.pgo { min-height: 48px; padding: 0 18px; font-family: var(--f-hud); font-size: 14px; letter-spacing: 1px; background: var(--torch); color: #1a1206; border: 0; cursor: pointer; }
+.perr { color: var(--blood); font-size: 14px; }
+.pnote { font-size: 13px; color: var(--ink-dim); }
+.pclose { align-self: center; background: none; border: 0; color: var(--arcane); text-decoration: underline; cursor: pointer; font: inherit; min-height: 40px; }
+.playerBtn { display: inline-flex; align-items: center; gap: 6px; max-width: 200px; min-height: 32px; font-family: var(--f-body); font-size: 15px; background: none; border: 1px solid var(--seam); color: var(--ink); padding: 4px 10px; cursor: pointer; }
+.playerBtn b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--torch); font-weight: 600; }
+.playerBtn:hover { border-color: var(--torch); }
+@media (pointer: coarse) { .playerBtn { min-height: 42px; } }
+@media (max-width: 1400px) and (min-width: 521px) { .playerBtn { max-width: 140px; } }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 @media (max-width: 520px) { body { font-size: 18px; } .card { padding: 16px; } .ask { font-size: 20px; } .dot { width: 18px; } }
 </style>
@@ -233,7 +264,7 @@ textarea { font-size: max(16px, 1em); }            /* sous 16 px, l'iPad zoome d
     <img src="assets/logo-128.webp" alt="" width="44" height="47">
     <h1>Premiers pas<small>LE GRIMOIRE DES REQUÊTES</small></h1>
     <div class="dots" id="dots" aria-label="Progression"></div>
-    <div class="hudBtns"><a class="switchBtn" id="switchMode" href="index.html" data-switch title="Le Grimoire des Requêtes : l'aventure complète"><span class="arr">⇄</span>L'aventure<span class="long"> complète</span></a>
+    <div class="hudBtns"><button class="playerBtn" id="playerBtn" title="Changer de joueur" aria-label="Changer de joueur"><span aria-hidden="true">👤</span><b id="playerName">…</b></button><a class="switchBtn" id="switchMode" href="index.html" data-switch title="Le Grimoire des Requêtes : l'aventure complète"><span class="arr">⇄</span>L'aventure<span class="long"> complète</span></a>
     <button class="soundBtn" id="sound" aria-pressed="true">SON : OUI</button></div>
   </header>
   <div class="lessonTag" id="tag"></div>
@@ -1276,10 +1307,82 @@ function friendlyError(msg) {
 }
 
 /* ---------- État ---------- */
+
+/* ---------- JOUEURS : chaque joueur a sa propre partie, sauvée dans ce navigateur ---------- */
+const Players = (() => {
+  const KEY = "grimoire-joueurs-v1";
+  let d = { current: null, list: [] };
+  try { const x = JSON.parse(localStorage.getItem(KEY)); if (x && Array.isArray(x.list)) d = x; } catch (e) {}
+  const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(d)); } catch (e) {} };
+  const clean = (n) => String(n || "").replace(/[<>"`]/g, "").replace(/\s+/g, " ").trim().slice(0, 20);
+  const slot = (base, name) => `${base}::${String(name).toLowerCase()}`;
+  return {
+    get current() { return d.current; },
+    get list() { return d.list.slice(); },
+    clean, slot,
+    key: (base) => (d.current ? slot(base, d.current) : base),
+    read(base, name) { try { return JSON.parse(localStorage.getItem(slot(base, name))); } catch (e) { return null; } },
+    // choisir (ou créer) un joueur ; l'ancienne partie sans nom est confiée au premier joueur de ce navigateur
+    choose(name, legacyKeys) {
+      name = clean(name); if (!name) return null;
+      const found = d.list.find((n) => n.toLowerCase() === name.toLowerCase());
+      if (!found) {
+        d.list.push(name);
+        (legacyKeys || []).forEach((k) => { try {
+          const old = localStorage.getItem(k);
+          if (old && !localStorage.getItem(k + "::adopte") && !localStorage.getItem(slot(k, name))) { localStorage.setItem(slot(k, name), old); localStorage.setItem(k + "::adopte", name); }
+        } catch (e) {} });
+      }
+      d.current = found || name; persist(); return d.current;
+    },
+    forget(name, bases) {
+      d.list = d.list.filter((n) => n !== name); if (d.current === name) d.current = null; persist();
+      (bases || []).forEach((b) => { try { localStorage.removeItem(slot(b, name)); } catch (e) {} });
+    }
+  };
+})();
+// L'écran « Qui joue ? » : au premier accès, et quand on touche le bouton du joueur en haut
+function playerGate({ summary, bases, legacy, onChoose, canClose }) {
+  const old = document.getElementById("playerGate"); if (old) old.remove();
+  const g = document.createElement("div"); g.id = "playerGate"; g.className = "pgate";
+  const list = Players.list;
+  const e = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  g.innerHTML = `<div class="pcard" role="dialog" aria-modal="true" aria-labelledby="pgTitle">
+    <img class="plogo" src="assets/logo-480.webp" alt="">
+    <h2 id="pgTitle">${list.length ? "Qui joue ?" : "Bienvenue, aventurier !"}</h2>
+    ${list.length ? `<p>Touche ton nom pour reprendre ta partie là où tu l'as laissée.</p>
+      <div class="plist">${list.map((n, i) => `<div class="prow"><button class="pbtn" data-pick="${i}"><b>${e(n)}</b><span>${e(summary(n))}</span></button><button class="pdel" data-del="${i}" title="Effacer la partie de ${e(n)}" aria-label="Effacer la partie de ${e(n)}">✕</button></div>`).join("")}</div>
+      <p class="psep">ou nouveau joueur :</p>` : `<p>Avant de commencer, écris ton <b>nom de joueur</b>. Il sert à retrouver ta partie : la prochaine fois, choisis le même nom et tu reprendras là où tu t'es arrêté.</p>`}
+    <form class="pform" id="pgForm" autocomplete="off">
+      <label for="pgName">Ton nom de joueur</label>
+      <div class="pline"><input id="pgName" maxlength="20" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" enterkeyhint="go" placeholder="Par exemple : Lina">
+      <button class="pgo" type="submit">${list.length ? "Créer" : "Commencer"}</button></div>
+      <p class="perr" id="pgErr" hidden>Écris au moins une lettre.</p>
+    </form>
+    <p class="pnote">Ta partie est gardée dans ce navigateur, sur cet appareil. Chaque joueur a la sienne.</p>
+    ${canClose ? `<button class="pclose" id="pgClose">Annuler</button>` : ""}
+  </div>`;
+  document.body.appendChild(g);
+  const done = (name) => { const n = Players.choose(name, legacy); if (!n) return false; g.remove(); onChoose(n); return true; };
+  g.querySelectorAll("[data-pick]").forEach((b) => b.onclick = () => done(list[+b.dataset.pick]));
+  g.querySelectorAll("[data-del]").forEach((b) => { let armed = false; b.onclick = () => {
+    if (!armed) { armed = true; b.textContent = "Effacer ?"; b.classList.add("armed"); setTimeout(() => { armed = false; b.textContent = "✕"; b.classList.remove("armed"); }, 3000); return; }
+    const n = list[+b.dataset.del], wasCurrent = Players.current === n; Players.forget(n, bases);
+    playerGate({ summary, bases, legacy, onChoose, canClose: canClose && !wasCurrent }); }; });
+  document.getElementById("pgForm").onsubmit = (ev) => { ev.preventDefault();
+    if (!done(document.getElementById("pgName").value)) { document.getElementById("pgErr").hidden = false; document.getElementById("pgName").focus(); } };
+  if (canClose) document.getElementById("pgClose").onclick = () => g.remove();
+  setTimeout(() => (list.length ? g.querySelector(".pbtn") : document.getElementById("pgName")).focus(), 50);
+}
+
 const SAVE = "grimoire-premiers-pas-v1";
 let st = { l: 0, s: 0, done: [], v: 2 };
-try { const x = JSON.parse(localStorage.getItem(SAVE)); if (x && typeof x.l === "number") { st = x; if (st.v !== 2) { st.s = 0; st.v = 2; } } } catch (e) {}
-const save = () => { try { localStorage.setItem(SAVE, JSON.stringify(st)); } catch (e) {} };
+function loadSt() {
+  st = { l: 0, s: 0, done: [], v: 2 };
+  try { const x = JSON.parse(localStorage.getItem(Players.key(SAVE))); if (x && typeof x.l === "number") { st = x; if (st.v !== 2) { st.s = 0; st.v = 2; } } } catch (e) {}
+}
+loadSt();
+const save = () => { if (!Players.current) return; try { localStorage.setItem(Players.key(SAVE), JSON.stringify(st)); } catch (e) {} };
 let placed = [];   // blocs posés pour l'étape « build » en cours
 
 /* ---------- Rendu ---------- */
@@ -1577,9 +1680,10 @@ const ORDER_CHAIN_HTML = `<div class="chain">${["SELECT", "FROM", "JOIN", "WHERE
   `<span><b>${i + 1}</b><code>${k}${k === "JOIN" ? " … ON" : ""}</code><i>${QFR[k]}</i></span>`).join("")}</div>`;
 
 const TSAVE = "grimoire-entrainement-v1";
+function loadTR() { TR = { box: {}, last: "", streak: 0, sessions: 0 }; try { const x = JSON.parse(localStorage.getItem(Players.key(TSAVE))); if (x && x.box) TR = x; } catch (e) {} }
 let TR = { box: {}, last: "", streak: 0, sessions: 0 };
-try { const x = JSON.parse(localStorage.getItem(TSAVE)); if (x && x.box) TR = x; } catch (e) {}
-const tsave = () => { try { localStorage.setItem(TSAVE, JSON.stringify(TR)); } catch (e) {} };
+loadTR();
+const tsave = () => { if (!Players.current) return; try { localStorage.setItem(Players.key(TSAVE), JSON.stringify(TR)); } catch (e) {} };
 const dayStr = (d) => d.toISOString().slice(0, 10);
 const today = () => dayStr(new Date());
 const unlockedAt = (l) => st.done.includes(l) || st.l > l;
@@ -1749,10 +1853,23 @@ $("restart").onclick = () => {
   st = { l: 0, s: 0, done: [] }; placed = []; armed = false; $("restart").textContent = "Recommencer"; save(); render();
 };
 
+function ppSummary(name) {
+  const x = Players.read(SAVE, name);
+  if (!x || typeof x.l !== "number") return "nouvelle partie";
+  return x.l >= LESSONS.length ? "Premiers pas terminés" : `leçon ${x.l + 1} sur ${LESSONS.length} · ${(x.done || []).length} réussies`;
+}
+function showPlayer() { $("playerName").textContent = Players.current || "Joueur"; }
+function openPlayers(first) {
+  playerGate({ summary: ppSummary, bases: [SAVE, TSAVE], legacy: [SAVE, TSAVE], canClose: !first,
+    onChoose: () => { loadSt(); loadTR(); placed = []; showPlayer(); $("train").hidden = true; $("pocket").hidden = true; $("card").hidden = false; render(); FX.play("win"); window.scrollTo({ top: 0 }); } });
+}
+$("playerBtn").onclick = () => { FX.play("page"); openPlayers(false); };
+showPlayer();
 (async function boot() {
   try {
     SQL = await initSqlJs({ wasmBinary: Uint8Array.from(atob(WASM_B64), (c) => c.charCodeAt(0)) });
     render();
+    if (!Players.current) openPlayers(true);       // premier accès : on demande le nom du joueur
   } catch (e) { $("card").innerHTML = `<p>Le moteur n'a pas pu démarrer dans ce navigateur : ${esc(e.message)}</p>`; }
 })();
 </script>

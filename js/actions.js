@@ -90,7 +90,7 @@ function victory(L) {
       ${chapterEnd ? `<img class="logo sm" src="assets/logo-480.webp" alt="">` : ""}
       <h3 id="vt">${!next ? "Maître du Grimoire !" : chapterEnd ? `${esc(chName)} terminé !` : levelUp ? "Niveau supérieur !" : "Victoire !"}</h3>
       <p>${first ? `Mission « ${esc(L.title)} » accomplie.` : "Mission déjà accomplie : pas de nouvelle récompense, mais l'entraînement paie."}</p>
-      ${first ? `<div class="rewards"><span class="x">+${gained} XP</span><span class="i">${esc(L.item)}</span>${L.badge ? `<span class="b">${esc(L.badge)}</span>` : ""}${levelUp ? `<span class="x">NIV ${playerLevel()}</span>` : ""}${chapterEnd ? `<span class="i">+2 parchemins</span>` : ""}</div>` : ""}
+      ${first ? `<div class="rewards"><span class="x">+${gained} XP</span><span class="i">${esc(L.item)}</span>${L.badge ? `<span class="b">${esc(L.badge)}</span>` : ""}${levelUp ? `<span class="x">NIV ${playerLevel()}</span>` : ""}${chapterEnd ? `<span class="i">+2 📜 parchemins</span>` : ""}</div>` : ""}
       ${PEDAGOGY[L.id] ? `<div class="takeaway"><b>À RETENIR</b>${esc(PEDAGOGY[L.id].takeaway)}</div>` : ""}
       ${!next ? `<p>Grimoire terminé : ${state.xp} XP, niveau ${playerLevel()}, ${state.loot.filter((l) => l.kind === "badge").length} badges et ${state.loot.filter((l) => l.kind === "item").length} objets.</p>` : ""}
       <div class="btns"><button class="btn btn-cast" id="understandBtn">Comprendre pourquoi</button>
