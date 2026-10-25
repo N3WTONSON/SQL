@@ -2,38 +2,17 @@
 /* =====================================================================
    5. RENDU
    ===================================================================== */
-/* ---------- IMAGES : pixel art des 5 tables (12 × 12) ---------- */
-const PIX_PAL = { k: "#1a1630", o: "#f0a43a", y: "#f7d36b", g: "#a7adc4", d: "#6f7590", w: "#ece7da", b: "#66c9ff", B: "#3a7fc4",
-  r: "#e2574c", G: "#6fd3b0", D: "#2f9b78", p: "#c792ea", n: "#b07440", N: "#7a4a24", s: "#f2c79b" };
-const PIX = {
-  heros: [      // un chevalier casqué
-    ".....rr.....", "....rrr.....", "...gggggg...", "..gggggggg..", "..gkkggkkg..", "..gggggggg..",
-    "...dsssssd..", "....dddd....", "..bbbbbbbb..", ".bbbbbybbbb.", ".BbbbbbbbbB.", "..NN....NN.."],
-  monstres: [    // un slime à crocs
-    "............", "....GGGG....", "...GGGGGG...", "..GGGGGGGG..", ".GGwkGGwkGG.", ".GGwkGGwkGG.",
-    "GGGGGGGGGGGG", "GGkkkkkkkkGG", "GGkwkkkkwkGG", "DGGGGGGGGGGD", ".DGGGGGGGGD.", "..D..DD..D.."],
-  sorts: [      // une baguette et ses étincelles
-    "........y...", "........y...", "......yyyyy.", "........y...", ".......py.b.", "......p.....",
-    ".....p..b...", "....p.......", "...p........", "..p......b..", ".w..........", "............"],
-  inventaire: [   // un sac avec une pièce d'or
-    "............", "....NNNN....", ".....NN.....", "....kkkk....", "...nnnnnn...", "..nnnnnnnn..",
-    ".nnnnyynnnn.", ".nnnyyyynnn.", ".nnnnyynnnn.", ".nnnnnnnnnn.", "..nnnnnnnn..", "...NNNNNN..."],
-  visites: [     // le sablier du registre des gardes
-    "..NNNNNNNN..", "...wyyyyw...", "...wyyyyw...", "....wyyw....", ".....yy.....", ".....yy.....",
-    "....w.yw....", "...w..y.w...", "...w.yyyw...", "...wyyyyw...", "..NNNNNNNN..", "............"],
-  chateaux: [     // un château et ses drapeaux
-    ".rr......rr.", ".d.......d..", "g.g......g.g", "ggg.g..g.ggg", "gggggggggggg", "gkggggggggkg",
-    "gggggggggggg", "ggggNNNNgggg", "gggNnnnnNggg", "gggNnnnnNggg", "gggNnnnnNggg", "dddddddddddd"]
-};
+/* ---------- IMAGES : une icône emoji par table ---------- */
+const PIX = { heros: 1, monstres: 1, sorts: 1, inventaire: 1, chateaux: 1, visites: 1 };   // tables qui ont une icône (emoji, voir pixIcon)
 const TABLE_ICON_FR = { visites: "le registre des gardes", heros: "les héros", monstres: "les monstres", sorts: "les sorts", inventaire: "les objets des héros", chateaux: "les châteaux" };
 const TABLE_MEMO = { visites: "visites : qui est entré où, quel jour, à quelle heure", heros: "heros, sans accent : les héros", monstres: "monstres : les monstres",
   sorts: "sorts : les sortilèges que connaissent les héros", inventaire: "inventaire : le sac du héros, ses objets",
   chateaux: "chateaux, sans accent circonflexe : les châteaux" };
+// Icônes des tables : des emoji (ils remplacent les anciens petits dessins en pixels)
+const TABLE_EMOJI = { heros: "🛡️", monstres: "👹", sorts: "🪄", inventaire: "💰", chateaux: "🏰", visites: "📖", familiers: "🐾", quetes: "📜" };
 function pixIcon(t, size = 24, cls = "pix") {
-  const g = PIX[t]; if (!g) return "";
-  let r = "";
-  g.forEach((row, y) => [...row].forEach((c, x) => { if (PIX_PAL[c]) r += `<rect x="${x}" y="${y}" width="1" height="1" fill="${PIX_PAL[c]}"/>`; }));
-  return `<svg class="${cls}" viewBox="0 0 12 12" width="${size}" height="${size}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;
+  const e = TABLE_EMOJI[t]; if (!e) return "";
+  return `<span class="${cls} ico" style="font-size:${Math.round(size * 0.82)}px;width:${size}px;height:${size}px" aria-hidden="true">${e}</span>`;
 }
 
 /* ---------- BRUITAGES : synthétisés par le navigateur (Web Audio), aucun fichier ---------- */
@@ -101,13 +80,15 @@ const playerLevel = () => Math.floor(state.xp / 150) + 1;
 
 function renderHUD(hit) {
   $("hearts").innerHTML = Array.from({ length: MAX_HP }, (_, i) =>
-    `<span class="heart ${i >= state.hp ? "lost" : ""} ${hit && i === state.hp ? "hit" : ""}"></span>`).join("");
+    `<span class="heart ${i >= state.hp ? "lost" : ""} ${hit && i === state.hp ? "hit" : ""}" aria-hidden="true">${i >= state.hp ? "🖤" : "❤️"}</span>`).join("");
   $("hearts").setAttribute("aria-label", `${state.hp} points de vie sur ${MAX_HP}`);
   $("xp").textContent = state.xp;
   $("plevel").textContent = playerLevel();
   $("xpfill").style.width = ((state.xp % 150) / 150 * 100) + "%";
   $("scrolls").textContent = state.scrolls;
   $("mapInfo").textContent = `${state.completed.length}/${LEVELS.length}`;
+  $("railMap").textContent = `${state.completed.length}/${LEVELS.length}`;
+  $("railLoot").textContent = state.loot.length ? `${state.loot.length}` : "";
   $("lootInfo").textContent = `${state.loot.filter((l) => l.kind === "item").length} objets · ${state.loot.filter((l) => l.kind === "badge").length} badges`;
   $("tablesInfo").textContent = LEVELS[state.current].id >= 25 ? "6 tables" : "5 tables";
   $("hintBtn").disabled = state.scrolls <= 0;

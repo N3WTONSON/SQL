@@ -116,10 +116,9 @@ Ensuite, l'aventure complète (`index.html`) reprend ces notions dès le Chapitr
 
 ## Images, animations et bruitages
 
-- **Pixel art des 5 tables** (dessinés en code, `PIX` dans `fx`) : un chevalier pour `heros`, un slime pour
-  `monstres`, une baguette pour `sorts`, un sac pour `inventaire`, un château pour `chateaux`. On les retrouve
-  sur la carte « Les 5 tables du royaume » (leçon 1 et aide-mémoire), dans les blocs, au-dessus des tableaux,
-  dans le panneau des tables et sous chaque mission (« Tables à utiliser »).
+- **Une icône emoji par table** : 🛡️ `heros`, 👹 `monstres`, 🪄 `sorts`, 💰 `inventaire`, 🏰 `chateaux`, 📖 `visites`.
+  On les retrouve dans les blocs, au-dessus des tableaux, dans le panneau des tables et sous chaque mission
+  (« Tables à utiliser »).
 - **Illustrations des tables** : une grande image par table (`assets/table-*.webp`) dans le panneau des tables
   et sur la carte « Les 5 tables du royaume » de Premiers pas, avec les **vraies colonnes** écrites par le jeu.
   Les trois châteaux ont chacun leur image (`assets/chateau-1.webp` à `chateau-3.webp`) : affichés côte à côte,
@@ -139,26 +138,60 @@ Ensuite, l'aventure complète (`index.html`) reprend ces notions dès le Chapitr
   bonne et mauvaise réponse, fanfare de fin de leçon, sort lancé, coup reçu (−1 PV), niveau supérieur, K.O.,
   parchemin déroulé. Le bouton **SON : OUI / NON** coupe tout et s'en souvient.
 
-## Joueurs
+## Joueurs, sauvegarde et classement
 
 Au premier accès, chaque jeu demande un **nom de joueur** (écran « Qui joue ? »). Chaque joueur a sa propre
 partie : mission en cours, XP, objets, leçons de Premiers pas et boîtes de l'entraînement. Le bouton 👤 en haut
-permet de changer de joueur ; l'écran liste les joueurs de ce navigateur avec leur avancement
-(« mission 12 · 12/40 réussies · 1500 XP »), et un double toucher sur ✕ efface une partie.
+permet de changer de joueur ; un double toucher sur ✕ efface une partie. Le nom ne tient pas compte des
+majuscules : « tom » retrouve la partie de « Tom ».
 
-- Le bouton 🏆 **Classement** (dans l'aventure) classe les joueurs de ce navigateur par niveau, puis par XP,
-  avec leurs missions et badges. Le classement est calculé par une vraie requête SQL,
-  `RANK() OVER (ORDER BY niveau DESC, xp DESC)`, affichée sous le tableau.
-- Le nom ne tient pas compte des majuscules : « tom » retrouve la partie de « Tom ».
-- Une partie commencée avant cette mise à jour est confiée au premier joueur créé.
-- Tout reste dans le navigateur (localStorage), sur cet appareil : pas de compte, rien n'est envoyé.
-  Dans le dossier du zip, l'aventure et Premiers pas partagent la même liste de joueurs.
+### Continuer sa partie sur un autre appareil : le code de sauvegarde
+
+Le site est statique (GitHub Pages) : il n'y a pas de serveur pour garder les parties. La partie vit donc sur
+l'appareil, et on la transporte avec un **code de sauvegarde** :
+
+1. Sur l'appareil de départ : 👤 → bouton **📤** à côté de son nom → **Copier le code** (ou **Télécharger le fichier**).
+2. Sur l'autre appareil : ouvrir le jeu → **📥 Entre ton code de sauvegarde** → coller le code (ou ouvrir le fichier)
+   → **Retrouver ma partie**.
+
+Le code (environ 500 caractères, il commence par `GRIM1.`) contient la partie de l'aventure **et** celle de Premiers
+pas, avec l'entraînement. C'est une photo de la partie à cet instant : on refait un code quand on a avancé.
+Si le joueur existe déjà sur l'appareil, le jeu demande de confirmer avant de remplacer sa partie.
+
+### Le classement 🏆
+
+Le bouton **🏆 Classement** (dans l'aventure) classe les joueurs par niveau, puis par XP, avec leurs missions et
+badges. Il est calculé par une vraie requête SQL, `RANK() OVER (ORDER BY niveau DESC, xp DESC)`, affichée sous le
+tableau. Le même joueur n'apparaît qu'une fois, même s'il a joué sur plusieurs appareils : il est reconnu par son
+identifiant, transporté par le code de sauvegarde.
+
+**Classement commun à tous les appareils (facultatif, gratuit, 5 minutes).** Un site GitHub Pages ne peut rien
+enregistrer ; les scores passent donc par une feuille Google Sheets. Seuls le nom, le niveau, l'XP, les missions et
+les badges y sont envoyés, la partie elle-même reste sur l'appareil.
+
+1. Crée une feuille sur sheets.google.com, puis **Extensions → Apps Script**.
+2. Remplace le contenu par celui du fichier `classement/Code.gs`, et enregistre.
+3. **Déployer → Nouveau déploiement → Application Web** ; « Exécuter en tant que : moi », « Qui a accès : tout le
+   monde ». Autorise l'accès quand Google le demande, puis copie l'adresse qui se termine par `/exec`.
+4. Dans `config.js` (à la racine du dépôt GitHub), colle cette adresse entre les guillemets :
+   `window.GRIMOIRE_CLASSEMENT_URL = "https://script.google.com/macros/s/…/exec";`
+5. Enregistre le fichier sur GitHub : quelques minutes après, le classement indique
+   « 🌍 Classement en ligne : les joueurs de tous les appareils ».
+
+Sans adresse, ou sans Internet, le classement montre les joueurs de l'appareil. N'importe qui connaissant l'adresse
+pourrait envoyer un faux score : c'est fait pour une classe ou une famille, pas pour un concours.
+Les pages publiées sur claude.ai restent en classement local (elles ne peuvent pas joindre Google).
 
 ## Panneaux pliables
 
 Dans l'aventure, la **Carte**, les **Tables du royaume** et la **Besace** se plient et se déplient en touchant
 leur titre. Repliés, ils affichent un résumé (« 13/40 », « 5 tables », « 4 objets · 2 badges »). Chaque appareil
 se souvient de ce qui est plié.
+
+**La colonne entière se replie aussi** : le bouton « ⇥ Replier la colonne » la range sur la droite en une fine
+barre d'icônes (🗺️ Carte, 📚 Tables, 🎒 Besace) et la mission prend toute la largeur. Toucher une icône fait glisser
+la colonne par-dessus la page ; choisir une mission, toucher à côté ou « ✕ Fermer » la referme. « 📌 Épingler » la
+remet toujours visible. Le choix est gardé sur l'appareil.
 
 ## Sur tablette
 
@@ -282,6 +315,8 @@ Ce contenu se trouve dans l'objet `PEDAGOGY` (`js/data/levels.js`) : `lesson`, `
 ```
 grimoire-des-requetes/
 ├── index.html                  page du jeu (charge les scripts dans l'ordre)
+├── config.js                   réglage du classement commun (adresse Google Apps Script)
+├── classement/Code.gs          le script à coller dans Google Sheets pour ce classement
 ├── css/style.css               thème : tokens de couleur et de typo en tête de fichier
 ├── js/
 │   ├── data/schema.js          base du royaume (CREATE TABLE + INSERT)

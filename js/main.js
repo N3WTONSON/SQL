@@ -14,6 +14,33 @@ function wire() {
     if (lv) { state.current = +lv.dataset.lvl; save(); renderMap(); renderLevel(); }
   });
   $("cast").onclick = cast;
+  // Colonne de droite : épinglée (toujours visible) ou repliée en barre d'icônes ; chaque appareil s'en souvient
+  const side = { rail: false };
+  try { side.rail = localStorage.getItem("grimoire-colonne") === "repliee"; } catch (e) {}
+  const closeDrawer = () => { document.body.classList.remove("drawer"); $("shade").hidden = true; };
+  const applySide = () => {
+    document.body.classList.toggle("rail", side.rail); if (!side.rail) closeDrawer();
+    $("pinBtn").innerHTML = side.rail
+      ? `<span class="ri" aria-hidden="true">📌</span><span class="rl">Épingler</span>`
+      : `<span class="ri" aria-hidden="true">⇥</span><span class="rl">Replier la colonne</span>`;
+    $("pinBtn").title = side.rail ? "Épingler la colonne : elle reste toujours visible" : "Replier la colonne sur la droite pour agrandir la mission";
+    try { localStorage.setItem("grimoire-colonne", side.rail ? "repliee" : "epinglee"); } catch (e) {}
+  };
+  $("pinBtn").onclick = () => { side.rail = !side.rail; FX.play(side.rail ? "unclick" : "click"); applySide(); };
+  document.querySelectorAll("[data-open]").forEach((b) => b.onclick = () => {
+    const panel = $(b.dataset.open);
+    document.body.classList.add("drawer"); $("shade").hidden = false; panel.open = true; FX.play("page");
+    setTimeout(() => panel.scrollIntoView({ block: "start", behavior: "smooth" }), 30);
+  });
+  $("shade").onclick = closeDrawer; $("drawerClose").onclick = () => { FX.play("unclick"); closeDrawer(); };
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && document.body.classList.contains("drawer")) closeDrawer(); });
+  // choisir une mission dans la carte referme le tiroir
+  $("map").addEventListener("click", (e) => { if (e.target.closest(".lvl[data-lvl]:not(.locked)")) closeDrawer(); });
+  applySide();
+  // hauteur réelle de la barre du haut (elle peut passer sur 2 lignes) : la barre d'icônes se cale dessous
+  const hudH = () => document.documentElement.style.setProperty("--hudH", document.querySelector(".hud").offsetHeight + "px");
+  hudH(); window.addEventListener("resize", hudH);
+  if (window.ResizeObserver) new ResizeObserver(hudH).observe(document.querySelector(".hud"));
   // panneaux pliables : chaque appareil se souvient de ce qui est plié
   ["foldMap", "foldTables", "foldLoot"].forEach((id) => {
     const el = $(id);
@@ -50,6 +77,7 @@ function wire() {
     });
     renderSchema(); renderLevel();
     $("cast").disabled = false;
+    if (Players.current) pushScore(true);          // le classement en ligne connaît le dernier score
     if (!Players.current) openPlayers(true);       // premier accès : on demande le nom du joueur
     else if (!state.seenIntro) showIntro();
   } catch (e) {

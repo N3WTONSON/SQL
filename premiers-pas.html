@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta charset="utf-8">
 <title>Grimoire : Premiers pas</title>
 <link rel="icon" href="assets/logo-128.webp" type="image/webp">
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -150,7 +151,7 @@ textarea { width: 100%; min-height: 96px; resize: vertical; font-family: var(--f
 .pop { animation: pop .35s ease-out; }
 @keyframes pop { from { transform: scale(.96); opacity: .4; } to { transform: none; opacity: 1; } }
 /* --- images, sons, animations --- */
-.pix { image-rendering: pixelated; flex: none; vertical-align: middle; }
+.pix.ico { display: inline-flex; align-items: center; justify-content: center; flex: none; vertical-align: middle; line-height: 1; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
 .tile .pix { margin: 0 auto 2px; }
 .zoneLabel .pix { margin-right: 6px; vertical-align: -6px; }
 .hudBtns { display: flex; gap: 8px; align-items: center; margin-left: auto; }
@@ -248,6 +249,17 @@ textarea { font-size: max(16px, 1em); }            /* sous 16 px, l'iPad zoome d
 .perr { color: var(--blood); font-size: 14px; }
 .pnote { font-size: 13px; color: var(--ink-dim); }
 .pclose { align-self: center; background: none; border: 0; color: var(--arcane); text-decoration: underline; cursor: pointer; font: inherit; min-height: 40px; }
+.pexp { font-size: 18px; }
+.pimport { background: none; border: 1px dashed var(--seam); color: var(--arcane); padding: 10px 12px; min-height: 48px; cursor: pointer; font: inherit; font-size: 15px; text-align: center; }
+.pimport:hover { border-color: var(--arcane); }
+.pimport b { color: var(--ink); }
+.pcode { width: 100%; min-height: 120px; resize: vertical; font-family: var(--f-code); font-size: 16px; line-height: 1.35; padding: 10px; background: var(--night); color: var(--ink); border: 1px solid var(--seam); word-break: break-all; }
+.pbtns { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.pgo.alt { background: none; border: 1px solid var(--torch); color: var(--torch); }
+.perr.ok { color: var(--rune); }
+.pfile { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; border: 1px solid var(--seam); cursor: pointer; color: var(--ink); }
+.pfile input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.pcard code { font-family: var(--f-code); color: var(--torch); }
 .playerBtn { display: inline-flex; align-items: center; gap: 6px; max-width: 200px; min-height: 32px; font-family: var(--f-body); font-size: 15px; background: none; border: 1px solid var(--seam); color: var(--ink); padding: 4px 10px; cursor: pointer; }
 .playerBtn b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--torch); font-weight: 600; }
 .playerBtn:hover { border-color: var(--torch); }
@@ -284,35 +296,17 @@ textarea { font-size: max(16px, 1em); }            /* sous 16 px, l'iPad zoome d
 <script>
 "use strict";
 const SCHEMA_SQL = "\nCREATE TABLE visites (\n  id INTEGER PRIMARY KEY, num_heros INTEGER REFERENCES heros(id), num_chateau INTEGER REFERENCES chateaux(id), jour INTEGER, heure INTEGER\n);\nCREATE TABLE chateaux (\n  id INTEGER PRIMARY KEY, nom TEXT NOT NULL, region TEXT, seigneur TEXT, tresor INTEGER\n);\nCREATE TABLE heros (\n  id INTEGER PRIMARY KEY, nom TEXT NOT NULL, classe TEXT, niveau INTEGER, pv INTEGER, fortune INTEGER,\n  num_chateau INTEGER REFERENCES chateaux(id)\n);\nCREATE TABLE monstres (\n  id INTEGER PRIMARY KEY, nom TEXT NOT NULL, type TEXT, region TEXT, pv INTEGER, danger INTEGER, butin TEXT\n);\nCREATE TABLE sorts (\n  id INTEGER PRIMARY KEY, nom TEXT NOT NULL, ecole TEXT, puissance INTEGER, mana INTEGER,\n  num_heros INTEGER REFERENCES heros(id)\n);\nCREATE TABLE inventaire (\n  id INTEGER PRIMARY KEY, objet TEXT NOT NULL, rarete TEXT, valeur INTEGER,\n  num_heros INTEGER REFERENCES heros(id)\n);\n\nINSERT INTO visites VALUES\n (1,1,1,3,19),(2,3,1,3,21),(3,4,1,3,22),(4,6,1,3,23),(5,2,2,3,22),(6,5,2,3,21),(7,1,1,2,22),(8,4,3,3,23),(9,6,3,2,20);\n\nINSERT INTO chateaux VALUES\n (1,'Bastion de l''Aube','Plaines Dorées','Reine Ysolde',12000),\n (2,'Fort Roc-Tonnerre','Pics Gelés','Thane Hrolf',4300),\n (3,'Tour Penchée de Brumeval','Marais Putride','Archimage Ombrelin',870);\n\nINSERT INTO heros VALUES\n (1,'Aria Lamebrume','Paladin',12,140,320,1),\n (2,'Borin Barbe-de-Fer','Guerrier',9,180,75,2),\n (3,'Lyra Murmure-Vent','Mage',14,85,510,1),\n (4,'Kael Pas-Feutré','Voleur',7,95,1200,3),\n (5,'Mira Chantelune','Druide',10,110,40,2),\n (6,'Gédéon le Distrait','Mage',3,60,5,3);\n\nINSERT INTO monstres VALUES\n (1,'Gobelin Grincheux','Gobelin','Forêt Sombre',30,2,'Dent cariée'),\n (2,'Loup Spectral','Bête','Forêt Sombre',65,5,'Croc d''ectoplasme'),\n (3,'Troll des Ponts','Troll','Marais Putride',150,7,'Péage impayé'),\n (4,'Champignon Hurleur','Plante','Forêt Sombre',20,1,'Spore bruyante'),\n (5,'Ours-Hibou','Bête','Forêt Sombre',90,6,'Plume de 40 kg'),\n (6,'Liche Mineure','Mort-vivant','Crypte Oubliée',120,8,'Phylactère fêlé'),\n (7,'Slime Collant','Gelée','Marais Putride',45,3,'Gelée à la menthe'),\n (8,'Dragonnet Boudeur','Dragon','Pics Gelés',200,9,'Écaille vexée'),\n (9,'Araignée Tisse-Nuit','Bête','Forêt Sombre',55,4,'Soie d''ombre');\n\nINSERT INTO sorts VALUES\n (1,'Boule de Feu','Feu',80,30,3),\n (2,'Lumière Sacrée','Lumière',60,25,1),\n (3,'Ronces Vivantes','Nature',45,20,5),\n (4,'Pas de l''Ombre','Ombre',30,15,4),\n (5,'Tempête de Givre','Glace',95,45,3),\n (6,'Étincelle Ratée','Feu',5,1,6),\n (7,'Jugement Divin','Lumière',110,60,1),\n (8,'Peau d''Écorce','Nature',25,10,5);\n\nINSERT INTO inventaire VALUES\n (1,'Épée Solaire','Légendaire',5000,1),\n (2,'Hache à Double Tranchant','Rare',800,2),\n (3,'Bâton de Cristal','Épique',2400,3),\n (4,'Crochets de Serrure','Commun',15,4),\n (5,'Bourse Trouée','Commun',1,6),\n (6,'Graine d''Yggdrasil','Légendaire',7000,5),\n (7,'Potion Douteuse','Commun',3,6),\n (8,'Cape d''Invisibilité (presque)','Rare',950,4);\n";
-/* ---------- IMAGES : pixel art des 5 tables (12 × 12) ---------- */
-const PIX_PAL = { k: "#1a1630", o: "#f0a43a", y: "#f7d36b", g: "#a7adc4", d: "#6f7590", w: "#ece7da", b: "#66c9ff", B: "#3a7fc4",
-  r: "#e2574c", G: "#6fd3b0", D: "#2f9b78", p: "#c792ea", n: "#b07440", N: "#7a4a24", s: "#f2c79b" };
-const PIX = {
-  heros: [      // un chevalier casqué
-    ".....rr.....", "....rrr.....", "...gggggg...", "..gggggggg..", "..gkkggkkg..", "..gggggggg..",
-    "...dsssssd..", "....dddd....", "..bbbbbbbb..", ".bbbbbybbbb.", ".BbbbbbbbbB.", "..NN....NN.."],
-  monstres: [    // un slime à crocs
-    "............", "....GGGG....", "...GGGGGG...", "..GGGGGGGG..", ".GGwkGGwkGG.", ".GGwkGGwkGG.",
-    "GGGGGGGGGGGG", "GGkkkkkkkkGG", "GGkwkkkkwkGG", "DGGGGGGGGGGD", ".DGGGGGGGGD.", "..D..DD..D.."],
-  sorts: [      // une baguette et ses étincelles
-    "........y...", "........y...", "......yyyyy.", "........y...", ".......py.b.", "......p.....",
-    ".....p..b...", "....p.......", "...p........", "..p......b..", ".w..........", "............"],
-  inventaire: [   // un sac avec une pièce d'or
-    "............", "....NNNN....", ".....NN.....", "....kkkk....", "...nnnnnn...", "..nnnnnnnn..",
-    ".nnnnyynnnn.", ".nnnyyyynnn.", ".nnnnyynnnn.", ".nnnnnnnnnn.", "..nnnnnnnn..", "...NNNNNN..."],
-  chateaux: [     // un château et ses drapeaux
-    ".rr......rr.", ".d.......d..", "g.g......g.g", "ggg.g..g.ggg", "gggggggggggg", "gkggggggggkg",
-    "gggggggggggg", "ggggNNNNgggg", "gggNnnnnNggg", "gggNnnnnNggg", "gggNnnnnNggg", "dddddddddddd"]
-};
+/* ---------- IMAGES : une icône emoji par table ---------- */
+const PIX = { heros: 1, monstres: 1, sorts: 1, inventaire: 1, chateaux: 1, visites: 1 };   // tables qui ont une icône (emoji, voir pixIcon)
 const TABLE_ICON_FR = { heros: "les héros", monstres: "les monstres", sorts: "les sorts", inventaire: "les objets des héros", chateaux: "les châteaux" };
 const TABLE_MEMO = { heros: "heros, sans accent : les héros", monstres: "monstres : les monstres",
   sorts: "sorts : les sortilèges que connaissent les héros", inventaire: "inventaire : le sac du héros, ses objets",
   chateaux: "chateaux, sans accent circonflexe : les châteaux" };
+// Icônes des tables : des emoji (ils remplacent les anciens petits dessins en pixels)
+const TABLE_EMOJI = { heros: "🛡️", monstres: "👹", sorts: "🪄", inventaire: "💰", chateaux: "🏰", visites: "📖", familiers: "🐾", quetes: "📜" };
 function pixIcon(t, size = 24, cls = "pix") {
-  const g = PIX[t]; if (!g) return "";
-  let r = "";
-  g.forEach((row, y) => [...row].forEach((c, x) => { if (PIX_PAL[c]) r += `<rect x="${x}" y="${y}" width="1" height="1" fill="${PIX_PAL[c]}"/>`; }));
-  return `<svg class="${cls}" viewBox="0 0 12 12" width="${size}" height="${size}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;
+  const e = TABLE_EMOJI[t]; if (!e) return "";
+  return `<span class="${cls} ico" style="font-size:${Math.round(size * 0.82)}px;width:${size}px;height:${size}px" aria-hidden="true">${e}</span>`;
 }
 
 /* ---------- BRUITAGES : synthétisés par le navigateur (Web Audio), aucun fichier ---------- */
@@ -1311,21 +1305,26 @@ function friendlyError(msg) {
 /* ---------- JOUEURS : chaque joueur a sa propre partie, sauvée dans ce navigateur ---------- */
 const Players = (() => {
   const KEY = "grimoire-joueurs-v1";
-  let d = { current: null, list: [] };
-  try { const x = JSON.parse(localStorage.getItem(KEY)); if (x && Array.isArray(x.list)) d = x; } catch (e) {}
+  let d = { current: null, list: [], ids: {} };
+  try { const x = JSON.parse(localStorage.getItem(KEY)); if (x && Array.isArray(x.list)) d = Object.assign({ ids: {} }, x); } catch (e) {}
   const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(d)); } catch (e) {} };
   const clean = (n) => String(n || "").replace(/[<>"`]/g, "").replace(/\s+/g, " ").trim().slice(0, 20);
-  const slot = (base, name) => `${base}::${String(name).toLowerCase()}`;
+  const low = (n) => String(n).toLowerCase();
+  const slot = (base, name) => `${base}::${low(name)}`;
+  const newId = () => (window.crypto && crypto.randomUUID ? crypto.randomUUID() : "j" + Date.now().toString(36) + Math.random().toString(36).slice(2, 10));
   return {
     get current() { return d.current; },
     get list() { return d.list.slice(); },
     clean, slot,
     key: (base) => (d.current ? slot(base, d.current) : base),
     read(base, name) { try { return JSON.parse(localStorage.getItem(slot(base, name))); } catch (e) { return null; } },
+    // identifiant unique du joueur : il le suit d'un appareil à l'autre grâce au code de sauvegarde
+    idOf(name) { if (!d.ids[low(name)]) { d.ids[low(name)] = newId(); persist(); } return d.ids[low(name)]; },
+    has: (name) => d.list.some((n) => low(n) === low(clean(name))),
     // choisir (ou créer) un joueur ; l'ancienne partie sans nom est confiée au premier joueur de ce navigateur
     choose(name, legacyKeys) {
       name = clean(name); if (!name) return null;
-      const found = d.list.find((n) => n.toLowerCase() === name.toLowerCase());
+      const found = d.list.find((n) => low(n) === low(name));
       if (!found) {
         d.list.push(name);
         (legacyKeys || []).forEach((k) => { try {
@@ -1333,25 +1332,62 @@ const Players = (() => {
           if (old && !localStorage.getItem(k + "::adopte") && !localStorage.getItem(slot(k, name))) { localStorage.setItem(slot(k, name), old); localStorage.setItem(k + "::adopte", name); }
         } catch (e) {} });
       }
-      d.current = found || name; persist(); return d.current;
+      d.current = found || name; this.idOf(d.current); persist(); return d.current;
     },
     forget(name, bases) {
-      d.list = d.list.filter((n) => n !== name); if (d.current === name) d.current = null; persist();
+      d.list = d.list.filter((n) => n !== name); delete d.ids[low(name)]; if (d.current === name) d.current = null; persist();
       (bases || []).forEach((b) => { try { localStorage.removeItem(slot(b, name)); } catch (e) {} });
+    },
+    // tout ce qui appartient à un joueur sur cet appareil (aventure, Premiers pas, entraînement)
+    snapshot(name) {
+      const out = { v: 1, n: name, id: this.idOf(name), k: {} }, tail = "::" + low(name);
+      try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.endsWith(tail) && k.startsWith("grimoire-") && !k.startsWith("grimoire-joueurs")) out.k[k.slice(0, -tail.length)] = localStorage.getItem(k); } } catch (e) {}
+      return out;
+    },
+    restore(data) {
+      const name = clean(data.n); if (!name) return null;
+      const found = d.list.find((n) => low(n) === low(name)) || name;
+      if (!d.list.includes(found)) d.list.push(found);
+      if (data.id) d.ids[low(found)] = String(data.id).slice(0, 60);
+      Object.entries(data.k || {}).forEach(([base, val]) => { if (/^grimoire-[\w-]+$/.test(base) && typeof val === "string") try { localStorage.setItem(slot(base, found), val); } catch (e) {} });
+      d.current = found; persist(); return found;
     }
   };
 })();
+
+/* ---------- CODE DE SAUVEGARDE : la partie tient dans un texte à copier sur un autre appareil ---------- */
+const b64u = {
+  enc: (bytes) => { let s = ""; bytes.forEach((b) => { s += String.fromCharCode(b); }); return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); },
+  dec: (str) => { const s = atob(str.replace(/-/g, "+").replace(/_/g, "/")); return Uint8Array.from(s, (c) => c.charCodeAt(0)); }
+};
+async function streamBytes(bytes, Stream, mode) { const r = new Blob([bytes]).stream().pipeThrough(new Stream(mode)); return new Uint8Array(await new Response(r).arrayBuffer()); }
+async function packSave(name) {
+  const raw = new TextEncoder().encode(JSON.stringify(Players.snapshot(name)));
+  if (window.CompressionStream) { try { return "GRIM1." + b64u.enc(await streamBytes(raw, CompressionStream, "deflate-raw")); } catch (e) {} }
+  return "GRIM0." + b64u.enc(raw);
+}
+async function unpackSave(code) {
+  const m = String(code || "").replace(/\s+/g, "").match(/^GRIM([01])\.([\w-]+)$/);
+  if (!m) throw new Error("Ce n'est pas un code de sauvegarde du Grimoire : il doit commencer par GRIM.");
+  let bytes = b64u.dec(m[2]);
+  if (m[1] === "1") { if (!window.DecompressionStream) throw new Error("Ce navigateur est trop ancien pour lire ce code. Mets-le à jour, ou essaie un autre navigateur."); bytes = await streamBytes(bytes, DecompressionStream, "deflate-raw"); }
+  const data = JSON.parse(new TextDecoder().decode(bytes));
+  if (!data || data.v !== 1 || !data.n || typeof data.k !== "object") throw new Error("Ce code est incomplet ou abîmé. Recopie-le en entier.");
+  return data;
+}
+
 // L'écran « Qui joue ? » : au premier accès, et quand on touche le bouton du joueur en haut
 function playerGate({ summary, bases, legacy, onChoose, canClose }) {
   const old = document.getElementById("playerGate"); if (old) old.remove();
   const g = document.createElement("div"); g.id = "playerGate"; g.className = "pgate";
   const list = Players.list;
   const e = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const reopen = (extra) => playerGate(Object.assign({ summary, bases, legacy, onChoose, canClose }, extra || {}));
   g.innerHTML = `<div class="pcard" role="dialog" aria-modal="true" aria-labelledby="pgTitle">
     <img class="plogo" src="assets/logo-480.webp" alt="">
     <h2 id="pgTitle">${list.length ? "Qui joue ?" : "Bienvenue, aventurier !"}</h2>
     ${list.length ? `<p>Touche ton nom pour reprendre ta partie là où tu l'as laissée.</p>
-      <div class="plist">${list.map((n, i) => `<div class="prow"><button class="pbtn" data-pick="${i}"><b>${e(n)}</b><span>${e(summary(n))}</span></button><button class="pdel" data-del="${i}" title="Effacer la partie de ${e(n)}" aria-label="Effacer la partie de ${e(n)}">✕</button></div>`).join("")}</div>
+      <div class="plist">${list.map((n, i) => `<div class="prow"><button class="pbtn" data-pick="${i}"><b>${e(n)}</b><span>${e(summary(n))}</span></button><button class="pdel pexp" data-exp="${i}" title="Code de sauvegarde de ${e(n)}, pour continuer sur un autre appareil" aria-label="Code de sauvegarde de ${e(n)}">📤</button><button class="pdel" data-del="${i}" title="Effacer la partie de ${e(n)}" aria-label="Effacer la partie de ${e(n)}">✕</button></div>`).join("")}</div>
       <p class="psep">ou nouveau joueur :</p>` : `<p>Avant de commencer, écris ton <b>nom de joueur</b>. Il sert à retrouver ta partie : la prochaine fois, choisis le même nom et tu reprendras là où tu t'es arrêté.</p>`}
     <form class="pform" id="pgForm" autocomplete="off">
       <label for="pgName">Ton nom de joueur</label>
@@ -1359,16 +1395,62 @@ function playerGate({ summary, bases, legacy, onChoose, canClose }) {
       <button class="pgo" type="submit">${list.length ? "Créer" : "Commencer"}</button></div>
       <p class="perr" id="pgErr" hidden>Écris au moins une lettre.</p>
     </form>
-    <p class="pnote">Ta partie est gardée dans ce navigateur, sur cet appareil. Chaque joueur a la sienne.</p>
+    <button class="pimport" id="pgImport">📥 Tu as déjà joué sur un autre appareil ? <b>Entre ton code de sauvegarde</b></button>
+    <p class="pnote">Ta partie est gardée sur cet appareil. Pour la continuer ailleurs, touche 📤 à côté de ton nom : tu obtiens un code de sauvegarde à recopier sur l'autre appareil.</p>
     ${canClose ? `<button class="pclose" id="pgClose">Annuler</button>` : ""}
   </div>`;
   document.body.appendChild(g);
+  const card = g.querySelector(".pcard");
   const done = (name) => { const n = Players.choose(name, legacy); if (!n) return false; g.remove(); onChoose(n); return true; };
   g.querySelectorAll("[data-pick]").forEach((b) => b.onclick = () => done(list[+b.dataset.pick]));
   g.querySelectorAll("[data-del]").forEach((b) => { let armed = false; b.onclick = () => {
     if (!armed) { armed = true; b.textContent = "Effacer ?"; b.classList.add("armed"); setTimeout(() => { armed = false; b.textContent = "✕"; b.classList.remove("armed"); }, 3000); return; }
     const n = list[+b.dataset.del], wasCurrent = Players.current === n; Players.forget(n, bases);
-    playerGate({ summary, bases, legacy, onChoose, canClose: canClose && !wasCurrent }); }; });
+    reopen({ canClose: canClose && !wasCurrent }); }; });
+  // 📤 : afficher le code de sauvegarde d'un joueur
+  g.querySelectorAll("[data-exp]").forEach((b) => b.onclick = async () => {
+    const n = list[+b.dataset.exp], code = await packSave(n);
+    card.innerHTML = `<h2>📤 Sauvegarde de ${e(n)}</h2>
+      <p>Pour continuer sur un autre appareil : ouvre le Grimoire là-bas, touche <b>« Entre ton code de sauvegarde »</b> et colle ce code.</p>
+      <textarea class="pcode" id="pgCode" readonly spellcheck="false">${code}</textarea>
+      <div class="pbtns"><button class="pgo" id="pgCopy">Copier le code</button><button class="pgo alt" id="pgFile">Télécharger le fichier</button></div>
+      <p class="perr ok" id="pgMsg" hidden></p>
+      <p class="pnote">Le code contient ta partie telle qu'elle est maintenant. Quand tu auras avancé, refais un nouveau code. Garde-le pour toi : il donne ta partie à qui le colle.</p>
+      <button class="pclose" id="pgBack">Retour</button>`;
+    const msg = (t) => { const m = document.getElementById("pgMsg"); m.textContent = t; m.hidden = false; };
+    const ta = document.getElementById("pgCode"); ta.onclick = () => ta.select();
+    document.getElementById("pgCopy").onclick = async () => {
+      ta.select();
+      try { await navigator.clipboard.writeText(code); msg("Code copié ! Colle-le sur l'autre appareil."); }
+      catch (err) { try { document.execCommand("copy"); msg("Code copié ! Colle-le sur l'autre appareil."); } catch (e2) { msg("Le code est sélectionné : copie-le (Ctrl + C, ou appui long puis « Copier »)."); } }
+    };
+    if (document.getElementById("pgFile")) document.getElementById("pgFile").onclick = () => {
+      try { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([code], { type: "text/plain" })); a.download = `grimoire-${Players.clean(n).replace(/[^\wÀ-ÿ-]+/g, "_")}.txt`; document.body.appendChild(a); a.click(); a.remove(); msg("Fichier téléchargé : envoie-le sur l'autre appareil (mail, clé USB…)."); }
+      catch (err) { msg("Le téléchargement n'est pas permis ici : copie plutôt le code."); }
+    };
+    document.getElementById("pgBack").onclick = () => reopen();
+    setTimeout(() => ta.select(), 50);
+  });
+  // 📥 : retrouver une partie avec un code
+  document.getElementById("pgImport").onclick = () => {
+    card.innerHTML = `<h2>📥 Retrouver ma partie</h2>
+      <p>Colle ici le code de sauvegarde obtenu sur l'autre appareil (il commence par <code>GRIM</code>), ou choisis le fichier de sauvegarde.</p>
+      <textarea class="pcode" id="pgCode" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="GRIM1.…"></textarea>
+      <label class="pfile">📄 Ouvrir un fichier de sauvegarde<input type="file" id="pgFileIn" accept=".txt,text/plain"></label>
+      <p class="perr" id="pgErr2" hidden></p>
+      <div class="pbtns"><button class="pgo" id="pgGo">Retrouver ma partie</button></div>
+      <button class="pclose" id="pgBack">Retour</button>`;
+    const ta = document.getElementById("pgCode"), err = (t) => { const m = document.getElementById("pgErr2"); m.textContent = t; m.hidden = false; };
+    document.getElementById("pgFileIn").onchange = async (ev) => { const f = ev.target.files[0]; if (f) ta.value = (await f.text()).trim(); };
+    let armedFor = null;
+    document.getElementById("pgGo").onclick = async () => {
+      let data; try { data = await unpackSave(ta.value); } catch (x) { err(/^(Ce |Cet )/.test(x.message) ? x.message : "Ce code est incomplet ou abîmé : il manque peut-être un morceau. Recopie-le en entier, ou utilise le fichier de sauvegarde."); return; }
+      if (Players.has(data.n) && armedFor !== data.n) { armedFor = data.n; err(`Il y a déjà un joueur « ${data.n} » sur cet appareil. Touche encore « Retrouver ma partie » pour remplacer sa partie par celle du code.`); document.getElementById("pgGo").textContent = "Remplacer la partie"; return; }
+      const n = Players.restore(data); g.remove(); onChoose(n);
+    };
+    document.getElementById("pgBack").onclick = () => reopen();
+    setTimeout(() => ta.focus(), 50);
+  };
   document.getElementById("pgForm").onsubmit = (ev) => { ev.preventDefault();
     if (!done(document.getElementById("pgName").value)) { document.getElementById("pgErr").hidden = false; document.getElementById("pgName").focus(); } };
   if (canClose) document.getElementById("pgClose").onclick = () => g.remove();
