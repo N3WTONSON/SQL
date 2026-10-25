@@ -669,7 +669,7 @@ const KEYWORDS = {
   ch7:  ["CREATE TABLE", "INTEGER", "TEXT", "PRIMARY KEY", "ALTER TABLE", "ADD COLUMN", "DROP TABLE"],
   ch8:  ["COALESCE()", "UPPER()", "LENGTH()", "WITH", "RANK() OVER", "PARTITION BY"]
 };
-const keywordsFor = (L) => [...KEYWORDS.base, ...(L.id >= 5 ? KEYWORDS.ch2 : []), ...(L.id >= 10 ? KEYWORDS.ch3 : []), ...(L.id >= 15 ? KEYWORDS.ch4 : []), ...(L.id >= 20 ? KEYWORDS.ch5 : []), ...(L.id >= 25 ? KEYWORDS.ch6 : []), ...(L.id >= 30 ? KEYWORDS.ch7 : []), ...(L.id >= 35 ? KEYWORDS.ch8 : [])];
+const keywordsFor = (L) => ((n) => [...KEYWORDS.base, ...(n >= 5 ? KEYWORDS.ch2 : []), ...(n >= 10 ? KEYWORDS.ch3 : []), ...(n >= 15 ? KEYWORDS.ch4 : []), ...(n >= 20 ? KEYWORDS.ch5 : []), ...(n >= 25 ? KEYWORDS.ch6 : []), ...(n >= 30 ? KEYWORDS.ch7 : []), ...(n >= 35 ? KEYWORDS.ch8 : [])])(L.kwId !== undefined ? L.kwId : L.id);
 
 /* ---------------------------------------------------------------------
    COMPRENDRE POURQUOI : pour chaque mission

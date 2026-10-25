@@ -241,7 +241,7 @@ async function openRanking() {
 function showPlayer() { $("playerName").textContent = Players.current || "Joueur"; }
 function openPlayers(first) {
   playerGate({ summary: gameSummary, bases: [SAVE_KEY], legacy: [SAVE_KEY], canClose: !first,
-    onChoose: () => { loadState(); showPlayer(); pushScore(true); buildDictionary(LEVELS[state.current]); renderHUD(); renderMap(); renderLoot(); renderSchema(); renderLevel(); FX.play("levelup");
+    onChoose: () => { daily.active = false; attempt = { key: null, fails: 0, hints: 0 }; loadState(); showPlayer(); pushScore(true); buildDictionary(LEVELS[state.current]); renderHUD(); renderMap(); renderLoot(); renderSchema(); renderLevel(); FX.play("levelup");
       if (!state.seenIntro) showIntro(); } });
 }
 

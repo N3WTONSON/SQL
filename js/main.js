@@ -9,9 +9,9 @@ function wire() {
     if (pk) { const t = pk.dataset.peek; $("consoleMode").textContent = "LECTURE";
       $("out").innerHTML = `<div class="msg info">La table ${t} (${TABLE_FR[t]}) telle qu'elle est au départ. Chaque ligne est un élément, chaque colonne une information sur lui. Simple lecture : aucun PV en jeu.</div>` + table(run(`SELECT * FROM ${t}`));
       $("out").scrollIntoView({ block: "nearest" }); return; }
-    if (e.target.closest("#whyNext")) { const n = LEVELS[state.current + 1]; if (n) { state.current = n.id; save(); renderMap(); renderLevel(); window.scrollTo({ top: 0 }); } return; }
+    if (e.target.closest("#whyNext")) { const n = LEVELS[state.current + 1]; if (n) { daily.active = false; state.current = n.id; save(); renderMap(); renderLevel(); window.scrollTo({ top: 0 }); } return; }
     const lv = e.target.closest(".lvl[data-lvl]:not(.locked)");
-    if (lv) { state.current = +lv.dataset.lvl; save(); renderMap(); renderLevel(); }
+    if (lv) { daily.active = false; state.current = +lv.dataset.lvl; save(); renderMap(); renderLevel(); }
   });
   $("cast").onclick = cast;
   // Colonne de droite : épinglée (toujours visible) ou repliée en barre d'icônes ; chaque appareil s'en souvient
@@ -42,13 +42,14 @@ function wire() {
   hudH(); window.addEventListener("resize", hudH);
   if (window.ResizeObserver) new ResizeObserver(hudH).observe(document.querySelector(".hud"));
   // panneaux pliables : chaque appareil se souvient de ce qui est plié
-  ["foldMap", "foldTables", "foldLoot"].forEach((id) => {
+  ["foldQuests", "foldMap", "foldTables", "foldLoot"].forEach((id) => {
     const el = $(id);
     try { if (localStorage.getItem("grimoire-pli-" + id) === "ferme") el.open = false; } catch (e) {}
     el.addEventListener("toggle", () => { FX.play(el.open ? "page" : "unclick"); try { localStorage.setItem("grimoire-pli-" + id, el.open ? "ouvert" : "ferme"); } catch (e) {} });
   });
   $("playerBtn").onclick = () => { FX.play("page"); openPlayers(false); };
   $("rankBtn").onclick = () => { if (!SQL) return; FX.play("levelup"); openRanking(); };
+  $("albumBtn").onclick = () => { if (!SQL) return; FX.play("page"); openAlbum(); };
   $("peek").onclick = () => { FX.play("page"); explore(); };
   const soundLabel = () => { $("sound").textContent = FX.on ? "SON : OUI" : "SON : NON"; $("sound").setAttribute("aria-pressed", FX.on ? "true" : "false"); };
   $("sound").onclick = () => { FX.toggle(); soundLabel(); }; soundLabel();

@@ -16,14 +16,16 @@
     <div class="stats">
     <div class="stat">PV <div class="hearts" id="hearts" aria-live="polite"></div></div>
     <div class="stat">NIV <span class="num" id="plevel">1</span> <div class="xpbar" title="Expérience"><i id="xpfill"></i></div> <span class="num" id="xp">0</span> XP</div>
+    <div class="stat streakStat" id="streakStat"><span class="fireI" aria-hidden="true">🔥</span> <span class="num" id="streak">0</span></div>
     <div class="stat" title="Parchemins : chacun donne un indice"><span class="scroll-emo" aria-hidden="true">📜</span> <span class="num" id="scrolls">3</span> <span class="lbl">parchemins</span></div>
     </div>
-    <div class="hudBtns"><button class="playerBtn" id="rankBtn" title="Classement des joueurs" aria-label="Classement des joueurs"><span aria-hidden="true">🏆</span><b>Classement</b></button><button class="playerBtn" id="playerBtn" title="Changer de joueur" aria-label="Changer de joueur"><span aria-hidden="true">👤</span><b id="playerName">…</b></button><a class="switchBtn" id="switchMode" href="premiers-pas.html" data-switch title="Passer au mode débutant, avec des blocs à cliquer"><span class="arr">⇄</span>Premiers pas</a>
+    <div class="hudBtns"><button class="playerBtn" id="albumBtn" title="Mon album de cartes" aria-label="Mon album de cartes"><span aria-hidden="true">📒</span><b>Album <span id="albumCount"></span></b></button><button class="playerBtn" id="rankBtn" title="Classement des joueurs" aria-label="Classement des joueurs"><span aria-hidden="true">🏆</span><b>Classement</b></button><button class="playerBtn" id="playerBtn" title="Changer de joueur" aria-label="Changer de joueur"><span aria-hidden="true">👤</span><b id="playerName">…</b></button><a class="switchBtn" id="switchMode" href="premiers-pas.html" data-switch title="Passer au mode débutant, avec des blocs à cliquer"><span class="arr">⇄</span>Premiers pas</a>
     <button class="soundBtn" id="sound" aria-pressed="true">SON : OUI</button></div>
   </header>
 
   <div class="grid">
     <main class="col">
+      <div class="dailybar" id="dailyBar"></div>
       <section class="story" aria-live="polite">
         <div class="label" id="lvlTag">Tutoriel</div>
         <h1 id="lvlTitle">Chargement du grimoire…</h1>
@@ -67,10 +69,15 @@
       <div class="railBar" id="railBar">
         <button class="railBtn pinBtn" id="pinBtn"></button>
         <button class="railBtn closeBtn" id="drawerClose" title="Fermer"><span class="ri" aria-hidden="true">✕</span><span class="rl">Fermer</span></button>
+        <button class="railBtn" data-open="foldQuests" title="Quêtes de la semaine"><span class="ri" aria-hidden="true">📋</span><span class="rl">Quêtes</span><span class="rn" id="railQuest"></span></button>
         <button class="railBtn" data-open="foldMap" title="Carte des missions"><span class="ri" aria-hidden="true">🗺️</span><span class="rl">Carte</span><span class="rn" id="railMap"></span></button>
         <button class="railBtn" data-open="foldTables" title="Tables du royaume"><span class="ri" aria-hidden="true">📚</span><span class="rl">Tables</span></button>
         <button class="railBtn" data-open="foldLoot" title="Besace"><span class="ri" aria-hidden="true">🎒</span><span class="rl">Besace</span><span class="rn" id="railLoot"></span></button>
       </div>
+      <details class="panel fold" id="foldQuests" open>
+        <summary><h2>Quêtes de la semaine</h2><span class="foldInfo" id="questInfo"></span><span class="chev" aria-hidden="true"></span></summary>
+        <div class="foldBody"><div class="quests" id="quests"></div></div>
+      </details>
       <details class="panel fold" id="foldMap" open>
         <summary><h2>Carte</h2><span class="foldInfo" id="mapInfo"></span><span class="chev" aria-hidden="true"></span></summary>
         <div class="foldBody"><div class="map" id="map"></div></div>

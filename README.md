@@ -182,6 +182,26 @@ Sans adresse, ou sans Internet, le classement montre les joueurs de l'appareil. 
 pourrait envoyer un faux score : c'est fait pour une classe ou une famille, pas pour un concours.
 Les pages publiées sur claude.ai restent en classement local (elles ne peuvent pas joindre Google).
 
+## Revenir chaque jour : défi, série, quêtes, étoiles, album
+
+- **⭐⭐⭐ Étoiles par mission** : ⭐ réussie, ⭐⭐ sans parchemin, ⭐⭐⭐ sans parchemin et du premier coup.
+  La meilleure note est gardée et s'affiche sur la carte (« ★★☆ »), avec le total d'étoiles. Quand on rejoue une
+  mission, les parchemins déjà lus se relisent gratuitement, mais font perdre les étoiles.
+- **🎯 Défi du jour** : une mission surprise, la même pour tous les joueurs, qui change à minuit (30 défis en
+  rotation). +100 XP, +50 si elle est réussie du premier coup, sans parchemin. Le **classement du jour** classe par
+  essais ratés, puis par temps ; il est commun à tous les appareils si le classement en ligne est réglé.
+- **🔥 Série de jours** : un jour compte dès qu'une mission ou le défi est réussi. Tous les 7 jours : +100 XP,
+  +2 parchemins et un badge « Flamme de N jours ». Un **joker 🃏 par semaine** sauve la série si on rate un seul jour.
+- **📋 Quêtes de la semaine** : 3 objectifs renouvelés chaque lundi (« Réussis 3 missions avec JOIN »,
+  « Gagne sans parchemin », « Fais 2 entraînements dans Premiers pas »…), adaptés à l'avancement du joueur.
+  +75 XP et +1 parchemin chacune ; les 3 : +150 XP et un badge « Héros de la semaine ».
+- **📒 Album** : 18 cartes (6 héros, 9 monstres, 3 châteaux) débloquées par des missions ; les cartes manquantes
+  sont floues avec « ? » et disent quelle mission réussir. Une nouvelle carte s'affiche sur l'écran de victoire.
+
+Ces informations font partie de la partie du joueur : elles voyagent avec le code de sauvegarde.
+Pour le classement du défi du jour en ligne, il faut la **nouvelle version** de `classement/Code.gs` : remplace le
+code dans Apps Script, puis **Déployer → Gérer les déploiements → Modifier → Nouvelle version** (l'adresse ne change pas).
+
 ## Panneaux pliables
 
 Dans l'aventure, la **Carte**, les **Tables du royaume** et la **Besace** se plient et se déplient en touchant

@@ -91,7 +91,9 @@ function renderHUD(hit) {
   $("railLoot").textContent = state.loot.length ? `${state.loot.length}` : "";
   $("lootInfo").textContent = `${state.loot.filter((l) => l.kind === "item").length} objets · ${state.loot.filter((l) => l.kind === "badge").length} badges`;
   $("tablesInfo").textContent = LEVELS[state.current].id >= 25 ? "6 tables" : "5 tables";
-  $("hintBtn").disabled = state.scrolls <= 0;
+  renderEngage();
+  { const L = curL(), used = state.hintsUsed[L.id] || 0;
+    $("hintBtn").disabled = !!L.daily || (state.scrolls <= 0 && !(state.completed.includes(L.id) && attempt.hints < used)); }
 }
 
 function renderTranslate() {
@@ -152,7 +154,9 @@ function showWhy(L) {
 }
 
 function renderLevel() {
-  const L = LEVELS[state.current];
+  const L = curL();
+  startAttempt(L.daily ? "defi-" + L.date : L.id);
+  $("dailyBar").hidden = false; renderDailyBar();
   $("lvlTag").textContent = L.chapter;
   $("lvlTitle").textContent = L.title;
   $("lvlPitch").innerHTML = L.pitch;
@@ -184,10 +188,16 @@ function renderLevel() {
   $("sql").value = L.starter;
   renderTranslate();
   $("kw").innerHTML = keywordsFor(L).map((k) => `<button data-ins="${k}">${k}</button>`).join("");
-  const used = state.hintsUsed[L.id] || 0;
-  $("out").innerHTML = used
+  const used = state.hintsUsed[L.id] || 0, replay = state.completed.includes(L.id), st = levelStars(L.id);
+  $("out").innerHTML = L.daily
+    ? `<div class="msg info"><b>DÉFI DU JOUR</b>Pas de parchemin aujourd'hui : utilise le traducteur sous l'éditeur et « Explorer » pour tester. Chaque sort raté compte comme un essai.</div>`
+    : replay
+    ? `<div class="msg info"><b>${st === 3 ? "⭐⭐⭐ MISSION PARFAITE" : `REJOUE POUR LES 3 ÉTOILES · TON RECORD : ${starsTxt(st)}`}</b>${st === 3 ? "Tu peux la rejouer pour t'entraîner." : "⭐ réussir · ⭐⭐ sans parchemin · ⭐⭐⭐ sans parchemin et du premier coup."}${used ? " Tes parchemins déjà lus se relisent gratuitement, mais ils font perdre les étoiles." : ""}</div>`
+    : used
     ? L.hints.slice(0, used).map((h, i) => `<div class="hint"><span class="label">Parchemin ${i + 1}</span><br>${h}</div>`).join("")
-    : `<div class="msg info">Écris ta formule puis lance le sort. « Explorer » exécute une requête sans valider la mission et sans coûter de PV.</div>`;
+    : `<div class="msg info">Écris ta formule puis lance le sort. « Explorer » exécute une requête sans valider la mission et sans coûter de PV.<br>⭐ réussir · ⭐⭐ sans parchemin · ⭐⭐⭐ sans parchemin et du premier coup.</div>`;
+  if (!L.daily && !replay && used) attempt.hints = Math.max(attempt.hints, used);
+  renderHUD();
   $("consoleMode").textContent = "";
 }
 
@@ -199,9 +209,9 @@ function renderMap() {
     const unlocked = done || L.id <= Math.max(0, ...state.completed.map((x) => x + 1));
     const cls = ["lvl", done && "done", L.id === state.current && "current", !unlocked && "locked"].filter(Boolean).join(" ");
     html += `<button class="${cls}" data-lvl="${L.id}" ${unlocked ? "" : "disabled aria-disabled=\"true\""}>
-      <span class="n">${done ? "✓" : L.id}</span><span>${esc(L.title)}</span><span class="xp">${L.xp} XP</span></button>`;
+      <span class="n">${done ? "✓" : L.id}</span><span>${esc(L.title)}${done ? ` <span class="stars s${levelStars(L.id)}" title="${levelStars(L.id)} étoile(s) sur 3">${starsTxt(levelStars(L.id))}</span>` : ""}</span><span class="xp">${L.xp} XP</span></button>`;
   });
-  html += `<div class="chapter">PARCOURS DÉBUTANT · ${state.completed.length} / ${LEVELS.length} MISSIONS</div>`;
+  html += `<div class="chapter">PARCOURS DÉBUTANT · ${state.completed.length} / ${LEVELS.length} MISSIONS · ${totalStars()} / ${LEVELS.length * 3} ★</div>`;
   $("map").innerHTML = html;
 }
 
