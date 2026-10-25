@@ -377,6 +377,7 @@ async function openDailyRanking() {
     } catch (e) {}
   }
   (online || []).forEach((o) => { if (!o || !o.id) return; const m = byId.get(o.id); if (!m || +o.essais < m.essais || (+o.essais === m.essais && +o.secondes < m.secondes)) byId.set(o.id, { id: o.id, nom: String(o.nom).slice(0, 20), essais: +o.essais || 0, secondes: +o.secondes || 0 }); });
+  hiddenIds().forEach((id) => byId.delete(id));
   const db = new SQL.Database(); let res = { values: [] };
   try {
     db.run("CREATE TABLE defi_du_jour (id TEXT, nom TEXT, essais INTEGER, secondes INTEGER)");

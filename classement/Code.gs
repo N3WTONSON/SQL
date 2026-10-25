@@ -3,7 +3,7 @@
  * À coller dans Extensions > Apps Script d'une feuille Google Sheets, puis à déployer
  * comme « Application Web » (Exécuter en tant que : moi ; Accès : tout le monde).
  * Après chaque modification de ce code : Déployer > Gérer les déploiements > Modifier > Nouvelle version.
- * Version 2 : défi du jour, et retrait d'un joueur à sa demande.
+ * Version 3 : défi du jour, retrait d'un joueur à sa demande, et pseudos uniques (un pseudo déjà pris est refusé).
  * Il ne reçoit que : identifiant du joueur, nom, niveau, XP, missions réussies, badges,
  * et pour le défi du jour : la date, le nombre d'essais ratés et le temps.
  */
@@ -22,7 +22,13 @@ const json_ = (o) => ContentService.createTextOutput(JSON.stringify(o)).setMimeT
 
 // Lire : sans paramètre, le classement général ; avec ?defi=AAAA-MM-JJ, le classement du défi de ce jour
 function doGet(e) {
-  if (e && e.parameter && e.parameter.version) return json_({ version: 2 });
+  if (e && e.parameter && e.parameter.version) return json_({ version: 3 });
+  // ?pseudo=Nom : ce pseudo est-il déjà pris ? (sans tenir compte des majuscules)
+  if (e && e.parameter && e.parameter.pseudo !== undefined) {
+    const p = String(e.parameter.pseudo).trim().toLowerCase();
+    const pris = classement_().getDataRange().getValues().slice(1).some((l) => l[0] && String(l[1]).trim().toLowerCase() === p);
+    return json_({ pris: pris });
+  }
   const defi = e && e.parameter && e.parameter.defi;
   if (defi) {
     // la date est rangée sous la forme « jour 2026-10-25 » pour que Google Sheets ne la transforme pas en date
@@ -58,6 +64,11 @@ function doPost(e) {
     const sh = classement_();
     const ids = sh.getRange(1, 1, sh.getLastRow(), 1).getValues().map((l) => String(l[0]));
     const i = ids.indexOf(id);
+    // pseudo unique : un nouveau joueur ne peut pas prendre le pseudo d'un autre joueur
+    if (i < 0) {
+      const pris = sh.getDataRange().getValues().slice(1).some((l) => String(l[0]) !== id && String(l[1]).trim().toLowerCase() === nom.trim().toLowerCase());
+      if (pris) return ContentService.createTextOutput("pseudo déjà pris");
+    }
     if (i > 0) sh.getRange(i + 1, 1, 1, ligne.length).setValues([ligne]); else sh.appendRow(ligne);
     // le défi du jour : on garde le meilleur résultat de chaque joueur pour chaque jour
     if (d.type === "defi" && /^\d{4}-\d{2}-\d{2}$/.test(String(d.defi || ""))) {

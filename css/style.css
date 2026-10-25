@@ -500,6 +500,7 @@ table.rank .you { font-family: var(--f-hud); font-size: 11px; color: var(--night
 .pline input:focus { outline: none; border-color: var(--torch); }
 .pgo { min-height: 48px; padding: 0 18px; font-family: var(--f-hud); font-size: 14px; letter-spacing: 1px; background: var(--torch); color: #1a1206; border: 0; cursor: pointer; }
 .perr { color: var(--blood); font-size: 14px; }
+.phint { text-transform: none; letter-spacing: 0; font-family: var(--f-body); font-size: 12px; }
 .pnote { font-size: 13px; color: var(--ink-dim); }
 .pclose { align-self: center; background: none; border: 0; color: var(--arcane); text-decoration: underline; cursor: pointer; font: inherit; min-height: 40px; }
 .pexp { font-size: 18px; }

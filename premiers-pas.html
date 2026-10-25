@@ -272,6 +272,7 @@ textarea { font-size: max(16px, 1em); }            /* sous 16 px, l'iPad zoome d
 .pline input:focus { outline: none; border-color: var(--torch); }
 .pgo { min-height: 48px; padding: 0 18px; font-family: var(--f-hud); font-size: 14px; letter-spacing: 1px; background: var(--torch); color: #1a1206; border: 0; cursor: pointer; }
 .perr { color: var(--blood); font-size: 14px; }
+.phint { text-transform: none; letter-spacing: 0; font-family: var(--f-body); font-size: 12px; }
 .pnote { font-size: 13px; color: var(--ink-dim); }
 .pclose { align-self: center; background: none; border: 0; color: var(--arcane); text-decoration: underline; cursor: pointer; font: inherit; min-height: 40px; }
 .pexp { font-size: 18px; }
@@ -345,6 +346,7 @@ textarea { font-size: max(16px, 1em); }            /* sous 16 px, l'iPad zoome d
   </div>
 </div>
 
+<script src="config.js"></script>
 <script src="vendor/sql-wasm.js"></script>
 <script src="vendor/sql-wasm-binary.js"></script>
 <script>
@@ -1467,6 +1469,19 @@ async function unpackSave(code) {
 }
 
 // L'écran « Qui joue ? » : au premier accès, et quand on touche le bouton du joueur en haut
+// Un pseudo est-il déjà pris par un joueur du classement en ligne ? (sans classement en ligne, ou sans Internet : on ne peut pas vérifier)
+async function pseudoTaken(name) {
+  const url = (typeof window.GRIMOIRE_CLASSEMENT_URL === "string") ? window.GRIMOIRE_CLASSEMENT_URL.trim() : "";
+  if (!url) return false;
+  const low = String(name).toLowerCase();
+  try {
+    const ctrl = window.AbortController ? new AbortController() : null; const t = setTimeout(() => ctrl && ctrl.abort(), 5000);
+    const r = await fetch(url + (url.includes("?") ? "&" : "?") + "pseudo=" + encodeURIComponent(name), { signal: ctrl ? ctrl.signal : undefined }); clearTimeout(t);
+    const j = await r.json();
+    if (j && typeof j.pris === "boolean") return j.pris;                                             // script version 3
+    return Array.isArray(j) && j.some((o) => o && String(o.nom || "").toLowerCase() === low);       // versions 1 et 2 : la liste complète
+  } catch (err) { return false; }
+}
 function playerGate({ summary, bases, legacy, onChoose, canClose }) {
   const old = document.getElementById("playerGate"); if (old) old.remove();
   const g = document.createElement("div"); g.id = "playerGate"; g.className = "pgate";
@@ -1480,7 +1495,7 @@ function playerGate({ summary, bases, legacy, onChoose, canClose }) {
       <div class="plist">${list.map((n, i) => `<div class="prow"><button class="pbtn" data-pick="${i}"><b>${e(n)}</b><span>${e(summary(n))}</span></button><button class="pdel pexp" data-exp="${i}" title="Code de sauvegarde de ${e(n)}, pour continuer sur un autre appareil" aria-label="Code de sauvegarde de ${e(n)}">📤</button><button class="pdel" data-del="${i}" title="Effacer la partie de ${e(n)}" aria-label="Effacer la partie de ${e(n)}">✕</button></div>`).join("")}</div>
       <p class="psep">ou nouveau joueur :</p>` : `<p>Avant de commencer, choisis un <b>pseudo</b> (pas ton vrai prénom : il peut apparaître dans le classement). Il sert à retrouver ta partie : la prochaine fois, choisis le même pseudo et tu reprendras là où tu t'es arrêté.</p>`}
     <form class="pform" id="pgForm" autocomplete="off">
-      <label for="pgName">Ton pseudo de joueur</label>
+      <label for="pgName">Ton pseudo de joueur <small class="phint">(un pseudo qui n'est pas déjà pris)</small></label>
       <div class="pline"><input id="pgName" maxlength="20" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" enterkeyhint="go" placeholder="Par exemple : DragonBleu">
       <button class="pgo" type="submit">${list.length ? "Créer" : "Commencer"}</button></div>
       <p class="perr" id="pgErr" hidden>Écris au moins une lettre.</p>
@@ -1541,8 +1556,19 @@ function playerGate({ summary, bases, legacy, onChoose, canClose }) {
     document.getElementById("pgBack").onclick = () => reopen();
     setTimeout(() => ta.focus(), 50);
   };
-  document.getElementById("pgForm").onsubmit = (ev) => { ev.preventDefault();
-    if (!done(document.getElementById("pgName").value)) { document.getElementById("pgErr").hidden = false; document.getElementById("pgName").focus(); } };
+  document.getElementById("pgForm").onsubmit = async (ev) => { ev.preventDefault();
+    const input = document.getElementById("pgName"), errEl = document.getElementById("pgErr"), go = g.querySelector(".pgo");
+    const fail = (html) => { errEl.innerHTML = html; errEl.hidden = false; input.focus(); };
+    const name = Players.clean(input.value);
+    if (!name) return fail("Écris au moins une lettre.");
+    if (!Players.has(name)) {      // nouveau joueur : le pseudo ne doit pas déjà appartenir à un autre joueur du classement
+      const label = go.textContent; go.disabled = true; go.textContent = "Vérification…";
+      const taken = await pseudoTaken(name);
+      go.disabled = false; go.textContent = label;
+      if (taken) return fail(`Le pseudo « <b>${e(name)}</b> » est déjà utilisé par un autre joueur. Choisis-en un autre, par exemple « ${e(name.slice(0, 18))}${Math.floor(Math.random() * 90) + 10} ». C'est toi, sur un autre appareil ? Utilise plutôt « Entre ton code de sauvegarde ».`);
+    }
+    if (!done(name)) fail("Écris au moins une lettre.");
+  };
   if (canClose) document.getElementById("pgClose").onclick = () => g.remove();
   setTimeout(() => (list.length ? g.querySelector(".pbtn") : document.getElementById("pgName")).focus(), 50);
 }

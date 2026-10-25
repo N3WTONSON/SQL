@@ -189,6 +189,11 @@ Les pages publiées sur claude.ai restent en classement local (elles ne peuvent 
   classement : le pseudo, un numéro tiré au hasard, le niveau, l'XP, les missions, les badges et les résultats du
   défi du jour. Jamais d'âge, d'école, d'adresse ni de photo.
 - L'écran « Qui joue ? » demande un **pseudo** et conseille de ne pas mettre son vrai prénom ni son nom.
+- **Pseudos uniques** : quand le classement en ligne est réglé, un nouveau joueur ne peut pas prendre un pseudo déjà
+  utilisé par un autre joueur (majuscules comprises : « lina » = « Lina »). Le jeu le dit et propose un autre pseudo ;
+  pour retrouver sa propre partie sur un autre appareil, on utilise le code de sauvegarde. La **version 3** de
+  `classement/Code.gs` refuse aussi ces doublons côté Google. Sans Internet, la vérification n'est pas possible :
+  le joueur est créé, et le script refusera son score si le pseudo est pris (le classement l'indique).
 - **Se retirer du classement en ligne** : 🏆 Classement → « Retirer mon nom du classement en ligne » (deux touches
   pour confirmer). Le nom est effacé de la feuille Google et plus aucun score n'y est envoyé depuis cet appareil ;
   « Revenir dans le classement » annule. Effacer la partie dans 👤 la supprime de l'appareil.

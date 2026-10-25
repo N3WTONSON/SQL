@@ -1,6 +1,6 @@
 // Service worker du Grimoire des Requêtes : tout le jeu est gardé sur l'appareil pour marcher sans Internet.
 // Généré par build.py : la version change à chaque nouvelle version du jeu, l'ancien cache est alors remplacé.
-const CACHE = "grimoire-b2bef09b1ae5";
+const CACHE = "grimoire-9d61f37ff231";
 const FILES = [
  "./",
  "assets/apple-touch-icon.png",
