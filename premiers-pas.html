@@ -6,6 +6,14 @@
 <meta charset="utf-8">
 <title>Grimoire : Premiers pas</title>
 <link rel="icon" href="assets/logo-128.webp" type="image/webp">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#11132a">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Grimoire SQL">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script>try { if (localStorage.getItem("grimoire-theme") === "light") document.documentElement.dataset.theme = "light"; } catch (e) {}</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Alegreya:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;600&family=Cinzel:wght@700&display=swap">
@@ -38,6 +46,23 @@ header h1 small { display: block; font-family: var(--f-hud); font-size: 12px; co
 .dot { width: 16px; height: 8px; background: var(--seam); }
 .dot.done { background: var(--rune); }
 .dot.now { background: var(--torch); }
+.dot.gold { background: #e8c547; }
+.ppStats { display: inline-flex; gap: 10px; align-items: center; }
+.ppStat { display: inline-flex; align-items: center; gap: 4px; font-family: var(--f-code); font-size: 17px; font-weight: 700; color: var(--ink); }
+.ppStat span { font-size: 20px; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+.ppStat.off { opacity: .45; filter: grayscale(1); }
+.ppNext { border: 1px dashed var(--seam); background: var(--stone); padding: 8px 12px; font-size: 16px; }
+.ppNext b { color: var(--arcane); font-family: var(--f-hud); font-size: 12px; letter-spacing: 1px; margin-right: 6px; }
+.lstars { font-size: 34px; letter-spacing: 4px; color: #e8c547; text-align: center; margin: 4px 0 0; }
+.lstars + p.lsub { text-align: center; margin-top: 0; color: var(--ink-dim); }
+.newcard { display: flex; gap: 12px; align-items: center; border: 2px solid #e8c547; padding: 10px; background: rgba(232,197,71,.08); }
+.newcard img { width: 88px; height: 88px; object-fit: cover; border-radius: 6px; }
+.agrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+.acard { border: 1px solid var(--seam); background: var(--night); padding: 6px; text-align: center; font-size: 13px; display: flex; flex-direction: column; gap: 4px; }
+.acard img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 4px; }
+.acard.lock { opacity: .55; }
+.acard .q { aspect-ratio: 1; display: grid; place-items: center; font-size: 40px; color: var(--ink-dim); border: 1px dashed var(--seam); }
+.acard b { color: var(--torch); font-size: 14px; }
 
 .lessonTag { font-family: var(--f-hud); font-size: 13px; letter-spacing: 1.6px; color: var(--arcane); }
 .card { background: var(--stone); border: 1px solid var(--seam); padding: 24px; display: flex; flex-direction: column; gap: 16px; }
@@ -154,7 +179,7 @@ textarea { width: 100%; min-height: 96px; resize: vertical; font-family: var(--f
 .pix.ico { display: inline-flex; align-items: center; justify-content: center; flex: none; vertical-align: middle; line-height: 1; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
 .tile .pix { margin: 0 auto 2px; }
 .zoneLabel .pix { margin-right: 6px; vertical-align: -6px; }
-.hudBtns { display: flex; gap: 8px; align-items: center; margin-left: auto; }
+.hudBtns { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; align-items: center; margin-left: auto; max-width: 100%; }
 .switchBtn { display: inline-flex; align-items: center; gap: 7px; font-family: var(--f-hud); font-size: 12px; letter-spacing: 1px; text-decoration: none; color: var(--night); background: var(--torch); border: 1px solid var(--torch); padding: 6px 11px; white-space: nowrap; transition: transform 0.15s ease, background 0.15s ease; }
 .switchBtn:hover { background: #f7c06a; transform: translateY(-1px); }
 .switchBtn:focus-visible { outline: 2px solid var(--arcane); outline-offset: 2px; }
@@ -260,6 +285,13 @@ textarea { font-size: max(16px, 1em); }            /* sous 16 px, l'iPad zoome d
 .pfile { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; border: 1px solid var(--seam); cursor: pointer; color: var(--ink); }
 .pfile input { position: absolute; width: 1px; height: 1px; opacity: 0; }
 .pcard code { font-family: var(--f-code); color: var(--torch); }
+.privcard { max-width: 640px !important; text-align: left !important; }
+.privcard h2 { text-align: center; }
+.privcard h3 { margin: 10px 0 0; font-family: var(--f-display); font-weight: 400; font-size: 20px; color: var(--torch); }
+.privcard ul { margin: 4px 0; padding-left: 20px; line-height: 1.45; }
+.privcard li { margin: 3px 0; }
+.pwarn { border: 1px solid var(--torch); background: rgba(240, 164, 58, 0.1); padding: 8px 10px; }
+.privlink { background: none; border: 0; padding: 0; color: var(--arcane); text-decoration: underline; cursor: pointer; font: inherit; }
 .playerBtn { display: inline-flex; align-items: center; gap: 6px; max-width: 200px; min-height: 32px; font-family: var(--f-body); font-size: 15px; background: none; border: 1px solid var(--seam); color: var(--ink); padding: 4px 10px; cursor: pointer; }
 .playerBtn b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--torch); font-weight: 600; }
 .playerBtn:hover { border-color: var(--torch); }
@@ -267,6 +299,27 @@ textarea { font-size: max(16px, 1em); }            /* sous 16 px, l'iPad zoome d
 @media (max-width: 1400px) and (min-width: 521px) { .playerBtn { max-width: 140px; } }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 @media (max-width: 520px) { body { font-size: 18px; } .card { padding: 16px; } .ask { font-size: 20px; } .dot { width: 18px; } }
+/* ---------- Mode clair (salles lumineuses, vidéoprojecteur) ---------- */
+:root[data-theme="light"] {
+  --night: #f4eee1; --stone: #fffaf0; --stone-2: #efe6d3; --seam: #cdbf9f;
+  --ink: #2b2417; --ink-dim: #685f4d; --torch: #a5560c; --torch-deep: #7a3f08;
+  --rune: #1d7556; --blood: #b8322a; --arcane: #1d5c95;
+  color-scheme: light;
+}
+:root[data-theme="light"] body { background-image: radial-gradient(ellipse 60% 40% at 50% -10%, rgba(165,86,12,.10), transparent 70%), linear-gradient(var(--night), var(--night)); }
+:root[data-theme="light"] .console, :root[data-theme="light"] .codeLine, :root[data-theme="light"] textarea { background: #fbf7ec; }
+:root[data-theme="light"] td, :root[data-theme="light"] table.res td { border-bottom-color: var(--seam); }
+:root[data-theme="light"] #sql::placeholder, :root[data-theme="light"] .lvl.locked, :root[data-theme="light"] tr.drop td { color: #a39a86; }
+:root[data-theme="light"] .lvl.done .n { color: #fff; }
+:root[data-theme="light"] .dbtn, :root[data-theme="light"] .btn-cast, :root[data-theme="light"] .pgo, :root[data-theme="light"] .btn.main,
+:root[data-theme="light"] .switchBtn, :root[data-theme="light"] .anew { color: #fff; }
+:root[data-theme="light"] .dbtn.alt { color: var(--torch); }
+:root[data-theme="light"] .switchBtn:hover { background: var(--torch-deep); }
+:root[data-theme="light"] .dot.gold { background: #c69a1c; }
+:root[data-theme="light"] .lstars { color: #b8860b; }
+/* légendes posées sur les images : elles gardent un fond sombre, donc un texte clair */
+:root[data-theme="light"] figure:not(.acard) figcaption { --ink: #ece7da; --ink-dim: #c9c4b6; --torch: #f0a43a; --arcane: #66c9ff; --rune: #6fd3b0; --blood: #e2574c; color: var(--ink); }
+.themeBtn { font-size: 17px; line-height: 1; min-width: 38px; }
 </style>
 </head>
 <body>
@@ -276,18 +329,19 @@ textarea { font-size: max(16px, 1em); }            /* sous 16 px, l'iPad zoome d
     <img src="assets/logo-128.webp" alt="" width="44" height="47">
     <h1>Premiers pas<small>LE GRIMOIRE DES REQUÊTES</small></h1>
     <div class="dots" id="dots" aria-label="Progression"></div>
-    <div class="hudBtns"><button class="playerBtn" id="playerBtn" title="Changer de joueur" aria-label="Changer de joueur"><span aria-hidden="true">👤</span><b id="playerName">…</b></button><a class="switchBtn" id="switchMode" href="index.html" data-switch title="Le Grimoire des Requêtes : l'aventure complète"><span class="arr">⇄</span>L'aventure<span class="long"> complète</span></a>
-    <button class="soundBtn" id="sound" aria-pressed="true">SON : OUI</button></div>
+    <div class="hudBtns"><span class="ppStats"><span class="ppStat off" id="ppFire" title="Série de jours"><span aria-hidden="true">🔥</span><b id="ppFireN">0</b></span><span class="ppStat" id="ppStarsS" title="Étoiles gagnées dans les leçons"><span aria-hidden="true">⭐</span><b id="ppStarsN">0</b></span></span><button class="playerBtn" id="installBtn" hidden title="Installer le Grimoire comme une application" aria-label="Installer le Grimoire comme une application"><span aria-hidden="true">📲</span><b>Installer</b></button><button class="playerBtn" id="playerBtn" title="Changer de joueur" aria-label="Changer de joueur"><span aria-hidden="true">👤</span><b id="playerName">…</b></button><a class="switchBtn" id="switchMode" href="index.html" data-switch title="Le Grimoire des Requêtes : l'aventure complète"><span class="arr">⇄</span>L'aventure<span class="long"> complète</span></a>
+    <button class="soundBtn themeBtn" id="themeBtn" aria-pressed="false" title="Mode clair">☀️</button><button class="soundBtn" id="sound" aria-pressed="true">SON : OUI</button></div>
   </header>
   <div class="lessonTag" id="tag"></div>
+  <div class="ppNext" id="ppNext" hidden></div>
   <div id="trainBanner" hidden><p><b>Ton entraînement du jour t'attend.</b> Dix questions, trois minutes, pour ancrer les mots et l'ordre.</p><button class="btn main" id="bannerGo">S'entraîner</button></div>
   <main class="card pop" id="card" aria-live="polite"><p>Le grimoire s'ouvre…</p></main>
   <section class="card" id="pocket" hidden aria-label="Aide-mémoire"></section>
   <section class="card" id="train" hidden aria-label="Entraînement" aria-live="polite"></section>
   <div class="footer">
     <button id="back">← Étape précédente</button>
-    <span><button id="trainBtn">S'entraîner (3 min)</button> · <button id="pocketBtn">Mon aide-mémoire</button></span>
-    <span><a href="index.html" target="_blank" rel="noopener">Aller à l'aventure complète</a> · <button id="restart">Recommencer</button></span>
+    <span><button id="trainBtn">S'entraîner (3 min)</button> · <button id="pocketBtn">Mon aide-mémoire</button> · <button id="albumBtn">📒 Mon album</button></span>
+    <span><a href="index.html" target="_blank" rel="noopener">Aller à l'aventure complète</a> · <button data-privacy>🔒 Confidentialité</button> · <button id="restart">Recommencer</button></span>
   </div>
 </div>
 
@@ -1355,6 +1409,36 @@ const Players = (() => {
   };
 })();
 
+
+// 🔒 Confidentialité : ce que le jeu garde et envoie, en clair
+const PRIVACY_HTML = `<h2>🔒 Confidentialité</h2>
+<p><b>Ce que le Grimoire garde, et ce qu'il envoie.</b> Expliqué simplement, pour les joueurs et leurs parents.</p>
+<h3>Sur ton appareil</h3>
+<p>Ta partie (ton pseudo, tes missions, ton XP, tes objets, tes leçons de Premiers pas) est gardée <b>dans le navigateur de cet appareil</b>. Pour jouer, rien n'est envoyé sur Internet. Pas de compte, pas d'adresse e-mail, pas de mot de passe.</p>
+<h3>Le classement en ligne</h3>
+<p>Seulement si la personne qui gère le site l'a activé. Il reçoit <b>uniquement</b> :</p>
+<ul><li>ton <b>pseudo</b> et un <b>numéro tiré au hasard</b> qui te reconnaît ;</li><li>ton <b>niveau</b>, ton <b>XP</b>, le nombre de <b>missions</b> réussies et de <b>badges</b> ;</li><li>pour le défi du jour : la <b>date</b>, le nombre d'<b>essais</b> et le <b>temps</b>.</li></ul>
+<p>Ces informations vont dans une feuille Google Sheets appartenant à la personne qui gère le site. Elles sont visibles par les autres joueurs dans le classement. Jamais d'âge, d'école, d'adresse, de position, de photo ni de publicité.</p>
+<p class="pwarn">👉 <b>Choisis un pseudo, pas ton vrai prénom ni ton nom de famille.</b> Par exemple : « DragonBleu », « Lina_42 ».</p>
+<h3>Te retirer</h3>
+<ul><li><b>Du classement en ligne :</b> bouton 🏆 Classement → « Retirer mon nom du classement en ligne ». Ton nom est effacé de la feuille et n'y est plus envoyé.</li>
+<li><b>De cet appareil :</b> bouton 👤 → ✕ à côté de ton nom (deux fois) efface ta partie.</li>
+<li>Tu peux aussi demander à l'adulte qui gère le site d'effacer ta ligne dans la feuille Google.</li></ul>
+<h3>Le code de sauvegarde</h3>
+<p>Il contient toute ta partie. Garde-le pour toi : la personne qui le colle récupère ta partie.</p>
+<h3>Services extérieurs</h3>
+<p>Les polices d'écriture viennent de Google Fonts : comme pour tout site, Google voit alors l'adresse Internet de l'appareil. Le classement en ligne passe par Google Apps Script. Aucun autre service n'est utilisé.</p>
+<p class="pnote">Pour les adultes qui gèrent le site : informez les familles, demandez des pseudos, et videz la feuille Google en fin d'année (onglets « Classement » et « Defis »).</p>`;
+function openPrivacy() {
+  const old = document.getElementById("privGate"); if (old) old.remove();
+  const g = document.createElement("div"); g.id = "privGate"; g.className = "pgate"; g.style.zIndex = 60;
+  g.innerHTML = `<div class="pcard privcard" role="dialog" aria-modal="true">${PRIVACY_HTML}<button class="pclose" id="privClose">J'ai compris</button></div>`;
+  document.body.appendChild(g);
+  const close = () => g.remove(); document.getElementById("privClose").onclick = close; g.addEventListener("click", (e) => { if (e.target === g) close(); });
+  setTimeout(() => document.getElementById("privClose").focus(), 50);
+}
+document.addEventListener("click", (e) => { if (e.target.closest("[data-privacy]")) { e.preventDefault(); openPrivacy(); } });
+
 /* ---------- CODE DE SAUVEGARDE : la partie tient dans un texte à copier sur un autre appareil ---------- */
 const b64u = {
   enc: (bytes) => { let s = ""; bytes.forEach((b) => { s += String.fromCharCode(b); }); return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); },
@@ -1388,15 +1472,15 @@ function playerGate({ summary, bases, legacy, onChoose, canClose }) {
     <h2 id="pgTitle">${list.length ? "Qui joue ?" : "Bienvenue, aventurier !"}</h2>
     ${list.length ? `<p>Touche ton nom pour reprendre ta partie là où tu l'as laissée.</p>
       <div class="plist">${list.map((n, i) => `<div class="prow"><button class="pbtn" data-pick="${i}"><b>${e(n)}</b><span>${e(summary(n))}</span></button><button class="pdel pexp" data-exp="${i}" title="Code de sauvegarde de ${e(n)}, pour continuer sur un autre appareil" aria-label="Code de sauvegarde de ${e(n)}">📤</button><button class="pdel" data-del="${i}" title="Effacer la partie de ${e(n)}" aria-label="Effacer la partie de ${e(n)}">✕</button></div>`).join("")}</div>
-      <p class="psep">ou nouveau joueur :</p>` : `<p>Avant de commencer, écris ton <b>nom de joueur</b>. Il sert à retrouver ta partie : la prochaine fois, choisis le même nom et tu reprendras là où tu t'es arrêté.</p>`}
+      <p class="psep">ou nouveau joueur :</p>` : `<p>Avant de commencer, choisis un <b>pseudo</b> (pas ton vrai prénom : il peut apparaître dans le classement). Il sert à retrouver ta partie : la prochaine fois, choisis le même pseudo et tu reprendras là où tu t'es arrêté.</p>`}
     <form class="pform" id="pgForm" autocomplete="off">
-      <label for="pgName">Ton nom de joueur</label>
-      <div class="pline"><input id="pgName" maxlength="20" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" enterkeyhint="go" placeholder="Par exemple : Lina">
+      <label for="pgName">Ton pseudo de joueur</label>
+      <div class="pline"><input id="pgName" maxlength="20" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" enterkeyhint="go" placeholder="Par exemple : DragonBleu">
       <button class="pgo" type="submit">${list.length ? "Créer" : "Commencer"}</button></div>
       <p class="perr" id="pgErr" hidden>Écris au moins une lettre.</p>
     </form>
     <button class="pimport" id="pgImport">📥 Tu as déjà joué sur un autre appareil ? <b>Entre ton code de sauvegarde</b></button>
-    <p class="pnote">Ta partie est gardée sur cet appareil. Pour la continuer ailleurs, touche 📤 à côté de ton nom : tu obtiens un code de sauvegarde à recopier sur l'autre appareil.</p>
+    <p class="pnote">Ta partie est gardée sur cet appareil. Pour la continuer ailleurs, touche 📤 à côté de ton nom : tu obtiens un code de sauvegarde à recopier sur l'autre appareil. <button class="privlink" data-privacy>🔒 Confidentialité : ce qui est gardé et envoyé</button></p>
     ${canClose ? `<button class="pclose" id="pgClose">Annuler</button>` : ""}
   </div>`;
   document.body.appendChild(g);
@@ -1472,13 +1556,14 @@ function shuffleStable(arr, seed) {
   const a = arr.map((v, i) => ({ v, k: Math.sin(seed * 97 + i * 13.7) })); a.sort((p, q) => p.k - q.k); return a.map((x) => x.v);
 }
 function dots() {
-  $("dots").innerHTML = LESSONS.map((L, i) => `<span class="dot ${st.done.includes(i) ? "done" : ""} ${i === st.l && st.s >= 0 ? "now" : ""}" title="Leçon ${i + 1} : ${esc(L.title)}"></span>`).join("");
+  $("dots").innerHTML = LESSONS.map((L, i) => `<span class="dot ${st.done.includes(i) ? ((st.stars || {})[i] === 3 ? "done gold" : "done") : ""} ${i === st.l && st.s >= 0 ? "now" : ""}" title="Leçon ${i + 1} : ${esc(L.title)}"></span>`).join("");
 }
 function show(html) { const c = $("card"); c.classList.remove("pop"); void c.offsetWidth; c.classList.add("pop"); c.innerHTML = html; }
 const nextBtn = (label = "Continuer") => `<div class="btns"><button class="btn main" id="next">${label}</button></div>`;
 
 function render() {
-  dots();
+  if (st.errL !== st.l) { st.errL = st.l; st.err = 0; }
+  dots(); renderPPStats();
   if (typeof trainBanner === "function" && $("train").hidden && $("pocket").hidden) trainBanner();
   if (st.l >= LESSONS.length) return renderEnd();
   const L = LESSONS[st.l];
@@ -1511,7 +1596,7 @@ function render() {
       const o = S.options[+b.dataset.o];
       document.querySelectorAll(".opt").forEach((x) => x.classList.remove("ok", "no"));
       b.classList.add(o.ok ? "ok" : "no");
-      if (o.ok) { FX.play("good"); burst(b, 10); } else { FX.play("bad"); shake(b); }
+      if (o.ok) { FX.play("good"); burst(b, 10); } else { FX.play("bad"); shake(b); oops(); }
       $("fb").innerHTML = `<div class="fb ${o.ok ? "ok" : "try"}"><b>${o.ok ? "BONNE RÉPONSE" : "PAS TOUT À FAIT"}</b>${esc(o.why)}</div>${o.ok ? nextBtn() : ""}`;
       if (o.ok) { $("next").onclick = advance; $("next").focus(); }
     });
@@ -1576,7 +1661,7 @@ function renderBuild(S, head) {
       fb = `<div class="fb try"><b>PAS ENCORE</b>${missing > 0 ? `Il te manque ${missing} bloc(s). ` : ""}Rappel de l'ordre d'une phrase : <b>SELECT</b> (quoi montrer ?) → <b>FROM</b> (quelle table ?) → <b>WHERE</b> (quelle condition ?) → <b>ORDER BY</b> (quel ordre ?).</div>`;
     }
     $("fb").innerHTML = fb;
-    if (/fb ok/.test(fb)) { FX.play("good"); burst($("fb").firstElementChild); } else { FX.play("bad"); shake($("phrase")); }
+    if (/fb ok/.test(fb)) { FX.play("good"); burst($("fb").firstElementChild); } else { FX.play("bad"); shake($("phrase")); if (placed.length) oops(); }
     if ($("next")) { $("next").onclick = advance; $("next").focus(); }
   };
 }
@@ -1603,11 +1688,11 @@ function renderType(S, head) {
     const first = (q.match(/^\s*([^\s*,]+)/) || [])[1] || "";
     if (!(S.ddl ? /^(create|alter|drop)$/i : S.write ? /^(insert|update|delete)$/i : /^(select|with)$/i).test(first)) { $("fb").innerHTML = `<div class="fb try"><b>LE PREMIER MOT</b>${S.ddl ? "Pour construire ou modifier le plan d'une table, la phrase commence par CREATE TABLE, ALTER TABLE ou DROP TABLE." : S.write ? "Pour modifier la base, la phrase commence par INSERT (ajouter), UPDATE (modifier) ou DELETE (supprimer)." : "Une phrase pour lire la base commence par SELECT (« montre »), ou par WITH pour préparer une liste."} Tu as écrit « ${esc(first)} ».</div>`; $("live").innerHTML = ""; return; }
     const r = evalQ(S, q);
-    if (r.err) { $("fb").innerHTML = `<div class="fb try"><b>LA BASE NE COMPREND PAS</b>${esc(friendlyError(r.err))}</div>`; $("live").innerHTML = ""; FX.play("bad"); shake($("ta")); return; }
+    if (r.err) { oops(); $("fb").innerHTML = `<div class="fb try"><b>LA BASE NE COMPREND PAS</b>${esc(friendlyError(r.err))}</div>`; $("live").innerHTML = ""; FX.play("bad"); shake($("ta")); return; }
     $("live").innerHTML = S.write || S.ddl ? r.html : `<span class="zoneLabel">CE QUE DONNE TA PHRASE</span>${r.html}`;
-    if (S.ddl && !sameResult(r.res, target, false)) { FX.play("bad"); $("fb").innerHTML = `<div class="fb try"><b>LA PHRASE MARCHE, MAIS…</b>${esc(ddlMsg(r, tv))}</div>`; return; }
-    if (S.write && !sameResult(r.res, target, false)) { FX.play("bad"); $("fb").innerHTML = `<div class="fb try"><b>LA PHRASE MARCHE, MAIS…</b>${esc(writeMsg(r, tv, q))}</div>`; return; }
-    if (!sameResult(r.res, target, S.ordered)) FX.play("bad");
+    if (S.ddl && !sameResult(r.res, target, false)) { FX.play("bad"); oops(); $("fb").innerHTML = `<div class="fb try"><b>LA PHRASE MARCHE, MAIS…</b>${esc(ddlMsg(r, tv))}</div>`; return; }
+    if (S.write && !sameResult(r.res, target, false)) { FX.play("bad"); oops(); $("fb").innerHTML = `<div class="fb try"><b>LA PHRASE MARCHE, MAIS…</b>${esc(writeMsg(r, tv, q))}</div>`; return; }
+    if (!sameResult(r.res, target, S.ordered)) { FX.play("bad"); oops(); }
     if (sameResult(r.res, target, S.ordered)) { $("fb").innerHTML = `<div class="fb ok"><b>BRAVO</b>${esc(S.why)}</div>${caseNote(S, r, tv)}${nextBtn()}`; FX.play("good"); burst($("fb").firstElementChild); $("next").onclick = advance; $("next").focus(); }
     else if (!r.res.columns.length) $("fb").innerHTML = `<div class="fb try"><b>AUCUNE LIGNE</b>Ta phrase ne trouve rien. Si tu compares un texte, vérifie les apostrophes, les majuscules et les accents.</div>`;
     else if (S.ordered && r.res.values.length === target.values.length && r.res.columns.length === target.columns.length && sameResult(r.res, target, false))
@@ -1618,9 +1703,13 @@ function renderType(S, head) {
 }
 
 function renderLessonEnd(L) {
-  if (!st.done.includes(st.l)) { st.done.push(st.l); save(); dots(); }
+  const fin = lessonFinish();
   setTimeout(() => { FX.play("win"); burst($("card"), 22); }, 80);
-  show(`<h2>Leçon ${st.l + 1} réussie</h2><p>Ce que tu sais maintenant :</p>
+  show(`<h2>Leçon ${st.l + 1} réussie</h2>
+    <p class="lstars" aria-label="${fin.stars} étoile(s) sur 3">${"★".repeat(fin.stars)}${"☆".repeat(3 - fin.stars)}</p><p class="lsub">${fin.stars === 3 ? "Sans aucune erreur, bravo !" : `${fin.err} erreur(s) dans cette leçon · ★★★ sans erreur, ★★ avec 1 ou 2 erreurs`}${fin.best > fin.stars ? ` · ton record reste ${fin.best} ★` : ""}</p>
+    ${fin.fire ? `<div class="fb info"><b>🔥 ${fin.fire} JOUR${fin.fire > 1 ? "S" : ""} D'AFFILÉE</b>Ta leçon d'aujourd'hui compte dans ta série, ici comme dans l'aventure.</div>` : ""}
+    ${fin.card ? `<div class="newcard">${fin.card.img ? `<img src="${fin.card.img}" alt="">` : ""}<div><b>📒 NOUVELLE CARTE POUR TON ALBUM</b><br>${esc(fin.card.name)}<br><small>Tu la retrouves dans « 📒 Mon album » et dans l'aventure.</small></div></div>` : ""}
+    <p>Ce que tu sais maintenant :</p>
     <ul class="learned">${L.learned.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
     ${L.memos.length ? `<p>Et pour t'en souvenir :</p><div class="memos">${L.memos.map((k) => `<div class="memo"><span class="notion">${esc(MNEMOS[k].notion)}</span><span class="hook">${MNEMOS[k].hook}</span></div>`).join("")}</div>` : ""}
     ${LESSONS[st.l + 1] && LESSONS[st.l + 1].part !== L.part ? `<div class="fb info"><b>PARTIE ${L.part} TERMINÉE</b>${PARTS[L.part].end}</div>` : ""}
@@ -1653,7 +1742,8 @@ function seenMemos() {
 }
 function togglePocket(open) {
   const p = $("pocket");
-  if (!open) { p.hidden = true; $("card").hidden = false; $("pocketBtn").textContent = "Mon aide-mémoire"; return; }
+  if (!open) { p.hidden = true; $("card").hidden = false; $("pocketBtn").textContent = "Mon aide-mémoire"; renderPPStats(); return; }
+  $("ppNext").hidden = true;
   const keys = seenMemos();
   $("train").hidden = true; $("trainBanner").hidden = true;
   p.innerHTML = `<h2>Mon aide-mémoire</h2><span class="zoneLabel">L'ORDRE DE LA PHRASE : DES QUESTIONS, TOUJOURS DANS LE MÊME ORDRE</span>${ORDER_CHAIN_HTML}<span class="zoneLabel">LES 5 TABLES DU ROYAUME</span>${kingdomHTML()}
@@ -1811,7 +1901,7 @@ function masteryHTML() {
 }
 
 function openTrain() {
-  $("card").hidden = true; $("pocket").hidden = true; $("train").hidden = false; $("trainBanner").hidden = true;
+  $("card").hidden = true; $("pocket").hidden = true; $("train").hidden = false; $("trainBanner").hidden = true; $("ppNext").hidden = true;
   $("pocketBtn").textContent = "Mon aide-mémoire";
   trainHome(); window.scrollTo({ top: 0 });
 }
@@ -1895,6 +1985,7 @@ function answer(it, ok, btn, mistakes) {
 function trainEnd() {
   const t = today(), y = dayStr(new Date(Date.now() - 864e5));
   if (TR.last !== t) { TR.streak = TR.last === y ? TR.streak + 1 : 1; TR.last = t; }
+  Shared.add(Shared.DAYS, [dayKey()]); renderPPStats();      // l'entraînement compte aussi dans la série 🔥
   TR.sessions++; tsave();
   const total = session.q.length, missed = [...session.missed];
   FX.play("win"); setTimeout(() => burst($("train"), 22), 50);
@@ -1915,8 +2006,49 @@ $("bannerGo").onclick = openTrain;
 
 function soundLabel() { $("sound").textContent = FX.on ? "SON : OUI" : "SON : NON"; $("sound").setAttribute("aria-pressed", FX.on ? "true" : "false"); }
 $("sound").onclick = () => { FX.toggle(); soundLabel(); };
+/* ---------- Mode clair / sombre, et installation comme une application ---------- */
+const Theme = (() => {
+  const meta = () => document.querySelector('meta[name="theme-color"]');
+  const apply = (t) => {
+    document.documentElement.dataset.theme = t;
+    const b = document.getElementById("themeBtn");
+    if (b) { b.textContent = t === "light" ? "🌙" : "☀️"; b.title = t === "light" ? "Passer en mode sombre" : "Passer en mode clair (salle lumineuse, vidéoprojecteur)"; b.setAttribute("aria-label", b.title); b.setAttribute("aria-pressed", t === "light" ? "true" : "false"); }
+    if (meta()) meta().content = t === "light" ? "#f4eee1" : "#11132a";
+  };
+  let t = "dark"; try { t = localStorage.getItem("grimoire-theme") === "light" ? "light" : "dark"; } catch (e) {}
+  apply(t);
+  const b = document.getElementById("themeBtn");
+  if (b) b.onclick = () => { t = t === "light" ? "dark" : "light"; try { localStorage.setItem("grimoire-theme", t); } catch (e) {} apply(t); if (typeof FX !== "undefined") FX.play("click"); };
+  return { apply };
+})();
+const Install = (() => {
+  const btn = document.getElementById("installBtn");
+  const can = !!document.querySelector('link[rel="manifest"]') && /^https?:$/.test(location.protocol);
+  const standalone = () => (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
+  const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  let evt = null;
+  if (!btn || !can || standalone()) return {};
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+  window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); evt = e; btn.hidden = false; });
+  window.addEventListener("appinstalled", () => { btn.hidden = true; evt = null; });
+  if (ios) btn.hidden = false;      // Safari n'a pas de bouton automatique : on explique les deux gestes
+  btn.onclick = async () => {
+    if (evt) { evt.prompt(); try { const r = await evt.userChoice; if (r.outcome === "accepted") btn.hidden = true; } catch (e) {} evt = null; return; }
+    const old = document.getElementById("playerGate"); if (old) old.remove();
+    const g = document.createElement("div"); g.id = "playerGate"; g.className = "pgate";
+    g.innerHTML = `<div class="pcard" role="dialog" aria-modal="true" aria-labelledby="insT"><h2 id="insT">📲 Installer le Grimoire</h2>
+      <p>Sur iPad et iPhone, dans <b>Safari</b> :</p>
+      <p>1. Touche le bouton <b>Partager</b> <span aria-hidden="true">⬆️</span> (en haut à droite sur iPad).<br>2. Choisis <b>« Sur l'écran d'accueil »</b>, puis <b>Ajouter</b>.</p>
+      <p class="pnote">Le Grimoire s'ouvre alors en plein écran, avec son icône, et marche même sans Internet (sauf le classement en ligne).</p>
+      <button class="pclose" id="insClose">Fermer</button></div>`;
+    document.body.appendChild(g); document.getElementById("insClose").onclick = () => g.remove();
+  };
+  return {};
+})();
+
 soundLabel();
 $("pocketBtn").onclick = () => togglePocket($("pocket").hidden);
+$("albumBtn").onclick = () => { FX.play("page"); openPPAlbum(); };
 
 function advance() { FX.play("page"); placed = []; st.s++; save(); render(); window.scrollTo({ top: 0 }); }
 
@@ -1935,6 +2067,96 @@ $("restart").onclick = () => {
   st = { l: 0, s: 0, done: [] }; placed = []; armed = false; $("restart").textContent = "Recommencer"; save(); render();
 };
 
+const dayKey = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+const dayNum = (k) => { const [y, m, d] = k.split("-").map(Number); return Math.round(Date.UTC(y, m - 1, d) / 86400000); };
+const weekKey = (d = new Date()) => {
+  const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())); const wd = t.getUTCDay() || 7;
+  t.setUTCDate(t.getUTCDate() + 4 - wd); const y0 = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
+  return `${t.getUTCFullYear()}-S${String(Math.ceil(((t - y0) / 86400000 + 1) / 7)).padStart(2, "0")}`;
+};
+/* ---------- Commun aux deux jeux : jours actifs (série 🔥) et cartes d'album, rangés par joueur ---------- */
+const Shared = {
+  DAYS: "grimoire-jours-v1", ALB: "grimoire-album-v1",
+  get(base) { if (!Players.current) return []; try { const x = JSON.parse(localStorage.getItem(Players.key(base))); return Array.isArray(x) ? x : []; } catch (e) { return []; } },
+  add(base, vals) {
+    if (!Players.current || !vals.length) return; const cur = new Set(Shared.get(base)), n = cur.size; vals.forEach((v) => v && cur.add(v));
+    if (cur.size !== n) try { localStorage.setItem(Players.key(base), JSON.stringify([...cur].sort().slice(-400))); } catch (e) {}
+  }
+};
+const keyDate = (k) => { const [y, m, d] = k.split("-").map(Number); return new Date(y, m - 1, d); };
+function foldStreak(s0, days) {      // rejoue les jours actifs après la dernière date connue (le joker sauve un jour manqué par semaine)
+  const s = Object.assign({ n: 0, last: null, best: 0, jokerWeek: null }, s0 || {});
+  days.filter((d) => !s.last || d > s.last).sort().forEach((d) => {
+    const gap = s.last ? dayNum(d) - dayNum(s.last) : 99, wk = weekKey(keyDate(d));
+    if (gap === 1) s.n += 1; else if (gap === 2 && s.jokerWeek !== wk) { s.n += 1; s.jokerWeek = wk; } else s.n = 1;
+    s.last = d; s.best = Math.max(s.best || 0, s.n);
+  });
+  return s;
+}
+
+/* ---------- Étoiles, série et cartes d'album dans Premiers pas ---------- */
+// leçon → carte d'album (les mêmes cartes que dans l'aventure)
+const PP_CARDS = { 0: "h1", 1: "m1", 3: "m4", 5: "h3", 7: "m9", 9: "c1", 11: "m5", 13: "h6", 15: "m3", 17: "c2", 19: "m7", 21: "h2", 23: "m6", 25: "h5", 27: "m2", 29: "c3", 31: "h4", 32: "m8" };
+const ALL_CARDS = [1, 2, 3, 4, 5, 6].map((i) => "h" + i).concat([1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => "m" + i), [1, 2, 3].map((i) => "c" + i));
+function cardInfoPP(k) {
+  const kind = { h: "heros", m: "monstres", c: "chateaux" }[k[0]], id = +k.slice(1);
+  const name = (run(`SELECT nom FROM ${kind} WHERE id = ${id}`).values[0] || ["?"])[0];
+  return { k, kind, id, name, img: ({ h: HERO_ART, m: MONSTER_ART, c: CASTLE_ART }[k[0]])[id] || "" };
+}
+const oops = () => { st.err = (st.err || 0) + 1; save(); };
+const ppStars = () => Object.values(st.stars || {}).reduce((a, b) => a + b, 0);
+function ppStreak() {      // la même série que l'aventure : elle part de la série de l'aventure et ajoute les jours de leçon
+  if (!Players.current) return 0;
+  const g = Players.read("grimoire-sql-v1", Players.current) || {}, s = foldStreak(g.streak, Shared.get(Shared.DAYS));
+  if (!s.last) return 0;
+  const gap = dayNum(dayKey()) - dayNum(s.last);
+  return gap <= 1 || (gap === 2 && s.jokerWeek !== weekKey()) ? s.n : 0;
+}
+function lessonFinish() {
+  const l = st.l, err = st.err || 0, stars = err === 0 ? 3 : err <= 2 ? 2 : 1;
+  st.stars = st.stars || {}; const best = Math.max(st.stars[l] || 0, stars); st.stars[l] = best;
+  if (!st.done.includes(l)) st.done.push(l);
+  let card = null; const k = PP_CARDS[l];
+  if (k && !Shared.get(Shared.ALB).includes(k)) { Shared.add(Shared.ALB, [k]); card = cardInfoPP(k); }
+  const fresh = !Shared.get(Shared.DAYS).includes(dayKey()); Shared.add(Shared.DAYS, [dayKey()]);
+  save(); dots(); renderPPStats();
+  return { stars, best, err, card, fire: fresh ? ppStreak() : 0 };
+}
+function renderPPStats() {
+  const n = ppStreak();
+  $("ppFireN").textContent = n; $("ppFire").classList.toggle("off", !n);
+  $("ppFire").title = n ? `Série de ${n} jour(s) d'affilée, commune avec l'aventure` : "Termine une leçon ou une mission aujourd'hui pour lancer ta série de jours";
+  $("ppStarsN").textContent = ppStars(); $("ppStarsS").title = `${ppStars()} étoile(s) sur ${LESSONS.length * 3} · ★★★ quand une leçon est faite sans erreur`;
+  const el = $("ppNext"), t = ppNextStep(); el.hidden = !t || !$("train").hidden || !$("pocket").hidden;
+  if (t) el.innerHTML = `<b>🧭 PROCHAIN PAS</b> ${t}`;
+}
+function ppNextStep() {
+  if (!Players.current) return "";
+  const n = ppStreak();
+  if (n && !Shared.get(Shared.DAYS).includes(dayKey())) {
+    const g = Players.read("grimoire-sql-v1", Players.current) || {};
+    if (!(g.streak && g.streak.last === dayKey())) return `🔥 Termine une leçon aujourd'hui pour garder ta série de ${n} jour${n > 1 ? "s" : ""}.`;
+  }
+  const own = new Set(Shared.get(Shared.ALB)), nextL = Object.keys(PP_CARDS).map(Number).filter((l) => l >= st.l && !own.has(PP_CARDS[l]))[0];
+  if (nextL !== undefined && nextL < LESSONS.length) return `📒 Termine la leçon ${nextL + 1} pour gagner la carte « ${esc(cardInfoPP(PP_CARDS[nextL]).name)} ».`;
+  const low = st.done.filter((l) => ((st.stars || {})[l] || 0) < 3);
+  if (low.length) return `⭐ ${low.length} leçon${low.length > 1 ? "s" : ""} à refaire sans erreur pour les 3 étoiles (la leçon ${low[0] + 1}, par exemple).`;
+  return "";
+}
+function openPPAlbum() {
+  const old = document.getElementById("playerGate"); if (old) old.remove();
+  const own = new Set(Shared.get(Shared.ALB)), byCard = {}; Object.entries(PP_CARDS).forEach(([l, k]) => byCard[k] = +l);
+  const cell = (k) => { const c = cardInfoPP(k);
+    return own.has(k) ? `<div class="acard">${c.img ? `<img src="${c.img}" alt="">` : ""}<b>${esc(c.name)}</b></div>`
+      : `<div class="acard lock"><span class="q" aria-hidden="true">?</span><span>Leçon ${byCard[k] + 1}</span></div>`; };
+  const g = document.createElement("div"); g.id = "playerGate"; g.className = "pgate";
+  g.innerHTML = `<div class="pcard" style="max-width:760px" role="dialog" aria-modal="true" aria-labelledby="alT">
+    <h2 id="alT">📒 Mon album · ${ALL_CARDS.filter((k) => own.has(k)).length}/${ALL_CARDS.length}</h2>
+    <p>Les leçons et les missions de l'aventure débloquent les mêmes cartes. ${location.protocol === "file:" || /claude/.test(location.hostname) ? "" : "Elles se retrouvent dans l'album de l'aventure."}</p>
+    <div class="agrid">${ALL_CARDS.map(cell).join("")}</div>
+    <button class="pclose" id="alClose">Fermer</button></div>`;
+  document.body.appendChild(g); $("alClose").onclick = () => g.remove(); $("alClose").focus();
+}
 function ppSummary(name) {
   const x = Players.read(SAVE, name);
   if (!x || typeof x.l !== "number") return "nouvelle partie";
@@ -1942,7 +2164,7 @@ function ppSummary(name) {
 }
 function showPlayer() { $("playerName").textContent = Players.current || "Joueur"; }
 function openPlayers(first) {
-  playerGate({ summary: ppSummary, bases: [SAVE, TSAVE], legacy: [SAVE, TSAVE], canClose: !first,
+  playerGate({ summary: ppSummary, bases: [SAVE, TSAVE, Shared.DAYS, Shared.ALB], legacy: [SAVE, TSAVE], canClose: !first,
     onChoose: () => { loadSt(); loadTR(); placed = []; showPlayer(); $("train").hidden = true; $("pocket").hidden = true; $("card").hidden = false; render(); FX.play("win"); window.scrollTo({ top: 0 }); } });
 }
 $("playerBtn").onclick = () => { FX.play("page"); openPlayers(false); };

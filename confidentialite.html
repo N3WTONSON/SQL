@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Confidentialité · Le Grimoire des Requêtes</title>
+<link rel="icon" href="assets/logo-128.webp" type="image/webp">
+<style>
+:root { --night:#11132a; --stone:#191c36; --ink:#ece7da; --ink-dim:#a3a3b8; --torch:#f0a43a; --arcane:#66c9ff; color-scheme: dark; }
+:root[data-theme="light"] { --night:#f6f1e6; --stone:#fffaf0; --ink:#2b2417; --ink-dim:#5d5240; --torch:#9a4f0f; --arcane:#1d5c95; color-scheme: light; }
+html, body { margin:0; background:var(--night); color:var(--ink); font-family: Alegreya, Georgia, serif; font-size:18px; line-height:1.5; }
+main { max-width:720px; margin:0 auto; padding:24px 16px 48px; }
+h2 { color:var(--torch); font-size:32px; margin:0 0 8px; } h3 { color:var(--torch); margin:22px 0 4px; }
+.pwarn { border:1px solid var(--torch); padding:8px 10px; } .pnote { color:var(--ink-dim); font-size:15px; }
+a { color:var(--arcane); }
+</style>
+<script>try { if (localStorage.getItem("grimoire-theme") === "light") document.documentElement.dataset.theme = "light"; } catch (e) {}</script>
+</head><body><main><p><a href="index.html">← Retour au Grimoire</a></p>
+<h2>🔒 Confidentialité</h2>
+<p><b>Ce que le Grimoire garde, et ce qu'il envoie.</b> Expliqué simplement, pour les joueurs et leurs parents.</p>
+<h3>Sur ton appareil</h3>
+<p>Ta partie (ton pseudo, tes missions, ton XP, tes objets, tes leçons de Premiers pas) est gardée <b>dans le navigateur de cet appareil</b>. Pour jouer, rien n'est envoyé sur Internet. Pas de compte, pas d'adresse e-mail, pas de mot de passe.</p>
+<h3>Le classement en ligne</h3>
+<p>Seulement si la personne qui gère le site l'a activé. Il reçoit <b>uniquement</b> :</p>
+<ul><li>ton <b>pseudo</b> et un <b>numéro tiré au hasard</b> qui te reconnaît ;</li><li>ton <b>niveau</b>, ton <b>XP</b>, le nombre de <b>missions</b> réussies et de <b>badges</b> ;</li><li>pour le défi du jour : la <b>date</b>, le nombre d'<b>essais</b> et le <b>temps</b>.</li></ul>
+<p>Ces informations vont dans une feuille Google Sheets appartenant à la personne qui gère le site. Elles sont visibles par les autres joueurs dans le classement. Jamais d'âge, d'école, d'adresse, de position, de photo ni de publicité.</p>
+<p class="pwarn">👉 <b>Choisis un pseudo, pas ton vrai prénom ni ton nom de famille.</b> Par exemple : « DragonBleu », « Lina_42 ».</p>
+<h3>Te retirer</h3>
+<ul><li><b>Du classement en ligne :</b> bouton 🏆 Classement → « Retirer mon nom du classement en ligne ». Ton nom est effacé de la feuille et n'y est plus envoyé.</li>
+<li><b>De cet appareil :</b> bouton 👤 → ✕ à côté de ton nom (deux fois) efface ta partie.</li>
+<li>Tu peux aussi demander à l'adulte qui gère le site d'effacer ta ligne dans la feuille Google.</li></ul>
+<h3>Le code de sauvegarde</h3>
+<p>Il contient toute ta partie. Garde-le pour toi : la personne qui le colle récupère ta partie.</p>
+<h3>Services extérieurs</h3>
+<p>Les polices d'écriture viennent de Google Fonts : comme pour tout site, Google voit alors l'adresse Internet de l'appareil. Le classement en ligne passe par Google Apps Script. Aucun autre service n'est utilisé.</p>
+<p class="pnote">Pour les adultes qui gèrent le site : informez les familles, demandez des pseudos, et videz la feuille Google en fin d'année (onglets « Classement » et « Defis »).</p>
+</main></body></html>

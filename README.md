@@ -182,6 +182,21 @@ Sans adresse, ou sans Internet, le classement montre les joueurs de l'appareil. 
 pourrait envoyer un faux score : c'est fait pour une classe ou une famille, pas pour un concours.
 Les pages publiées sur claude.ai restent en classement local (elles ne peuvent pas joindre Google).
 
+### Confidentialité 🔒
+
+- La page **🔒 Confidentialité** (lien sur l'écran « Qui joue ? », dans la Besace, en bas de Premiers pas, et
+  `confidentialite.html` à la racine du site) explique simplement ce qui reste sur l'appareil et ce qui part dans le
+  classement : le pseudo, un numéro tiré au hasard, le niveau, l'XP, les missions, les badges et les résultats du
+  défi du jour. Jamais d'âge, d'école, d'adresse ni de photo.
+- L'écran « Qui joue ? » demande un **pseudo** et conseille de ne pas mettre son vrai prénom ni son nom.
+- **Se retirer du classement en ligne** : 🏆 Classement → « Retirer mon nom du classement en ligne » (deux touches
+  pour confirmer). Le nom est effacé de la feuille Google et plus aucun score n'y est envoyé depuis cet appareil ;
+  « Revenir dans le classement » annule. Effacer la partie dans 👤 la supprime de l'appareil.
+- Ce retrait demande la **version 2** de `classement/Code.gs`. Si tu as installé le script avant : colle le nouveau
+  code dans Apps Script, enregistre, puis **Déployer → Gérer les déploiements → ✏️ Modifier → Version : Nouvelle
+  version → Déployer** (l'adresse ne change pas). Avec l'ancienne version, le jeu arrête d'envoyer les scores et
+  affiche ce qu'il faut faire ; le responsable peut aussi supprimer la ligne à la main dans la feuille.
+
 ## Revenir chaque jour : défi, série, quêtes, étoiles, album
 
 - **⭐⭐⭐ Étoiles par mission** : ⭐ réussie, ⭐⭐ sans parchemin, ⭐⭐⭐ sans parchemin et du premier coup.
@@ -209,6 +224,26 @@ Les pages publiées sur claude.ai restent en classement local (elles ne peuvent 
   le niveau 12 ! », « Encore 1 monstre pour compléter l'album », « Encore 2 niveaux pour l'armure »…), avec un
   bouton pour passer au suivant ; les deux plus proches s'affichent aussi sur l'écran de victoire.
 
+- **🔁 Révisions ciblées** : le jeu note, notion par notion (WHERE, GROUP BY, JOIN, LIKE…), les sorts ratés.
+  Dès qu'une notion a coûté 2 essais, un bouton apparaît dans le bandeau du haut : « 🔁 Tu hésites sur GROUP BY :
+  3 exercices ». Les exercices sont tirés des missions déjà réussies et d'une banque d'entraînement (30 exercices en
+  plus, qui servent aussi au défi éclair). Aucun PV perdu, on peut passer un exercice ; +15 XP par bonne réponse et
+  +30 XP si les 3 sont justes, ce qui remet le compteur de la notion à zéro.
+
+### Premiers pas a les mêmes récompenses
+
+- **⭐ Étoiles par leçon** : ★★★ sans aucune erreur, ★★ avec 1 ou 2 erreurs, ★ sinon (une erreur = une mauvaise
+  réponse au quiz, une phrase de blocs fausse ou une requête tapée fausse). Le total s'affiche en haut ; les leçons
+  à 3 étoiles ont une case dorée.
+- **🔥 Une seule série pour les deux jeux** : une leçon ou un entraînement terminé dans Premiers pas compte comme un
+  jour actif, exactement comme une mission dans l'aventure (même joker hebdomadaire, mêmes récompenses tous les 7 jours,
+  versées dans l'aventure).
+- **📒 Les mêmes cartes** : 18 leçons débloquent chacune une carte de l'album. « 📒 Mon album », en bas de page,
+  montre la collection. Les cartes et la série se partagent quand les deux jeux sont sur le même site (GitHub Pages) ;
+  sur claude.ai, chaque page garde les siennes.
+- **🧭 Prochain pas** sous le titre de la leçon : « Termine la leçon 4 pour gagner la carte Champignon Hurleur »,
+  « Termine une leçon aujourd'hui pour garder ta série de 5 jours »…
+
 Ces informations font partie de la partie du joueur : elles voyagent avec le code de sauvegarde.
 Pour le classement du défi du jour en ligne, il faut la **nouvelle version** de `classement/Code.gs` : remplace le
 code dans Apps Script, puis **Déployer → Gérer les déploiements → Modifier → Nouvelle version** (l'adresse ne change pas).
@@ -223,6 +258,28 @@ se souvient de ce qui est plié.
 barre d'icônes (🗺️ Carte, 📚 Tables, 🎒 Besace) et la mission prend toute la largeur. Toucher une icône fait glisser
 la colonne par-dessus la page ; choisir une mission, toucher à côté ou « ✕ Fermer » la referme. « 📌 Épingler » la
 remet toujours visible. Le choix est gardé sur l'appareil.
+
+## L'installer comme une application 📲
+
+Depuis le site GitHub Pages (en `https://`), le Grimoire s'installe comme une vraie application : une icône sur
+l'écran d'accueil, l'ouverture en plein écran sans barre d'adresse, et le jeu qui marche **sans Internet**.
+
+- **Android, Chrome, Edge (ordinateur)** : le bouton **📲 Installer** apparaît en haut du jeu ; sinon, menu ⋮ →
+  « Installer l'application » ou « Ajouter à l'écran d'accueil ».
+- **iPad et iPhone (Safari)** : bouton **Partager** ⬆️ → **« Sur l'écran d'accueil »** → **Ajouter**. Le bouton
+  📲 Installer du jeu rappelle ces deux gestes.
+
+Après la première visite, tout le jeu (pages, images, moteur SQL, polices) est gardé sur l'appareil par un *service
+worker* (`sw.js`). Seul le classement en ligne a besoin d'Internet. À chaque nouvelle version publiée sur GitHub, le
+numéro de version de `sw.js` change : l'application se met à jour d'elle-même à l'ouverture suivante (fermer puis
+rouvrir l'application si un changement tarde à apparaître). En ouvrant `index.html` en double-clic (`file://`),
+l'installation n'est pas proposée, mais le jeu marche toujours.
+
+## Mode clair ☀️
+
+Le bouton **☀️** en haut des deux jeux passe en **mode clair** : fond crème, texte sombre, couleurs plus foncées pour
+rester lisibles. C'est fait pour les salles très lumineuses et les vidéoprojecteurs. **🌙** revient au mode sombre.
+Le choix est gardé sur l'appareil, pour les deux jeux et la page de confidentialité.
 
 ## Sur tablette
 
@@ -347,6 +404,10 @@ Ce contenu se trouve dans l'objet `PEDAGOGY` (`js/data/levels.js`) : `lesson`, `
 grimoire-des-requetes/
 ├── index.html                  page du jeu (charge les scripts dans l'ordre)
 ├── config.js                   réglage du classement commun (adresse Google Apps Script)
+├── manifest.webmanifest        nom, icônes et couleurs de l'application installée
+├── sw.js                       service worker : garde le jeu sur l'appareil pour le hors-ligne (généré)
+├── premiers-pas.html           le mode débutant, avec des blocs à cliquer
+├── confidentialite.html        ce que le jeu garde et envoie, et comment se retirer
 ├── classement/Code.gs          le script à coller dans Google Sheets pour ce classement
 ├── css/style.css               thème : tokens de couleur et de typo en tête de fichier
 ├── js/
@@ -362,7 +423,7 @@ grimoire-des-requetes/
 │   ├── sql-wasm.wasm           binaire SQLite
 │   ├── sql-wasm-binary.js      le même binaire en base64 (permet le file://)
 │   └── LICENSE-sql.js.txt      licence MIT de sql.js
-├── assets/                     logo (128 px, 480 px et original)
+├── assets/                     logo, icônes de l'application, illustrations
 ├── sql/schema.sql              la base en SQL pur, à ouvrir dans DB Browser for SQLite
 └── standalone/                 version en un seul fichier HTML
 ```

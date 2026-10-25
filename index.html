@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Le Grimoire des Requêtes</title>
 <link rel="icon" href="assets/logo-128.webp" type="image/webp">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#11132a">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Grimoire SQL">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script>try { if (localStorage.getItem("grimoire-theme") === "light") document.documentElement.dataset.theme = "light"; } catch (e) {}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Alegreya:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;600&family=Cinzel:wght@700&display=swap">
 <link rel="stylesheet" href="css/style.css">
@@ -19,8 +27,8 @@
     <div class="stat streakStat" id="streakStat"><span class="fireI" aria-hidden="true">🔥</span> <span class="num" id="streak">0</span></div>
     <div class="stat" title="Parchemins : chacun donne un indice"><span class="scroll-emo" aria-hidden="true">📜</span> <span class="num" id="scrolls">3</span> <span class="lbl">parchemins</span></div>
     </div>
-    <div class="hudBtns"><button class="playerBtn" id="albumBtn" title="Mon album de cartes" aria-label="Mon album de cartes"><span aria-hidden="true">📒</span><b>Album <span id="albumCount"></span></b></button><button class="playerBtn" id="rankBtn" title="Classement des joueurs" aria-label="Classement des joueurs"><span aria-hidden="true">🏆</span><b>Classement</b></button><button class="playerBtn" id="playerBtn" title="Changer de joueur" aria-label="Changer de joueur"><span aria-hidden="true" id="playerIco">👤</span><b id="playerName">…</b></button><a class="switchBtn" id="switchMode" href="premiers-pas.html" data-switch title="Passer au mode débutant, avec des blocs à cliquer"><span class="arr">⇄</span>Premiers pas</a>
-    <button class="soundBtn" id="sound" aria-pressed="true">SON : OUI</button></div>
+    <div class="hudBtns"><button class="playerBtn" id="albumBtn" title="Mon album de cartes" aria-label="Mon album de cartes"><span aria-hidden="true">📒</span><b>Album <span id="albumCount"></span></b></button><button class="playerBtn" id="rankBtn" title="Classement des joueurs" aria-label="Classement des joueurs"><span aria-hidden="true">🏆</span><b>Classement</b></button><button class="playerBtn" id="installBtn" hidden title="Installer le Grimoire comme une application" aria-label="Installer le Grimoire comme une application"><span aria-hidden="true">📲</span><b>Installer</b></button><button class="playerBtn" id="playerBtn" title="Changer de joueur" aria-label="Changer de joueur"><span aria-hidden="true" id="playerIco">👤</span><b id="playerName">…</b></button><a class="switchBtn" id="switchMode" href="premiers-pas.html" data-switch title="Passer au mode débutant, avec des blocs à cliquer"><span class="arr">⇄</span>Premiers pas</a>
+    <button class="soundBtn themeBtn" id="themeBtn" aria-pressed="false" title="Mode clair">☀️</button><button class="soundBtn" id="sound" aria-pressed="true">SON : OUI</button></div>
   </header>
 
   <div class="grid">
@@ -95,6 +103,7 @@
         <div class="foldBody">
         <div class="loot" id="loot"></div>
         <a class="reset" href="premiers-pas.html" target="_blank" rel="noopener" style="color:var(--arcane)">Revoir les bases : Premiers pas</a>
+        <button class="reset" data-privacy>🔒 Confidentialité</button>
         <button class="reset" id="reset">Recommencer l'aventure</button>
         </div>
       </details>

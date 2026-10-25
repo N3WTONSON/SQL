@@ -156,6 +156,9 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .bclock.hurry { color: var(--blood); animation: hurry 1s ease-in-out infinite; }
 @keyframes hurry { 50% { transform: scale(1.08); } }
 .blitzbtn { border-color: var(--arcane) !important; color: var(--arcane) !important; }
+.revbar { border-color: var(--rune); background: linear-gradient(90deg, rgba(111, 211, 176, 0.14), rgba(111, 211, 176, 0.02)); }
+.revbar b { color: var(--rune) !important; }
+.revbtn { border-color: var(--rune) !important; color: var(--rune) !important; }
 .bigscore { font-family: var(--f-display); font-size: 72px; line-height: 1; color: var(--arcane); }
 .nextstep { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border: 1px dashed var(--seam); background: var(--stone); font-size: 15px; animation: rise 0.4s ease-out; }
 .nextstep .nsI { font-size: 20px; }
@@ -462,6 +465,7 @@ textarea { font-size: max(16px, 1em); }            /* sous 16 px, l'iPad zoome d
 @media (max-width: 820px) and (min-width: 521px) { .brand { font-size: 28px; } }
 
 .pcard.rankcard { max-width: 720px; }
+.privrow { font-size: 14px; color: var(--ink-dim); }
 .rankcard .tablewrap { padding: 0; }
 table.rank { font-size: 14px; } table.rank td, table.rank th { padding: 8px 10px; }
 table.rank td, table.rank th { text-align: center; }
@@ -509,6 +513,13 @@ table.rank .you { font-family: var(--f-hud); font-size: 11px; color: var(--night
 .pfile { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; border: 1px solid var(--seam); cursor: pointer; color: var(--ink); }
 .pfile input { position: absolute; width: 1px; height: 1px; opacity: 0; }
 .pcard code { font-family: var(--f-code); color: var(--torch); }
+.privcard { max-width: 640px !important; text-align: left !important; }
+.privcard h2 { text-align: center; }
+.privcard h3 { margin: 10px 0 0; font-family: var(--f-display); font-weight: 400; font-size: 20px; color: var(--torch); }
+.privcard ul { margin: 4px 0; padding-left: 20px; line-height: 1.45; }
+.privcard li { margin: 3px 0; }
+.pwarn { border: 1px solid var(--torch); background: rgba(240, 164, 58, 0.1); padding: 8px 10px; }
+.privlink { background: none; border: 0; padding: 0; color: var(--arcane); text-decoration: underline; cursor: pointer; font: inherit; }
 .playerBtn { display: inline-flex; align-items: center; gap: 6px; max-width: 200px; min-height: 32px; font-family: var(--f-body); font-size: 15px; background: none; border: 1px solid var(--seam); color: var(--ink); padding: 4px 10px; cursor: pointer; }
 .playerBtn b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--torch); font-weight: 600; }
 .playerBtn:hover { border-color: var(--torch); }
@@ -517,3 +528,24 @@ table.rank .you { font-family: var(--f-hud); font-size: 11px; color: var(--night
 @media (max-width: 520px) { #rankBtn b, #albumBtn b { display: none; } }
 @media (prefers-reduced-motion: reduce) { *, *::before { animation: none !important; transition: none !important; } }
 @media (max-width: 520px) { .hud { position: static; gap: 10px; } .stats { width: 100%; flex-wrap: wrap; gap: 8px 16px; } .xpbar { width: 60px; } .stat .lbl { display: none; } .brand { font-size: 26px; width: 100%; } .brand img { width: 52px; } .stat { font-size: 14px; } .num { font-size: 18px; } .heart { font-size: 20px; } .hudBtns { width: 100%; flex-wrap: wrap; } .kbd { display: none; } body { font-size: 16px; } }
+/* ---------- Mode clair (salles lumineuses, vidéoprojecteur) ---------- */
+:root[data-theme="light"] {
+  --night: #f4eee1; --stone: #fffaf0; --stone-2: #efe6d3; --seam: #cdbf9f;
+  --ink: #2b2417; --ink-dim: #685f4d; --torch: #a5560c; --torch-deep: #7a3f08;
+  --rune: #1d7556; --blood: #b8322a; --arcane: #1d5c95;
+  color-scheme: light;
+}
+:root[data-theme="light"] body { background-image: radial-gradient(ellipse 60% 40% at 50% -10%, rgba(165,86,12,.10), transparent 70%), linear-gradient(var(--night), var(--night)); }
+:root[data-theme="light"] .console, :root[data-theme="light"] .codeLine, :root[data-theme="light"] textarea { background: #fbf7ec; }
+:root[data-theme="light"] td, :root[data-theme="light"] table.res td { border-bottom-color: var(--seam); }
+:root[data-theme="light"] #sql::placeholder, :root[data-theme="light"] .lvl.locked, :root[data-theme="light"] tr.drop td { color: #a39a86; }
+:root[data-theme="light"] .lvl.done .n { color: #fff; }
+:root[data-theme="light"] .dbtn, :root[data-theme="light"] .btn-cast, :root[data-theme="light"] .pgo, :root[data-theme="light"] .btn.main,
+:root[data-theme="light"] .switchBtn, :root[data-theme="light"] .anew { color: #fff; }
+:root[data-theme="light"] .dbtn.alt { color: var(--torch); }
+:root[data-theme="light"] .switchBtn:hover { background: var(--torch-deep); }
+:root[data-theme="light"] .dot.gold { background: #c69a1c; }
+:root[data-theme="light"] .lstars { color: #b8860b; }
+/* légendes posées sur les images : elles gardent un fond sombre, donc un texte clair */
+:root[data-theme="light"] figure:not(.acard) figcaption { --ink: #ece7da; --ink-dim: #c9c4b6; --torch: #f0a43a; --arcane: #66c9ff; --rune: #6fd3b0; --blood: #e2574c; color: var(--ink); }
+.themeBtn { font-size: 17px; line-height: 1; min-width: 38px; }

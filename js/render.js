@@ -94,7 +94,7 @@ function renderHUD(hit) {
   $("tablesInfo").textContent = LEVELS[state.current].id >= 25 ? "6 tables" : "5 tables";
   renderEngage();
   { const L = curL(), used = state.hintsUsed[L.id] || 0;
-    $("hintBtn").disabled = !!L.daily || !!L.blitz || (state.scrolls <= 0 && !(state.completed.includes(L.id) && attempt.hints < used)); }
+    $("hintBtn").disabled = !!L.daily || !!L.blitz || !!L.revise || (state.scrolls <= 0 && !(state.completed.includes(L.id) && attempt.hints < used)); }
 }
 
 function renderTranslate() {
@@ -156,7 +156,7 @@ function showWhy(L) {
 
 function renderLevel() {
   const L = curL();
-  startAttempt(L.blitz ? "eclair-" + blitz.i : L.daily ? "defi-" + L.date : L.id);
+  startAttempt(L.blitz ? "eclair-" + blitz.i : L.revise ? "revision-" + revise.i : L.daily ? "defi-" + L.date : L.id);
   $("dailyBar").hidden = false; renderDailyBar();
   $("lvlTag").textContent = L.chapter;
   $("lvlTitle").textContent = L.title;
@@ -190,7 +190,9 @@ function renderLevel() {
   renderTranslate();
   $("kw").innerHTML = keywordsFor(L).map((k) => `<button data-ins="${k}">${k}</button>`).join("");
   const used = state.hintsUsed[L.id] || 0, replay = state.completed.includes(L.id), st = levelStars(L.id);
-  $("out").innerHTML = L.blitz
+  $("out").innerHTML = L.revise
+    ? `<div class="msg info"><b>RÉVISION · ${esc(revise.notion)}</b>Un exercice pour t'entraîner sur cette notion. Une erreur ne coûte rien : corrige, regarde la leçon, ou passe l'exercice.</div>`
+    : L.blitz
     ? `<div class="msg info"><b>DÉFI ÉCLAIR</b>Écris la requête et lance le sort. Une erreur ne coûte rien : corrige ou passe la question.</div>`
     : L.daily
     ? `<div class="msg info"><b>DÉFI DU JOUR</b>Pas de parchemin aujourd'hui : utilise le traducteur sous l'éditeur et « Explorer » pour tester. Chaque sort raté compte comme un essai.</div>`
@@ -199,7 +201,7 @@ function renderLevel() {
     : used
     ? L.hints.slice(0, used).map((h, i) => `<div class="hint"><span class="label">Parchemin ${i + 1}</span><br>${h}</div>`).join("")
     : `<div class="msg info">Écris ta formule puis lance le sort. « Explorer » exécute une requête sans valider la mission et sans coûter de PV.<br>⭐ réussir · ⭐⭐ sans parchemin · ⭐⭐⭐ sans parchemin et du premier coup.</div>`;
-  if (!L.daily && !replay && used) attempt.hints = Math.max(attempt.hints, used);
+ if (!L.daily && !L.revise && !replay && used) attempt.hints = Math.max(attempt.hints, used);
   renderHUD();
   $("consoleMode").textContent = "";
 }

@@ -3,6 +3,7 @@
  * À coller dans Extensions > Apps Script d'une feuille Google Sheets, puis à déployer
  * comme « Application Web » (Exécuter en tant que : moi ; Accès : tout le monde).
  * Après chaque modification de ce code : Déployer > Gérer les déploiements > Modifier > Nouvelle version.
+ * Version 2 : défi du jour, et retrait d'un joueur à sa demande.
  * Il ne reçoit que : identifiant du joueur, nom, niveau, XP, missions réussies, badges,
  * et pour le défi du jour : la date, le nombre d'essais ratés et le temps.
  */
@@ -21,6 +22,7 @@ const json_ = (o) => ContentService.createTextOutput(JSON.stringify(o)).setMimeT
 
 // Lire : sans paramètre, le classement général ; avec ?defi=AAAA-MM-JJ, le classement du défi de ce jour
 function doGet(e) {
+  if (e && e.parameter && e.parameter.version) return json_({ version: 2 });
   const defi = e && e.parameter && e.parameter.defi;
   if (defi) {
     // la date est rangée sous la forme « jour 2026-10-25 » pour que Google Sheets ne la transforme pas en date
@@ -42,6 +44,14 @@ function doPost(e) {
   const verrou = LockService.getScriptLock();
   verrou.waitLock(5000);
   try {
+    // un joueur demande à être retiré : on efface toutes ses lignes, sans rien réécrire
+    if (d.type === "retirer") {
+      [classement_(), defis_()].forEach((sh) => {
+        const lignes = sh.getDataRange().getValues();
+        for (let k = lignes.length - 1; k >= 1; k--) if (String(lignes[k][0]) === id) sh.deleteRow(k + 1);
+      });
+      return ContentService.createTextOutput("retiré");
+    }
     // le score général (toujours envoyé)
     const xp = borne(d.xp, 20000);
     const ligne = [id, nom, Math.floor(xp / 150) + 1, xp, borne(d.missions, 40), borne(d.badges, 60), new Date()];

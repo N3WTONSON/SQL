@@ -17,7 +17,12 @@ function explore() {
   catch (e) { $("out").innerHTML = `<div class="msg warn"><b>VISION TROUBLE</b>${esc(translateError(e.message))}</div>`; }
 }
 
-function cast() {
+function cast() {      // chaque sort raté est noté par notion, pour proposer des révisions ciblées
+  const L = curL(), f0 = attempt.fails;
+  castSpell();
+  if (attempt.fails > f0) noteFail(L);
+}
+function castSpell() {
   const L = curL();
   const q = $("sql").value.trim();
   if (!q) return;
@@ -28,7 +33,7 @@ function cast() {
   try { got = write ? runWorld(L, q) : run(q, worldSetup(L)); }
   catch (e) {                                    // erreur de syntaxe : -1 PV
     attempt.fails += 1; if (L.daily) renderDailyBar();
-    if (L.blitz) { FX.play("bad"); $("out").innerHTML = `<div class="msg warn"><b>PRESQUE !</b>${esc(translateError(e.message))} Aucun PV perdu en défi éclair.</div>`; return; }
+    if (L.blitz || L.revise) { FX.play("bad"); $("out").innerHTML = `<div class="msg warn"><b>PRESQUE !</b>${esc(translateError(e.message))} Aucun PV perdu ${L.revise ? "en révision" : "en défi éclair"}.</div>`; return; }
     state.hp -= 1; save(); renderHUD(true); FX.play("hit");
     document.querySelector(".spellbox").classList.remove("shake"); void document.body.offsetWidth;
     document.querySelector(".spellbox").classList.add("shake");
@@ -68,12 +73,13 @@ function cast() {
     $("out").innerHTML = `<div class="msg warn"><b>LE SORT FONCTIONNE, MAIS RATE SA CIBLE</b>${esc(problem)}</div>` + diff + table(got);
     return;
   }
-  $("out").innerHTML = `<div class="msg ok"><b>SORT RÉUSSI</b>La boule de cristal confirme ta vision.</div>` + table(got) + (L.daily ? "" : decomposition(L));
+  $("out").innerHTML = `<div class="msg ok"><b>SORT RÉUSSI</b>La boule de cristal confirme ta vision.</div>` + table(got) + (L.daily || L.blitz ? "" : decomposition(L));
   victory(L);
 }
 
 function victory(L) {
   if (L.blitz) return blitzRight();
+  if (L.revise) return reviseRight();
   if (L.daily) return dailyWin(L);
   const first = !state.completed.includes(L.id);
   const lvlBefore = playerLevel();
@@ -94,6 +100,7 @@ function victory(L) {
   const chapterEnd = !next || next.chapter !== L.chapter;
   if (first && chapterEnd) state.scrolls += 2;   // bonus de fin de chapitre
   ev.newCards = ALBUM.filter((c) => cardOwned(c) && !ownedBefore.has(c.k));
+  Shared.add(Shared.ALB, ALBUM.filter(cardOwned).map((c) => c.k));
   let extra = afterSuccess(ev);
   const gear = syncEquipment();
   if (gear.length) extra += `<div class="xtra card">${avatarImg(40)} <b>Nouvel équipement pour ton héros :</b> ${gear.map((g) => `${g.ico} ${esc(g.name)}`).join(", ")}</div>`;
@@ -159,7 +166,7 @@ function showIntro() {
 
 function readScroll() {
   const L = curL();
-  if (L.daily || L.blitz) return;
+  if (L.daily || L.blitz || L.revise) return;
   const used = state.hintsUsed[L.id] || 0;
   if (state.completed.includes(L.id) && attempt.hints < used) {      // mission rejouée : relire un parchemin déjà lu est gratuit (mais coûte les étoiles)
     attempt.hints += 1; FX.play("scroll");
@@ -192,6 +199,35 @@ const weekKey = (d = new Date()) => {      // semaine ISO, du lundi au dimanche 
   t.setUTCDate(t.getUTCDate() + 4 - wd); const y0 = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
   return `${t.getUTCFullYear()}-S${String(Math.ceil(((t - y0) / 86400000 + 1) / 7)).padStart(2, "0")}`;
 };
+/* ---------- Commun aux deux jeux : jours actifs (série 🔥) et cartes d'album, rangés par joueur ---------- */
+const Shared = {
+  DAYS: "grimoire-jours-v1", ALB: "grimoire-album-v1",
+  get(base) { if (!Players.current) return []; try { const x = JSON.parse(localStorage.getItem(Players.key(base))); return Array.isArray(x) ? x : []; } catch (e) { return []; } },
+  add(base, vals) {
+    if (!Players.current || !vals.length) return; const cur = new Set(Shared.get(base)), n = cur.size; vals.forEach((v) => v && cur.add(v));
+    if (cur.size !== n) try { localStorage.setItem(Players.key(base), JSON.stringify([...cur].sort().slice(-400))); } catch (e) {}
+  }
+};
+const keyDate = (k) => { const [y, m, d] = k.split("-").map(Number); return new Date(y, m - 1, d); };
+function foldStreak(s0, days) {      // rejoue les jours actifs après la dernière date connue (le joker sauve un jour manqué par semaine)
+  const s = Object.assign({ n: 0, last: null, best: 0, jokerWeek: null }, s0 || {});
+  days.filter((d) => !s.last || d > s.last).sort().forEach((d) => {
+    const gap = s.last ? dayNum(d) - dayNum(s.last) : 99, wk = weekKey(keyDate(d));
+    if (gap === 1) s.n += 1; else if (gap === 2 && s.jokerWeek !== wk) { s.n += 1; s.jokerWeek = wk; } else s.n = 1;
+    s.last = d; s.best = Math.max(s.best || 0, s.n);
+  });
+  return s;
+}
+let ppAlbum = new Set();      // cartes gagnées dans Premiers pas (même adresse de site seulement)
+function syncShared() {
+  if (!Players.current) return;
+  const s = state.streak || {}, last = s.last, days = Shared.get(Shared.DAYS);
+  if (last) Shared.add(Shared.DAYS, [last]);
+  let changed = false;
+  days.filter((d) => (!last || d > last) && d <= dayKey()).sort().forEach((d) => { markActiveDay(d); changed = true; });
+  ppAlbum = new Set(Shared.get(Shared.ALB));
+  if (changed) save();
+}
 const starsTxt = (n) => "★".repeat(n) + "☆".repeat(3 - n);
 const levelStars = (id) => (state.stars || {})[id] || 0;
 const totalStars = () => Object.values(state.stars || {}).reduce((a, b) => a + b, 0);
@@ -209,12 +245,13 @@ function streakNow() {      // la série encore vivante aujourd'hui (sinon 0)
   if (gap === 2 && s.jokerWeek !== weekKey()) return s.n;     // le joker de la semaine peut encore la sauver
   return 0;
 }
-function markActiveDay() {
-  const today = dayKey(), s = state.streak || (state.streak = { n: 0, last: null, best: 0, jokerWeek: null });
-  if (s.last === today) return null;
+function markActiveDay(today = dayKey()) {
+  const s = state.streak || (state.streak = { n: 0, last: null, best: 0, jokerWeek: null }), wk = weekKey(keyDate(today));
+  Shared.add(Shared.DAYS, [today]);
+  if (s.last === today || (s.last && today < s.last)) return null;
   const gap = s.last ? dayNum(today) - dayNum(s.last) : 99, out = {};
   if (gap === 1) s.n += 1;
-  else if (gap === 2 && s.jokerWeek !== weekKey()) { s.n += 1; s.jokerWeek = weekKey(); out.joker = true; }
+  else if (gap === 2 && s.jokerWeek !== wk) { s.n += 1; s.jokerWeek = wk; out.joker = true; }
   else s.n = 1;
   s.last = today; s.best = Math.max(s.best || 0, s.n); out.n = s.n;
   if (s.n % 7 === 0) {      // récompense tous les 7 jours
@@ -266,8 +303,8 @@ function todayDaily() {
     mission: D.m, concept: D.c, starter: "", expected: D.q + ";", ordered: !!D.o, hints: [], xp: DAILY_XP, item: null, badge: null };
 }
 const daily = { active: false, L: null, started: 0 };
-const curL = () => (blitz.active ? blitz.L : daily.active ? daily.L : LEVELS[state.current]);
-function stopModes() { daily.active = false; if (blitz.active) { blitz.active = false; clearInterval(blitz.timer); } }
+const curL = () => (blitz.active ? blitz.L : revise.active ? revise.L : daily.active ? daily.L : LEVELS[state.current]);
+function stopModes() { daily.active = false; revise.active = false; if (blitz.active) { blitz.active = false; clearInterval(blitz.timer); } }
 function dailyDone() { return state.daily && state.daily.date === dayKey() && state.daily.done ? state.daily : null; }
 function renderDailyBar() {
   if (blitz.active) {
@@ -276,19 +313,27 @@ function renderDailyBar() {
       <span class="bclock" id="blitzTime">3:00</span><button class="dbtn alt" id="blitzSkip">Passer ›</button><button class="dbtn alt" id="blitzQuit">Arrêter</button>`;
     $("blitzSkip").onclick = blitzSkip; $("blitzQuit").onclick = () => endBlitz(true); tickBlitz(); return;
   }
+  if (revise.active) {
+    $("dailyBar").className = "dailybar revbar";
+    $("dailyBar").innerHTML = `<span class="dI" aria-hidden="true">🔁</span><div><b>Révision : ${esc(revise.notion)} · exercice ${Math.min(revise.i + 1, revise.order.length)} / ${revise.order.length}</b><span>${revise.done} réussi(s) · +${REV_XP} XP par bonne réponse · aucun PV en jeu</span></div>
+      <button class="dbtn alt" id="revSkip">Passer ›</button><button class="dbtn alt" id="revQuit">Arrêter</button>`;
+    $("revSkip").onclick = reviseSkip; $("revQuit").onclick = () => endRevise(true); return;
+  }
   $("dailyBar").className = "dailybar";
   const D = todayDaily(), done = dailyDone();
   $("dailyBar").innerHTML = daily.active
     ? `<span class="dI" aria-hidden="true">🎯</span><div><b>Tu relèves le défi du jour</b><span>${esc(D.title)} · ${attempt.fails} essai(s) raté(s)</span></div><button class="dbtn alt" id="dailyLeave">← Revenir à ma mission</button>`
     : `<span class="dI" aria-hidden="true">🎯</span><div><b>Défi du jour : ${esc(D.title)}</b><span>${done ? `✅ Réussi ${done.tries === 0 ? "du premier coup" : `après ${done.tries} essai(s) raté(s)`} · reviens demain pour un nouveau défi` : `+${DAILY_XP} XP, +${DAILY_FIRST_TRY} XP si tu le réussis du premier coup · le même pour tous les joueurs`}</span></div>
        ${done ? `<button class="dbtn alt" id="dailyRank">🏆 Classement du jour</button><button class="dbtn alt" id="dailyGo">Rejouer</button>` : `<button class="dbtn" id="dailyGo">Relever le défi</button>`}
-       ${daily.active ? "" : `<button class="dbtn alt blitzbtn" id="blitzGo" title="Facultatif : combien de requêtes justes en 3 minutes ?">⚡ Défi éclair${state.blitz && state.blitz.best ? ` · record ${state.blitz.best}` : ""}</button>`}`;
+       ${daily.active ? "" : `<button class="dbtn alt blitzbtn" id="blitzGo" title="Facultatif : combien de requêtes justes en 3 minutes ?">⚡ Défi éclair${state.blitz && state.blitz.best ? ` · record ${state.blitz.best}` : ""}</button>`}
+       ${!daily.active && weakNotion() ? `<button class="dbtn alt revbtn" id="revGo" title="3 exercices sans risque sur la notion qui t'a coûté le plus d'essais">🔁 Tu hésites sur ${esc(weakNotion().k)} : 3 exercices</button>` : ""}`;
   $("dailyBar").classList.toggle("done", !!done && !daily.active);
   const go = $("dailyGo"), lv = $("dailyLeave"), rk = $("dailyRank");
   if (go) go.onclick = () => { FX.play("cast"); stopModes(); daily.active = true; daily.L = todayDaily(); daily.started = Date.now(); renderLevel(); window.scrollTo({ top: 0, behavior: "smooth" }); };
   if (lv) lv.onclick = () => { FX.play("page"); daily.active = false; renderLevel(); };
   if (rk) rk.onclick = () => openDailyRanking();
   if ($("blitzGo")) $("blitzGo").onclick = () => { FX.play("page"); openBlitzIntro(); };
+  if ($("revGo")) $("revGo").onclick = () => startRevise(weakNotion());
 }
 function dailyWin(L) {
   const prev = dailyDone(), secs = Math.max(1, Math.round((Date.now() - daily.started) / 1000)), tries = attempt.fails;
@@ -315,7 +360,7 @@ function dailyWin(L) {
   $("dBackBtn").focus();
 }
 function pushDaily() {
-  if (!CLASSEMENT_URL || !Players.current || !dailyDone()) return;
+  if (!CLASSEMENT_URL || !Players.current || !dailyDone() || state.prive) return;
   const d = dailyDone(), body = Object.assign(scoreOf(Players.current, state), { type: "defi", defi: d.date, essais: d.tries, secondes: d.secs });
   try { fetch(CLASSEMENT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(body) }).catch(() => {}); } catch (e) {}
 }
@@ -416,7 +461,7 @@ const ALBUM = [
   ...[[1, 2], [4, 2], [9, 2], [5, 4], [3, 6], [7, 6], [6, 14], [2, 21], [8, 22]].map(([id, lv]) => ({ k: "m" + id, kind: "monstres", id, lv })),
   ...[[1, 7], [2, 9], [3, 24]].map(([id, lv]) => ({ k: "c" + id, kind: "chateaux", id, lv }))
 ];
-const cardOwned = (c) => state.completed.includes(c.lv);
+const cardOwned = (c) => state.completed.includes(c.lv) || ppAlbum.has(c.k);
 const albumCount = () => ALBUM.filter(cardOwned).length;
 function cardInfo(c) {
   const db = new SQL.Database();
@@ -455,6 +500,7 @@ function afterSuccess(ev) {
   return lines.join("");
 }
 function renderEngage() {
+  syncShared();
   const n = streakNow();
   $("streak").textContent = n; $("streakStat").classList.toggle("off", n === 0);
   $("streakStat").title = n ? `Série de ${n} jour(s) d'affilée · record ${(state.streak && state.streak.best) || n} · joker ${state.streak && state.streak.jokerWeek === weekKey() ? "déjà utilisé cette semaine" : "disponible cette semaine"}` : "Réussis une mission aujourd'hui pour lancer ta série de jours";
@@ -521,7 +567,7 @@ const NEED = [   // à partir de quelle mission chaque mot-clé est connu (calcu
 ].map((re) => ({ re, at: (LEVELS.find((L) => re.test(L.expected)) || { id: 99 }).id }));
 const blitzPool = () => {
   const reach = Math.max(0, ...state.completed.map((x) => x + 1));
-  return DAILY_BANK.filter((D) => NEED.every((n) => !n.re.test(D.q) || n.at <= reach));
+  return DAILY_BANK.concat(REV_BANK).filter((D) => NEED.every((n) => !n.re.test(D.q) || n.at <= reach));
 };
 const blitz = { active: false, end: 0, score: 0, skips: 0, order: [], i: 0, timer: null, L: null };
 function blitzLevel() {
@@ -579,9 +625,106 @@ function endBlitz(quit) {
   $("bzBack").focus();
 }
 
+/* ---------- 7 bis. RÉVISIONS CIBLÉES 🔁 : la notion qui coûte le plus d'essais ---------- */
+const REV_XP = 15, REV_BONUS = 30, REV_MIN = 2;
+const REV_BANK = [      // exercices en plus, pour avoir au moins 3 entraînements par notion (servent aussi au défi éclair)
+  { t: "Les Deux Plus Riches", m: "Affiche le <code>nom</code> et la <code>fortune</code> des <b>2 héros les plus riches</b>, du plus riche au moins riche.", q: "SELECT nom, fortune FROM heros ORDER BY fortune DESC LIMIT 2", o: true, c: ["ORDER BY", "LIMIT"] },
+  { t: "Le Plus Fragile", m: "Affiche le <code>nom</code> et les <code>pv</code> du <b>monstre qui a le moins de PV</b>.", q: "SELECT nom, pv FROM monstres ORDER BY pv LIMIT 1", o: true, c: ["ORDER BY", "LIMIT"] },
+  { t: "Les Trois Babioles", m: "Affiche l'<code>objet</code> et la <code>valeur</code> des <b>3 objets les moins chers</b>, du moins cher au plus cher.", q: "SELECT objet, valeur FROM inventaire ORDER BY valeur LIMIT 3", o: true, c: ["ORDER BY", "LIMIT"] },
+  { t: "Combien de Bêtes ?", m: "Combien y a-t-il de monstres de <code>type</code> <b>'Bête'</b> ?", q: "SELECT COUNT(*) FROM monstres WHERE type = 'Bête'", c: ["COUNT(*)", "WHERE"] },
+  { t: "Les Objets Communs", m: "Combien y a-t-il d'objets de rareté <b>'Commun'</b> dans l'inventaire ?", q: "SELECT COUNT(*) FROM inventaire WHERE rarete = 'Commun'", c: ["COUNT(*)", "WHERE"] },
+  { t: "Le Trésor du Royaume", m: "Quelle est la <b>somme</b> des <code>tresor</code> de tous les châteaux ?", q: "SELECT SUM(tresor) FROM chateaux", c: ["SUM()"] },
+  { t: "Le Plus Gros Monstre", m: "Quel est le <b>plus grand</b> nombre de <code>pv</code> parmi les monstres ?", q: "SELECT MAX(pv) FROM monstres", c: ["MAX()"] },
+  { t: "Le Niveau Moyen", m: "Quel est le <code>niveau</code> <b>moyen</b> des héros ?", q: "SELECT AVG(niveau) FROM heros", c: ["AVG()"] },
+  { t: "Les Monstres par Type", m: "Affiche chaque <code>type</code> de monstre avec le <b>nombre de monstres</b> de ce type.", q: "SELECT type, COUNT(*) FROM monstres GROUP BY type", c: ["GROUP BY", "COUNT(*)"] },
+  { t: "La Puissance par École", m: "Affiche chaque <code>ecole</code> avec la <b>somme</b> de la <code>puissance</code> de ses sorts.", q: "SELECT ecole, SUM(puissance) FROM sorts GROUP BY ecole", c: ["GROUP BY", "SUM()"] },
+  { t: "Le Danger par Région", m: "Affiche chaque <code>region</code> avec le <b>danger le plus haut</b> de ses monstres.", q: "SELECT region, MAX(danger) FROM monstres GROUP BY region", c: ["GROUP BY", "MAX()"] },
+  { t: "Les Grandes Écoles", m: "Affiche chaque <code>ecole</code> et son nombre de sorts, <b>seulement</b> pour les écoles qui ont <b>au moins 2 sorts</b>.", q: "SELECT ecole, COUNT(*) FROM sorts GROUP BY ecole HAVING COUNT(*) >= 2", c: ["GROUP BY", "HAVING"] },
+  { t: "Les Types Nombreux", m: "Affiche chaque <code>type</code> de monstre et son nombre de monstres, <b>seulement</b> s'il y en a <b>au moins 2</b>.", q: "SELECT type, COUNT(*) FROM monstres GROUP BY type HAVING COUNT(*) >= 2", c: ["GROUP BY", "HAVING"] },
+  { t: "Les Écoles Redoutables", m: "Affiche chaque <code>ecole</code> et la somme de sa <code>puissance</code>, <b>seulement</b> si cette somme dépasse <b>100</b>.", q: "SELECT ecole, SUM(puissance) FROM sorts GROUP BY ecole HAVING SUM(puissance) > 100", c: ["GROUP BY", "HAVING"] },
+  { t: "Les Sorts de Chacun", m: "Affiche le <code>nom</code> de <b>chaque</b> héros avec son <b>nombre de sorts</b>, même s'il n'en a aucun (0).", q: "SELECT heros.nom, COUNT(sorts.id) FROM heros LEFT JOIN sorts ON sorts.num_heros = heros.id GROUP BY heros.nom", c: ["LEFT JOIN", "COUNT()"] },
+  { t: "Les Châteaux et leurs Héros", m: "Affiche le <code>nom</code> de chaque château et le <code>nom</code> de ses héros, avec <code>LEFT JOIN</code> en partant de <code>chateaux</code>.", q: "SELECT chateaux.nom, heros.nom FROM chateaux LEFT JOIN heros ON heros.num_chateau = chateaux.id", c: ["LEFT JOIN"] },
+  { t: "Les Héros en M", m: "Affiche le <code>nom</code> des héros dont le nom <b>commence par 'M'</b>.", q: "SELECT nom FROM heros WHERE nom LIKE 'M%'", c: ["LIKE", "%"] },
+  { t: "La Fin en T", m: "Affiche le <code>nom</code> des monstres dont le nom <b>se termine par 't'</b>.", q: "SELECT nom FROM monstres WHERE nom LIKE '%t'", c: ["LIKE", "%"] },
+  { t: "Les Sorts « de »", m: "Affiche le <code>nom</code> des sorts dont le nom <b>contient ' de '</b> (avec les espaces).", q: "SELECT nom FROM sorts WHERE nom LIKE '% de %'", c: ["LIKE", "%"] },
+  { t: "Les Régions Hantées", m: "Affiche la liste des <code>region</code> où vivent des monstres, <b>sans doublons</b>.", q: "SELECT DISTINCT region FROM monstres", c: ["DISTINCT"] },
+  { t: "Les Raretés", m: "Affiche la liste des <code>rarete</code> de l'inventaire, <b>sans doublons</b>.", q: "SELECT DISTINCT rarete FROM inventaire", c: ["DISTINCT"] },
+  { t: "Les Sorts Moyens", m: "Affiche le <code>nom</code> des sorts dont la <code>puissance</code> est <b>entre 40 et 90</b>.", q: "SELECT nom FROM sorts WHERE puissance BETWEEN 40 AND 90", c: ["BETWEEN"] },
+  { t: "Ni Doux, Ni Terribles", m: "Affiche le <code>nom</code> et le <code>danger</code> des monstres dont le danger est <b>entre 3 et 6</b>.", q: "SELECT nom, danger FROM monstres WHERE danger BETWEEN 3 AND 6", c: ["BETWEEN"] },
+  { t: "Les Sorts des Paladins", m: "Affiche le <code>nom</code> des sorts dont le propriétaire est un héros de classe <b>'Paladin'</b>.", q: "SELECT nom FROM sorts WHERE num_heros IN (SELECT id FROM heros WHERE classe = 'Paladin')", c: ["IN", "sous-requête"] },
+  { t: "Les Héros du Marais", m: "Affiche le <code>nom</code> des héros dont le château se trouve dans la région <b>'Marais Putride'</b>.", q: "SELECT nom FROM heros WHERE num_chateau IN (SELECT id FROM chateaux WHERE region = 'Marais Putride')", c: ["IN", "sous-requête"] },
+  { t: "Le Sac des Riches", m: "Affiche l'<code>objet</code> des objets dont le propriétaire a une <code>fortune</code> d'<b>au moins 300</b>.", q: "SELECT objet FROM inventaire WHERE num_heros IN (SELECT id FROM heros WHERE fortune >= 300)", c: ["IN", "sous-requête"] },
+  { t: "Riche ou Pauvre ?", m: "Affiche le <code>nom</code> de chaque héros et l'étiquette <b>'Riche'</b> si sa fortune vaut au moins 300, sinon <b>'Pauvre'</b>.", q: "SELECT nom, CASE WHEN fortune >= 300 THEN 'Riche' ELSE 'Pauvre' END FROM heros", c: ["CASE"] },
+  { t: "Les Cris des Monstres", m: "Affiche le <code>nom</code> de chaque monstre <b>en majuscules</b>.", q: "SELECT UPPER(nom) FROM monstres", c: ["UPPER()"] },
+  { t: "Des Noms à Rallonge", m: "Affiche le <code>nom</code> de chaque sort et sa <b>longueur</b> (nombre de caractères).", q: "SELECT nom, LENGTH(nom) FROM sorts", c: ["LENGTH()"] },
+  { t: "Le Classement des Fortunes", m: "Affiche le <code>nom</code>, la <code>fortune</code> et le <b>rang</b> de chaque héros (1 = le plus riche), avec <code>RANK() OVER</code>.", q: "SELECT nom, fortune, RANK() OVER (ORDER BY fortune DESC) FROM heros", c: ["RANK() OVER"] }
+];
+const NOTIONS = [
+  { k: "WHERE", re: /\bWHERE\b/i }, { k: "AND / OR", re: /\b(AND|OR)\b/i }, { k: "ORDER BY", re: /\bORDER BY\b/i },
+  { k: "LIMIT", re: /\bLIMIT\b/i }, { k: "COUNT", re: /\bCOUNT\(/i }, { k: "SUM, AVG, MIN, MAX", re: /\b(SUM|AVG|MIN|MAX)\(/i },
+  { k: "GROUP BY", re: /\bGROUP BY\b/i }, { k: "HAVING", re: /\bHAVING\b/i }, { k: "JOIN", re: /\bJOIN\b/i },
+  { k: "LEFT JOIN", re: /\bLEFT JOIN\b/i }, { k: "LIKE", re: /\bLIKE\b/i }, { k: "DISTINCT", re: /\bDISTINCT\b/i },
+  { k: "BETWEEN", re: /\bBETWEEN\b/i }, { k: "IN (…)", re: /\bIN \(/i }, { k: "sous-requêtes", re: /\(\s*SELECT\b/i },
+  { k: "CASE", re: /\bCASE\b/i }, { k: "UPPER, LOWER, LENGTH", re: /\b(UPPER|LOWER|LENGTH)\(/i }, { k: "RANK() OVER", re: /\bRANK\(\)/i }
+].map((n) => Object.assign(n, { at: (LEVELS.find((L) => n.re.test(L.expected)) || { id: 99 }).id }));
+const notionOf = (q) => NOTIONS.filter((n) => n.re.test(q)).sort((a, b) => b.at - a.at)[0] || null;   // la notion la plus récente de la requête attendue
+function noteFail(L) {
+  if (L.blitz || L.revise || L.mode === "write") return;
+  const n = notionOf(L.expected); if (!n) return;
+  state.errs = state.errs || {}; state.errs[n.k] = (state.errs[n.k] || 0) + 1; save();
+  if (state.errs[n.k] === REV_MIN) { renderDailyBar(); renderNextStep(); }
+}
+function revisePool(n) {
+  const reach = Math.max(0, ...state.completed.map((x) => x + 1));
+  const bank = DAILY_BANK.concat(REV_BANK).filter((D) => n.re.test(D.q) && NEED.every((x) => !x.re.test(D.q) || x.at <= reach))
+    .map((D) => ({ id: "revision", kwId: 39, title: D.t, mission: D.m, concept: D.c, starter: "", expected: D.q + ";", ordered: !!D.o, pitch: "" }));
+  const lv = LEVELS.filter((L) => state.completed.includes(L.id) && L.mode !== "write" && n.re.test(L.expected) && !worldSetup(L));
+  return lv.concat(bank);
+}
+function weakNotion() {
+  const e = state.errs || {};
+  return NOTIONS.filter((n) => (e[n.k] || 0) >= REV_MIN && revisePool(n).length >= 3).sort((a, b) => e[b.k] - e[a.k])[0] || null;
+}
+const revise = { active: false, notion: "", order: [], i: 0, done: 0, L: null };
+function reviseLevel() {
+  const S = revise.order[revise.i];
+  return Object.assign({}, S, { revise: true, daily: false, blitz: false, hints: [], xp: 0, item: null, badge: null,
+    chapter: `🔁 Révision · ${revise.notion}`, pitch: S.pitch || "Un exercice d'entraînement tiré du royaume. Prends ton temps : ici rien ne se perd." });
+}
+function startRevise(n) {
+  if (!n) return;
+  const pool = revisePool(n);
+  for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+  stopModes(); Object.assign(revise, { active: true, notion: n.k, order: pool.slice(0, 3), i: 0, done: 0 });
+  revise.L = reviseLevel(); FX.play("cast"); renderLevel(); window.scrollTo({ top: 0, behavior: "smooth" }); $("sql").focus();
+}
+function reviseNext() { revise.i += 1; if (revise.i >= revise.order.length) return endRevise(false); revise.L = reviseLevel(); renderLevel(); $("sql").focus(); }
+function reviseRight() { revise.done += 1; state.xp += REV_XP; save(); renderHUD(); FX.play("good"); burst($("dailyBar"), 12); setTimeout(reviseNext, 900); }
+function reviseSkip() { FX.play("unclick"); reviseNext(); }
+function endRevise(quit) {
+  if (!revise.active) return;
+  revise.active = false;
+  const all = revise.done === revise.order.length, gained = revise.done * REV_XP + (all ? REV_BONUS : 0);
+  if (all) { state.xp += REV_BONUS; state.errs[revise.notion] = 0; state.revisions = (state.revisions || 0) + 1; }
+  else if (revise.done) state.errs[revise.notion] = Math.max(0, (state.errs[revise.notion] || 0) - revise.done);
+  const gear = syncEquipment(); save(); renderHUD(); renderLoot(); renderLevel(); renderNextStep();
+  $("overlay").innerHTML = `<div class="card" role="dialog" aria-modal="true" aria-labelledby="rvEnd">
+    <h3 id="rvEnd">${all ? "🔁 Révision réussie !" : quit ? "Révision arrêtée" : "Révision terminée"}</h3>
+    <p>${revise.done} exercice${revise.done > 1 ? "s" : ""} sur ${revise.order.length} réussi${revise.done > 1 ? "s" : ""} sur <b>${esc(revise.notion)}</b>.
+       ${all ? "Cette notion ne te fait plus peur !" : "Tu pourras recommencer quand tu veux depuis le bandeau du haut."}</p>
+    <div class="rewards">${gained ? `<span class="x">+${gained} XP</span>` : ""}${all ? `<span class="b">+${REV_BONUS} XP de bonus</span>` : ""}</div>
+    ${gear.length ? `<div class="xtra card">🎒 Nouvel équipement : ${gear.map((g) => `${g.ico} ${esc(g.name)}`).join(", ")}</div>` : ""}
+    <div class="btns"><button class="btn btn-ghost" id="rvBack">Revenir à ma mission</button></div></div>`;
+  $("overlay").hidden = false;
+  setTimeout(() => { FX.play(all ? "levelup" : "win"); if (all) burst(document.querySelector("#overlay .card"), 24); }, 200);
+  $("rvBack").onclick = () => { $("overlay").hidden = true; renderLevel(); };
+  $("rvBack").focus();
+}
+
 /* ---------- 8. PROCHAIN PAS 🧭 : toujours un petit objectif visible ---------- */
 function nextSteps() {
   const out = [], lv = playerLevel(), toNext = 150 - (state.xp % 150);
+  const wn = weakNotion(); if (wn) out.push({ ico: "🔁", txt: `Tu hésites sur ${wn.k} : 3 exercices pour t'entraîner (bouton « 🔁 » en haut).` });
   out.push({ ico: "⬆️", txt: `Il te manque ${toNext} XP pour le niveau ${lv + 1} !` });
   const g = myGear().find((x) => lv < x.lvl);
   if (g) out.push({ ico: g.ico, txt: `Encore ${g.lvl - lv} niveau${g.lvl - lv > 1 ? "x" : ""} pour gagner ${g.name}.` });

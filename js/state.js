@@ -56,6 +56,36 @@ const Players = (() => {
   };
 })();
 
+
+// 🔒 Confidentialité : ce que le jeu garde et envoie, en clair
+const PRIVACY_HTML = `<h2>🔒 Confidentialité</h2>
+<p><b>Ce que le Grimoire garde, et ce qu'il envoie.</b> Expliqué simplement, pour les joueurs et leurs parents.</p>
+<h3>Sur ton appareil</h3>
+<p>Ta partie (ton pseudo, tes missions, ton XP, tes objets, tes leçons de Premiers pas) est gardée <b>dans le navigateur de cet appareil</b>. Pour jouer, rien n'est envoyé sur Internet. Pas de compte, pas d'adresse e-mail, pas de mot de passe.</p>
+<h3>Le classement en ligne</h3>
+<p>Seulement si la personne qui gère le site l'a activé. Il reçoit <b>uniquement</b> :</p>
+<ul><li>ton <b>pseudo</b> et un <b>numéro tiré au hasard</b> qui te reconnaît ;</li><li>ton <b>niveau</b>, ton <b>XP</b>, le nombre de <b>missions</b> réussies et de <b>badges</b> ;</li><li>pour le défi du jour : la <b>date</b>, le nombre d'<b>essais</b> et le <b>temps</b>.</li></ul>
+<p>Ces informations vont dans une feuille Google Sheets appartenant à la personne qui gère le site. Elles sont visibles par les autres joueurs dans le classement. Jamais d'âge, d'école, d'adresse, de position, de photo ni de publicité.</p>
+<p class="pwarn">👉 <b>Choisis un pseudo, pas ton vrai prénom ni ton nom de famille.</b> Par exemple : « DragonBleu », « Lina_42 ».</p>
+<h3>Te retirer</h3>
+<ul><li><b>Du classement en ligne :</b> bouton 🏆 Classement → « Retirer mon nom du classement en ligne ». Ton nom est effacé de la feuille et n'y est plus envoyé.</li>
+<li><b>De cet appareil :</b> bouton 👤 → ✕ à côté de ton nom (deux fois) efface ta partie.</li>
+<li>Tu peux aussi demander à l'adulte qui gère le site d'effacer ta ligne dans la feuille Google.</li></ul>
+<h3>Le code de sauvegarde</h3>
+<p>Il contient toute ta partie. Garde-le pour toi : la personne qui le colle récupère ta partie.</p>
+<h3>Services extérieurs</h3>
+<p>Les polices d'écriture viennent de Google Fonts : comme pour tout site, Google voit alors l'adresse Internet de l'appareil. Le classement en ligne passe par Google Apps Script. Aucun autre service n'est utilisé.</p>
+<p class="pnote">Pour les adultes qui gèrent le site : informez les familles, demandez des pseudos, et videz la feuille Google en fin d'année (onglets « Classement » et « Defis »).</p>`;
+function openPrivacy() {
+  const old = document.getElementById("privGate"); if (old) old.remove();
+  const g = document.createElement("div"); g.id = "privGate"; g.className = "pgate"; g.style.zIndex = 60;
+  g.innerHTML = `<div class="pcard privcard" role="dialog" aria-modal="true">${PRIVACY_HTML}<button class="pclose" id="privClose">J'ai compris</button></div>`;
+  document.body.appendChild(g);
+  const close = () => g.remove(); document.getElementById("privClose").onclick = close; g.addEventListener("click", (e) => { if (e.target === g) close(); });
+  setTimeout(() => document.getElementById("privClose").focus(), 50);
+}
+document.addEventListener("click", (e) => { if (e.target.closest("[data-privacy]")) { e.preventDefault(); openPrivacy(); } });
+
 /* ---------- CODE DE SAUVEGARDE : la partie tient dans un texte à copier sur un autre appareil ---------- */
 const b64u = {
   enc: (bytes) => { let s = ""; bytes.forEach((b) => { s += String.fromCharCode(b); }); return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); },
@@ -89,15 +119,15 @@ function playerGate({ summary, bases, legacy, onChoose, canClose }) {
     <h2 id="pgTitle">${list.length ? "Qui joue ?" : "Bienvenue, aventurier !"}</h2>
     ${list.length ? `<p>Touche ton nom pour reprendre ta partie là où tu l'as laissée.</p>
       <div class="plist">${list.map((n, i) => `<div class="prow"><button class="pbtn" data-pick="${i}"><b>${e(n)}</b><span>${e(summary(n))}</span></button><button class="pdel pexp" data-exp="${i}" title="Code de sauvegarde de ${e(n)}, pour continuer sur un autre appareil" aria-label="Code de sauvegarde de ${e(n)}">📤</button><button class="pdel" data-del="${i}" title="Effacer la partie de ${e(n)}" aria-label="Effacer la partie de ${e(n)}">✕</button></div>`).join("")}</div>
-      <p class="psep">ou nouveau joueur :</p>` : `<p>Avant de commencer, écris ton <b>nom de joueur</b>. Il sert à retrouver ta partie : la prochaine fois, choisis le même nom et tu reprendras là où tu t'es arrêté.</p>`}
+      <p class="psep">ou nouveau joueur :</p>` : `<p>Avant de commencer, choisis un <b>pseudo</b> (pas ton vrai prénom : il peut apparaître dans le classement). Il sert à retrouver ta partie : la prochaine fois, choisis le même pseudo et tu reprendras là où tu t'es arrêté.</p>`}
     <form class="pform" id="pgForm" autocomplete="off">
-      <label for="pgName">Ton nom de joueur</label>
-      <div class="pline"><input id="pgName" maxlength="20" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" enterkeyhint="go" placeholder="Par exemple : Lina">
+      <label for="pgName">Ton pseudo de joueur</label>
+      <div class="pline"><input id="pgName" maxlength="20" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" enterkeyhint="go" placeholder="Par exemple : DragonBleu">
       <button class="pgo" type="submit">${list.length ? "Créer" : "Commencer"}</button></div>
       <p class="perr" id="pgErr" hidden>Écris au moins une lettre.</p>
     </form>
     <button class="pimport" id="pgImport">📥 Tu as déjà joué sur un autre appareil ? <b>Entre ton code de sauvegarde</b></button>
-    <p class="pnote">Ta partie est gardée sur cet appareil. Pour la continuer ailleurs, touche 📤 à côté de ton nom : tu obtiens un code de sauvegarde à recopier sur l'autre appareil.</p>
+    <p class="pnote">Ta partie est gardée sur cet appareil. Pour la continuer ailleurs, touche 📤 à côté de ton nom : tu obtiens un code de sauvegarde à recopier sur l'autre appareil. <button class="privlink" data-privacy>🔒 Confidentialité : ce qui est gardé et envoyé</button></p>
     ${canClose ? `<button class="pclose" id="pgClose">Annuler</button>` : ""}
   </div>`;
   document.body.appendChild(g);
@@ -176,11 +206,21 @@ const CLASSEMENT_URL = (typeof window !== "undefined" && typeof window.GRIMOIRE_
 const scoreOf = (name, g) => { g = g || {}; const xp = g.xp || 0; return { id: Players.idOf(name), nom: name, niveau: Math.floor(xp / 150) + 1, xp, missions: (g.completed || []).length, badges: (g.loot || []).filter((l) => l.kind === "badge").length }; };
 let pushTimer = null;
 function pushScore(now) {
-  if (!CLASSEMENT_URL || !Players.current) return;
+  if (!CLASSEMENT_URL || !Players.current || state.prive) return;     // joueur retiré du classement : on n'envoie plus rien
   clearTimeout(pushTimer);
   pushTimer = setTimeout(() => {
     try { fetch(CLASSEMENT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(scoreOf(Players.current, state)) }).catch(() => {}); } catch (e) {}
   }, now ? 0 : 1500);
+}
+async function scriptVersion() {     // la version 2 du script sait retirer un joueur
+  if (!CLASSEMENT_URL) return 0;
+  try { const r = await fetch(CLASSEMENT_URL + (CLASSEMENT_URL.includes("?") ? "&" : "?") + "version=1"); const j = await r.json(); return Array.isArray(j) ? 1 : (+j.version || 1); } catch (e) { return 0; }
+}
+async function removeOnline() {
+  const v = await scriptVersion();
+  if (v < 2) return v === 0 ? "Le classement en ligne ne répond pas (pas d'Internet ?). Réessaie plus tard." : "Le script Google n'est pas à jour : demande à la personne qui gère le site d'installer le nouveau classement/Code.gs. En attendant, ton nom n'est plus envoyé.";
+  try { await fetch(CLASSEMENT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ type: "retirer", id: Players.idOf(Players.current) }) }); return ""; }
+  catch (e) { return "Le classement en ligne ne répond pas. Réessaie plus tard."; }
 }
 async function onlineScores() {
   if (!CLASSEMENT_URL) return null;
@@ -227,6 +267,9 @@ async function openRanking() {
     ${res.values.length ? `<div class="tablewrap"><table class="res rank"><thead><tr><th>Rang</th><th>Joueur</th><th>Niveau</th><th>XP</th><th>Missions</th><th>Badges</th></tr></thead>
       <tbody>${res.values.map(([rang, nom, niveau, xp, missions, badges, id]) => `<tr class="${id === myId ? "me" : ""}"><td class="rk">${medal(rang)}</td><td><b>${esc(nom)}</b>${id === myId ? ' <span class="you">toi</span>' : ""}</td><td>${niveau}</td><td>${xp}</td><td>${missions}/${LEVELS.length}</td><td>${badges}</td></tr>`).join("")}</tbody></table></div>`
       : `<p>Aucun joueur pour l'instant.</p>`}
+    ${CLASSEMENT_URL && Players.current ? `<div class="privrow">${state.prive
+      ? `🙈 Tu n'apparais pas dans le classement en ligne. <button class="privlink" id="rkShow">Y apparaître à nouveau</button>`
+      : `<button class="privlink" id="rkHide">🙈 Retirer mon nom du classement en ligne</button>`} · <button class="privlink" data-privacy>🔒 Confidentialité</button></div><p class="perr" id="rkMsg" hidden></p>` : ""}
     <p class="pnote">${online ? "🌍 Classement en ligne : les joueurs de tous les appareils." : CLASSEMENT_URL ? "⚠️ Le classement en ligne ne répond pas (pas d'Internet ?) : seuls les joueurs de cet appareil apparaissent." : "Seuls les joueurs de cet appareil apparaissent. Pour un classement commun à tous les appareils, il faut régler config.js (voir le README)."}</p>
     <details class="rksql"><summary>La requête SQL qui calcule ce classement</summary>
       <pre><code>${esc(RANK_SQL)}</code></pre>
@@ -236,11 +279,17 @@ async function openRanking() {
   document.body.appendChild(g);
   const close = () => g.remove();
   $("rkClose").onclick = close; g.addEventListener("click", (e) => { if (e.target === g) close(); });
+  if ($("rkHide")) { let armed = false; $("rkHide").onclick = async () => {
+    if (!armed) { armed = true; $("rkHide").textContent = "Touche encore pour confirmer : ton nom sera effacé du classement en ligne"; return; }
+    state.prive = true; save(); $("rkHide").disabled = true; $("rkHide").textContent = "Retrait en cours…";
+    const err = await removeOnline(); FX.play("unclick");
+    if (err) { $("rkMsg").textContent = err; $("rkMsg").hidden = false; } else openRanking(); }; }
+  if ($("rkShow")) $("rkShow").onclick = () => { state.prive = false; save(); pushScore(true); FX.play("click"); setTimeout(openRanking, 800); };
   setTimeout(() => $("rkClose").focus(), 50);
 }
 function showPlayer() { $("playerName").textContent = Players.current || "Joueur"; $("playerIco").innerHTML = state.avatar ? avatarImg(26, "mini") : "👤"; }
 function openPlayers(first) {
-  playerGate({ summary: gameSummary, bases: [SAVE_KEY], legacy: [SAVE_KEY], canClose: !first,
+  playerGate({ summary: gameSummary, bases: [SAVE_KEY, Shared.DAYS, Shared.ALB], legacy: [SAVE_KEY], canClose: !first,
     onChoose: () => { stopModes(); attempt = { key: null, fails: 0, hints: 0 }; loadState(); showPlayer(); pushScore(true); buildDictionary(LEVELS[state.current]); renderHUD(); renderMap(); renderLoot(); renderSchema(); renderLevel(); FX.play("levelup");
       const intro = () => { if (!state.seenIntro) showIntro(); };
       if (!state.avatar) openAvatarPicker(intro); else intro(); } });

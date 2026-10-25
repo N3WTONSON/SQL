@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta charset="utf-8">
 <title>Grimoire : Premiers pas</title>
+<script>try { if (localStorage.getItem("grimoire-theme") === "light") document.documentElement.dataset.theme = "light"; } catch (e) {}</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Alegreya:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;600&family=Cinzel:wght@700&display=swap">
@@ -37,6 +38,23 @@ header h1 small { display: block; font-family: var(--f-hud); font-size: 12px; co
 .dot { width: 16px; height: 8px; background: var(--seam); }
 .dot.done { background: var(--rune); }
 .dot.now { background: var(--torch); }
+.dot.gold { background: #e8c547; }
+.ppStats { display: inline-flex; gap: 10px; align-items: center; }
+.ppStat { display: inline-flex; align-items: center; gap: 4px; font-family: var(--f-code); font-size: 17px; font-weight: 700; color: var(--ink); }
+.ppStat span { font-size: 20px; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+.ppStat.off { opacity: .45; filter: grayscale(1); }
+.ppNext { border: 1px dashed var(--seam); background: var(--stone); padding: 8px 12px; font-size: 16px; }
+.ppNext b { color: var(--arcane); font-family: var(--f-hud); font-size: 12px; letter-spacing: 1px; margin-right: 6px; }
+.lstars { font-size: 34px; letter-spacing: 4px; color: #e8c547; text-align: center; margin: 4px 0 0; }
+.lstars + p.lsub { text-align: center; margin-top: 0; color: var(--ink-dim); }
+.newcard { display: flex; gap: 12px; align-items: center; border: 2px solid #e8c547; padding: 10px; background: rgba(232,197,71,.08); }
+.newcard img { width: 88px; height: 88px; object-fit: cover; border-radius: 6px; }
+.agrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+.acard { border: 1px solid var(--seam); background: var(--night); padding: 6px; text-align: center; font-size: 13px; display: flex; flex-direction: column; gap: 4px; }
+.acard img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 4px; }
+.acard.lock { opacity: .55; }
+.acard .q { aspect-ratio: 1; display: grid; place-items: center; font-size: 40px; color: var(--ink-dim); border: 1px dashed var(--seam); }
+.acard b { color: var(--torch); font-size: 14px; }
 
 .lessonTag { font-family: var(--f-hud); font-size: 13px; letter-spacing: 1.6px; color: var(--arcane); }
 .card { background: var(--stone); border: 1px solid var(--seam); padding: 24px; display: flex; flex-direction: column; gap: 16px; }
@@ -153,7 +171,7 @@ textarea { width: 100%; min-height: 96px; resize: vertical; font-family: var(--f
 .pix.ico { display: inline-flex; align-items: center; justify-content: center; flex: none; vertical-align: middle; line-height: 1; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
 .tile .pix { margin: 0 auto 2px; }
 .zoneLabel .pix { margin-right: 6px; vertical-align: -6px; }
-.hudBtns { display: flex; gap: 8px; align-items: center; margin-left: auto; }
+.hudBtns { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; align-items: center; margin-left: auto; max-width: 100%; }
 .switchBtn { display: inline-flex; align-items: center; gap: 7px; font-family: var(--f-hud); font-size: 12px; letter-spacing: 1px; text-decoration: none; color: var(--night); background: var(--torch); border: 1px solid var(--torch); padding: 6px 11px; white-space: nowrap; transition: transform 0.15s ease, background 0.15s ease; }
 .switchBtn:hover { background: #f7c06a; transform: translateY(-1px); }
 .switchBtn:focus-visible { outline: 2px solid var(--arcane); outline-offset: 2px; }
@@ -259,6 +277,13 @@ textarea { font-size: max(16px, 1em); }            /* sous 16 px, l'iPad zoome d
 .pfile { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; border: 1px solid var(--seam); cursor: pointer; color: var(--ink); }
 .pfile input { position: absolute; width: 1px; height: 1px; opacity: 0; }
 .pcard code { font-family: var(--f-code); color: var(--torch); }
+.privcard { max-width: 640px !important; text-align: left !important; }
+.privcard h2 { text-align: center; }
+.privcard h3 { margin: 10px 0 0; font-family: var(--f-display); font-weight: 400; font-size: 20px; color: var(--torch); }
+.privcard ul { margin: 4px 0; padding-left: 20px; line-height: 1.45; }
+.privcard li { margin: 3px 0; }
+.pwarn { border: 1px solid var(--torch); background: rgba(240, 164, 58, 0.1); padding: 8px 10px; }
+.privlink { background: none; border: 0; padding: 0; color: var(--arcane); text-decoration: underline; cursor: pointer; font: inherit; }
 .playerBtn { display: inline-flex; align-items: center; gap: 6px; max-width: 200px; min-height: 32px; font-family: var(--f-body); font-size: 15px; background: none; border: 1px solid var(--seam); color: var(--ink); padding: 4px 10px; cursor: pointer; }
 .playerBtn b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--torch); font-weight: 600; }
 .playerBtn:hover { border-color: var(--torch); }
@@ -266,6 +291,27 @@ textarea { font-size: max(16px, 1em); }            /* sous 16 px, l'iPad zoome d
 @media (max-width: 1400px) and (min-width: 521px) { .playerBtn { max-width: 140px; } }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 @media (max-width: 520px) { body { font-size: 18px; } .card { padding: 16px; } .ask { font-size: 20px; } .dot { width: 18px; } }
+/* ---------- Mode clair (salles lumineuses, vidéoprojecteur) ---------- */
+:root[data-theme="light"] {
+  --night: #f4eee1; --stone: #fffaf0; --stone-2: #efe6d3; --seam: #cdbf9f;
+  --ink: #2b2417; --ink-dim: #685f4d; --torch: #a5560c; --torch-deep: #7a3f08;
+  --rune: #1d7556; --blood: #b8322a; --arcane: #1d5c95;
+  color-scheme: light;
+}
+:root[data-theme="light"] body { background-image: radial-gradient(ellipse 60% 40% at 50% -10%, rgba(165,86,12,.10), transparent 70%), linear-gradient(var(--night), var(--night)); }
+:root[data-theme="light"] .console, :root[data-theme="light"] .codeLine, :root[data-theme="light"] textarea { background: #fbf7ec; }
+:root[data-theme="light"] td, :root[data-theme="light"] table.res td { border-bottom-color: var(--seam); }
+:root[data-theme="light"] #sql::placeholder, :root[data-theme="light"] .lvl.locked, :root[data-theme="light"] tr.drop td { color: #a39a86; }
+:root[data-theme="light"] .lvl.done .n { color: #fff; }
+:root[data-theme="light"] .dbtn, :root[data-theme="light"] .btn-cast, :root[data-theme="light"] .pgo, :root[data-theme="light"] .btn.main,
+:root[data-theme="light"] .switchBtn, :root[data-theme="light"] .anew { color: #fff; }
+:root[data-theme="light"] .dbtn.alt { color: var(--torch); }
+:root[data-theme="light"] .switchBtn:hover { background: var(--torch-deep); }
+:root[data-theme="light"] .dot.gold { background: #c69a1c; }
+:root[data-theme="light"] .lstars { color: #b8860b; }
+/* légendes posées sur les images : elles gardent un fond sombre, donc un texte clair */
+:root[data-theme="light"] figure:not(.acard) figcaption { --ink: #ece7da; --ink-dim: #c9c4b6; --torch: #f0a43a; --arcane: #66c9ff; --rune: #6fd3b0; --blood: #e2574c; color: var(--ink); }
+.themeBtn { font-size: 17px; line-height: 1; min-width: 38px; }
 </style>
 </head>
 <body>
@@ -275,18 +321,19 @@ textarea { font-size: max(16px, 1em); }            /* sous 16 px, l'iPad zoome d
     <img src="data:image/webp;base64,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" alt="" width="44" height="47">
     <h1>Premiers pas<small>LE GRIMOIRE DES REQUÊTES</small></h1>
     <div class="dots" id="dots" aria-label="Progression"></div>
-    <div class="hudBtns"><button class="playerBtn" id="playerBtn" title="Changer de joueur" aria-label="Changer de joueur"><span aria-hidden="true">👤</span><b id="playerName">…</b></button><a class="switchBtn" id="switchMode" href="grimoire-des-requetes.html" target="_blank" rel="noopener" data-switch title="Le Grimoire des Requêtes : l'aventure complète"><span class="arr">⇄</span>L'aventure<span class="long"> complète</span></a>
-    <button class="soundBtn" id="sound" aria-pressed="true">SON : OUI</button></div>
+    <div class="hudBtns"><span class="ppStats"><span class="ppStat off" id="ppFire" title="Série de jours"><span aria-hidden="true">🔥</span><b id="ppFireN">0</b></span><span class="ppStat" id="ppStarsS" title="Étoiles gagnées dans les leçons"><span aria-hidden="true">⭐</span><b id="ppStarsN">0</b></span></span><button class="playerBtn" id="installBtn" hidden title="Installer le Grimoire comme une application" aria-label="Installer le Grimoire comme une application"><span aria-hidden="true">📲</span><b>Installer</b></button><button class="playerBtn" id="playerBtn" title="Changer de joueur" aria-label="Changer de joueur"><span aria-hidden="true">👤</span><b id="playerName">…</b></button><a class="switchBtn" id="switchMode" href="grimoire-des-requetes.html" target="_blank" rel="noopener" data-switch title="Le Grimoire des Requêtes : l'aventure complète"><span class="arr">⇄</span>L'aventure<span class="long"> complète</span></a>
+    <button class="soundBtn themeBtn" id="themeBtn" aria-pressed="false" title="Mode clair">☀️</button><button class="soundBtn" id="sound" aria-pressed="true">SON : OUI</button></div>
   </header>
   <div class="lessonTag" id="tag"></div>
+  <div class="ppNext" id="ppNext" hidden></div>
   <div id="trainBanner" hidden><p><b>Ton entraînement du jour t'attend.</b> Dix questions, trois minutes, pour ancrer les mots et l'ordre.</p><button class="btn main" id="bannerGo">S'entraîner</button></div>
   <main class="card pop" id="card" aria-live="polite"><p>Le grimoire s'ouvre…</p></main>
   <section class="card" id="pocket" hidden aria-label="Aide-mémoire"></section>
   <section class="card" id="train" hidden aria-label="Entraînement" aria-live="polite"></section>
   <div class="footer">
     <button id="back">← Étape précédente</button>
-    <span><button id="trainBtn">S'entraîner (3 min)</button> · <button id="pocketBtn">Mon aide-mémoire</button></span>
-    <span><a href="grimoire-des-requetes.html" target="_blank" rel="noopener">Aller à l'aventure complète</a> · <button id="restart">Recommencer</button></span>
+    <span><button id="trainBtn">S'entraîner (3 min)</button> · <button id="pocketBtn">Mon aide-mémoire</button> · <button id="albumBtn">📒 Mon album</button></span>
+    <span><a href="grimoire-des-requetes.html" target="_blank" rel="noopener">Aller à l'aventure complète</a> · <button data-privacy>🔒 Confidentialité</button> · <button id="restart">Recommencer</button></span>
   </div>
 </div>
 
@@ -1546,6 +1593,36 @@ const Players = (() => {
   };
 })();
 
+
+// 🔒 Confidentialité : ce que le jeu garde et envoie, en clair
+const PRIVACY_HTML = `<h2>🔒 Confidentialité</h2>
+<p><b>Ce que le Grimoire garde, et ce qu'il envoie.</b> Expliqué simplement, pour les joueurs et leurs parents.</p>
+<h3>Sur ton appareil</h3>
+<p>Ta partie (ton pseudo, tes missions, ton XP, tes objets, tes leçons de Premiers pas) est gardée <b>dans le navigateur de cet appareil</b>. Pour jouer, rien n'est envoyé sur Internet. Pas de compte, pas d'adresse e-mail, pas de mot de passe.</p>
+<h3>Le classement en ligne</h3>
+<p>Seulement si la personne qui gère le site l'a activé. Il reçoit <b>uniquement</b> :</p>
+<ul><li>ton <b>pseudo</b> et un <b>numéro tiré au hasard</b> qui te reconnaît ;</li><li>ton <b>niveau</b>, ton <b>XP</b>, le nombre de <b>missions</b> réussies et de <b>badges</b> ;</li><li>pour le défi du jour : la <b>date</b>, le nombre d'<b>essais</b> et le <b>temps</b>.</li></ul>
+<p>Ces informations vont dans une feuille Google Sheets appartenant à la personne qui gère le site. Elles sont visibles par les autres joueurs dans le classement. Jamais d'âge, d'école, d'adresse, de position, de photo ni de publicité.</p>
+<p class="pwarn">👉 <b>Choisis un pseudo, pas ton vrai prénom ni ton nom de famille.</b> Par exemple : « DragonBleu », « Lina_42 ».</p>
+<h3>Te retirer</h3>
+<ul><li><b>Du classement en ligne :</b> bouton 🏆 Classement → « Retirer mon nom du classement en ligne ». Ton nom est effacé de la feuille et n'y est plus envoyé.</li>
+<li><b>De cet appareil :</b> bouton 👤 → ✕ à côté de ton nom (deux fois) efface ta partie.</li>
+<li>Tu peux aussi demander à l'adulte qui gère le site d'effacer ta ligne dans la feuille Google.</li></ul>
+<h3>Le code de sauvegarde</h3>
+<p>Il contient toute ta partie. Garde-le pour toi : la personne qui le colle récupère ta partie.</p>
+<h3>Services extérieurs</h3>
+<p>Les polices d'écriture viennent de Google Fonts : comme pour tout site, Google voit alors l'adresse Internet de l'appareil. Le classement en ligne passe par Google Apps Script. Aucun autre service n'est utilisé.</p>
+<p class="pnote">Pour les adultes qui gèrent le site : informez les familles, demandez des pseudos, et videz la feuille Google en fin d'année (onglets « Classement » et « Defis »).</p>`;
+function openPrivacy() {
+  const old = document.getElementById("privGate"); if (old) old.remove();
+  const g = document.createElement("div"); g.id = "privGate"; g.className = "pgate"; g.style.zIndex = 60;
+  g.innerHTML = `<div class="pcard privcard" role="dialog" aria-modal="true">${PRIVACY_HTML}<button class="pclose" id="privClose">J'ai compris</button></div>`;
+  document.body.appendChild(g);
+  const close = () => g.remove(); document.getElementById("privClose").onclick = close; g.addEventListener("click", (e) => { if (e.target === g) close(); });
+  setTimeout(() => document.getElementById("privClose").focus(), 50);
+}
+document.addEventListener("click", (e) => { if (e.target.closest("[data-privacy]")) { e.preventDefault(); openPrivacy(); } });
+
 /* ---------- CODE DE SAUVEGARDE : la partie tient dans un texte à copier sur un autre appareil ---------- */
 const b64u = {
   enc: (bytes) => { let s = ""; bytes.forEach((b) => { s += String.fromCharCode(b); }); return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); },
@@ -1579,15 +1656,15 @@ function playerGate({ summary, bases, legacy, onChoose, canClose }) {
     <h2 id="pgTitle">${list.length ? "Qui joue ?" : "Bienvenue, aventurier !"}</h2>
     ${list.length ? `<p>Touche ton nom pour reprendre ta partie là où tu l'as laissée.</p>
       <div class="plist">${list.map((n, i) => `<div class="prow"><button class="pbtn" data-pick="${i}"><b>${e(n)}</b><span>${e(summary(n))}</span></button><button class="pdel pexp" data-exp="${i}" title="Code de sauvegarde de ${e(n)}, pour continuer sur un autre appareil" aria-label="Code de sauvegarde de ${e(n)}">📤</button><button class="pdel" data-del="${i}" title="Effacer la partie de ${e(n)}" aria-label="Effacer la partie de ${e(n)}">✕</button></div>`).join("")}</div>
-      <p class="psep">ou nouveau joueur :</p>` : `<p>Avant de commencer, écris ton <b>nom de joueur</b>. Il sert à retrouver ta partie : la prochaine fois, choisis le même nom et tu reprendras là où tu t'es arrêté.</p>`}
+      <p class="psep">ou nouveau joueur :</p>` : `<p>Avant de commencer, choisis un <b>pseudo</b> (pas ton vrai prénom : il peut apparaître dans le classement). Il sert à retrouver ta partie : la prochaine fois, choisis le même pseudo et tu reprendras là où tu t'es arrêté.</p>`}
     <form class="pform" id="pgForm" autocomplete="off">
-      <label for="pgName">Ton nom de joueur</label>
-      <div class="pline"><input id="pgName" maxlength="20" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" enterkeyhint="go" placeholder="Par exemple : Lina">
+      <label for="pgName">Ton pseudo de joueur</label>
+      <div class="pline"><input id="pgName" maxlength="20" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" enterkeyhint="go" placeholder="Par exemple : DragonBleu">
       <button class="pgo" type="submit">${list.length ? "Créer" : "Commencer"}</button></div>
       <p class="perr" id="pgErr" hidden>Écris au moins une lettre.</p>
     </form>
     <button class="pimport" id="pgImport">📥 Tu as déjà joué sur un autre appareil ? <b>Entre ton code de sauvegarde</b></button>
-    <p class="pnote">Ta partie est gardée sur cet appareil. Pour la continuer ailleurs, touche 📤 à côté de ton nom : tu obtiens un code de sauvegarde à recopier sur l'autre appareil.</p>
+    <p class="pnote">Ta partie est gardée sur cet appareil. Pour la continuer ailleurs, touche 📤 à côté de ton nom : tu obtiens un code de sauvegarde à recopier sur l'autre appareil. <button class="privlink" data-privacy>🔒 Confidentialité : ce qui est gardé et envoyé</button></p>
     ${canClose ? `<button class="pclose" id="pgClose">Annuler</button>` : ""}
   </div>`;
   document.body.appendChild(g);
@@ -1663,13 +1740,14 @@ function shuffleStable(arr, seed) {
   const a = arr.map((v, i) => ({ v, k: Math.sin(seed * 97 + i * 13.7) })); a.sort((p, q) => p.k - q.k); return a.map((x) => x.v);
 }
 function dots() {
-  $("dots").innerHTML = LESSONS.map((L, i) => `<span class="dot ${st.done.includes(i) ? "done" : ""} ${i === st.l && st.s >= 0 ? "now" : ""}" title="Leçon ${i + 1} : ${esc(L.title)}"></span>`).join("");
+  $("dots").innerHTML = LESSONS.map((L, i) => `<span class="dot ${st.done.includes(i) ? ((st.stars || {})[i] === 3 ? "done gold" : "done") : ""} ${i === st.l && st.s >= 0 ? "now" : ""}" title="Leçon ${i + 1} : ${esc(L.title)}"></span>`).join("");
 }
 function show(html) { const c = $("card"); c.classList.remove("pop"); void c.offsetWidth; c.classList.add("pop"); c.innerHTML = html; }
 const nextBtn = (label = "Continuer") => `<div class="btns"><button class="btn main" id="next">${label}</button></div>`;
 
 function render() {
-  dots();
+  if (st.errL !== st.l) { st.errL = st.l; st.err = 0; }
+  dots(); renderPPStats();
   if (typeof trainBanner === "function" && $("train").hidden && $("pocket").hidden) trainBanner();
   if (st.l >= LESSONS.length) return renderEnd();
   const L = LESSONS[st.l];
@@ -1702,7 +1780,7 @@ function render() {
       const o = S.options[+b.dataset.o];
       document.querySelectorAll(".opt").forEach((x) => x.classList.remove("ok", "no"));
       b.classList.add(o.ok ? "ok" : "no");
-      if (o.ok) { FX.play("good"); burst(b, 10); } else { FX.play("bad"); shake(b); }
+      if (o.ok) { FX.play("good"); burst(b, 10); } else { FX.play("bad"); shake(b); oops(); }
       $("fb").innerHTML = `<div class="fb ${o.ok ? "ok" : "try"}"><b>${o.ok ? "BONNE RÉPONSE" : "PAS TOUT À FAIT"}</b>${esc(o.why)}</div>${o.ok ? nextBtn() : ""}`;
       if (o.ok) { $("next").onclick = advance; $("next").focus(); }
     });
@@ -1767,7 +1845,7 @@ function renderBuild(S, head) {
       fb = `<div class="fb try"><b>PAS ENCORE</b>${missing > 0 ? `Il te manque ${missing} bloc(s). ` : ""}Rappel de l'ordre d'une phrase : <b>SELECT</b> (quoi montrer ?) → <b>FROM</b> (quelle table ?) → <b>WHERE</b> (quelle condition ?) → <b>ORDER BY</b> (quel ordre ?).</div>`;
     }
     $("fb").innerHTML = fb;
-    if (/fb ok/.test(fb)) { FX.play("good"); burst($("fb").firstElementChild); } else { FX.play("bad"); shake($("phrase")); }
+    if (/fb ok/.test(fb)) { FX.play("good"); burst($("fb").firstElementChild); } else { FX.play("bad"); shake($("phrase")); if (placed.length) oops(); }
     if ($("next")) { $("next").onclick = advance; $("next").focus(); }
   };
 }
@@ -1794,11 +1872,11 @@ function renderType(S, head) {
     const first = (q.match(/^\s*([^\s*,]+)/) || [])[1] || "";
     if (!(S.ddl ? /^(create|alter|drop)$/i : S.write ? /^(insert|update|delete)$/i : /^(select|with)$/i).test(first)) { $("fb").innerHTML = `<div class="fb try"><b>LE PREMIER MOT</b>${S.ddl ? "Pour construire ou modifier le plan d'une table, la phrase commence par CREATE TABLE, ALTER TABLE ou DROP TABLE." : S.write ? "Pour modifier la base, la phrase commence par INSERT (ajouter), UPDATE (modifier) ou DELETE (supprimer)." : "Une phrase pour lire la base commence par SELECT (« montre »), ou par WITH pour préparer une liste."} Tu as écrit « ${esc(first)} ».</div>`; $("live").innerHTML = ""; return; }
     const r = evalQ(S, q);
-    if (r.err) { $("fb").innerHTML = `<div class="fb try"><b>LA BASE NE COMPREND PAS</b>${esc(friendlyError(r.err))}</div>`; $("live").innerHTML = ""; FX.play("bad"); shake($("ta")); return; }
+    if (r.err) { oops(); $("fb").innerHTML = `<div class="fb try"><b>LA BASE NE COMPREND PAS</b>${esc(friendlyError(r.err))}</div>`; $("live").innerHTML = ""; FX.play("bad"); shake($("ta")); return; }
     $("live").innerHTML = S.write || S.ddl ? r.html : `<span class="zoneLabel">CE QUE DONNE TA PHRASE</span>${r.html}`;
-    if (S.ddl && !sameResult(r.res, target, false)) { FX.play("bad"); $("fb").innerHTML = `<div class="fb try"><b>LA PHRASE MARCHE, MAIS…</b>${esc(ddlMsg(r, tv))}</div>`; return; }
-    if (S.write && !sameResult(r.res, target, false)) { FX.play("bad"); $("fb").innerHTML = `<div class="fb try"><b>LA PHRASE MARCHE, MAIS…</b>${esc(writeMsg(r, tv, q))}</div>`; return; }
-    if (!sameResult(r.res, target, S.ordered)) FX.play("bad");
+    if (S.ddl && !sameResult(r.res, target, false)) { FX.play("bad"); oops(); $("fb").innerHTML = `<div class="fb try"><b>LA PHRASE MARCHE, MAIS…</b>${esc(ddlMsg(r, tv))}</div>`; return; }
+    if (S.write && !sameResult(r.res, target, false)) { FX.play("bad"); oops(); $("fb").innerHTML = `<div class="fb try"><b>LA PHRASE MARCHE, MAIS…</b>${esc(writeMsg(r, tv, q))}</div>`; return; }
+    if (!sameResult(r.res, target, S.ordered)) { FX.play("bad"); oops(); }
     if (sameResult(r.res, target, S.ordered)) { $("fb").innerHTML = `<div class="fb ok"><b>BRAVO</b>${esc(S.why)}</div>${caseNote(S, r, tv)}${nextBtn()}`; FX.play("good"); burst($("fb").firstElementChild); $("next").onclick = advance; $("next").focus(); }
     else if (!r.res.columns.length) $("fb").innerHTML = `<div class="fb try"><b>AUCUNE LIGNE</b>Ta phrase ne trouve rien. Si tu compares un texte, vérifie les apostrophes, les majuscules et les accents.</div>`;
     else if (S.ordered && r.res.values.length === target.values.length && r.res.columns.length === target.columns.length && sameResult(r.res, target, false))
@@ -1809,9 +1887,13 @@ function renderType(S, head) {
 }
 
 function renderLessonEnd(L) {
-  if (!st.done.includes(st.l)) { st.done.push(st.l); save(); dots(); }
+  const fin = lessonFinish();
   setTimeout(() => { FX.play("win"); burst($("card"), 22); }, 80);
-  show(`<h2>Leçon ${st.l + 1} réussie</h2><p>Ce que tu sais maintenant :</p>
+  show(`<h2>Leçon ${st.l + 1} réussie</h2>
+    <p class="lstars" aria-label="${fin.stars} étoile(s) sur 3">${"★".repeat(fin.stars)}${"☆".repeat(3 - fin.stars)}</p><p class="lsub">${fin.stars === 3 ? "Sans aucune erreur, bravo !" : `${fin.err} erreur(s) dans cette leçon · ★★★ sans erreur, ★★ avec 1 ou 2 erreurs`}${fin.best > fin.stars ? ` · ton record reste ${fin.best} ★` : ""}</p>
+    ${fin.fire ? `<div class="fb info"><b>🔥 ${fin.fire} JOUR${fin.fire > 1 ? "S" : ""} D'AFFILÉE</b>Ta leçon d'aujourd'hui compte dans ta série, ici comme dans l'aventure.</div>` : ""}
+    ${fin.card ? `<div class="newcard">${fin.card.img ? `<img src="${fin.card.img}" alt="">` : ""}<div><b>📒 NOUVELLE CARTE POUR TON ALBUM</b><br>${esc(fin.card.name)}<br><small>Tu la retrouves dans « 📒 Mon album » et dans l'aventure.</small></div></div>` : ""}
+    <p>Ce que tu sais maintenant :</p>
     <ul class="learned">${L.learned.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
     ${L.memos.length ? `<p>Et pour t'en souvenir :</p><div class="memos">${L.memos.map((k) => `<div class="memo"><span class="notion">${esc(MNEMOS[k].notion)}</span><span class="hook">${MNEMOS[k].hook}</span></div>`).join("")}</div>` : ""}
     ${LESSONS[st.l + 1] && LESSONS[st.l + 1].part !== L.part ? `<div class="fb info"><b>PARTIE ${L.part} TERMINÉE</b>${PARTS[L.part].end}</div>` : ""}
@@ -1844,7 +1926,8 @@ function seenMemos() {
 }
 function togglePocket(open) {
   const p = $("pocket");
-  if (!open) { p.hidden = true; $("card").hidden = false; $("pocketBtn").textContent = "Mon aide-mémoire"; return; }
+  if (!open) { p.hidden = true; $("card").hidden = false; $("pocketBtn").textContent = "Mon aide-mémoire"; renderPPStats(); return; }
+  $("ppNext").hidden = true;
   const keys = seenMemos();
   $("train").hidden = true; $("trainBanner").hidden = true;
   p.innerHTML = `<h2>Mon aide-mémoire</h2><span class="zoneLabel">L'ORDRE DE LA PHRASE : DES QUESTIONS, TOUJOURS DANS LE MÊME ORDRE</span>${ORDER_CHAIN_HTML}<span class="zoneLabel">LES 5 TABLES DU ROYAUME</span>${kingdomHTML()}
@@ -2002,7 +2085,7 @@ function masteryHTML() {
 }
 
 function openTrain() {
-  $("card").hidden = true; $("pocket").hidden = true; $("train").hidden = false; $("trainBanner").hidden = true;
+  $("card").hidden = true; $("pocket").hidden = true; $("train").hidden = false; $("trainBanner").hidden = true; $("ppNext").hidden = true;
   $("pocketBtn").textContent = "Mon aide-mémoire";
   trainHome(); window.scrollTo({ top: 0 });
 }
@@ -2086,6 +2169,7 @@ function answer(it, ok, btn, mistakes) {
 function trainEnd() {
   const t = today(), y = dayStr(new Date(Date.now() - 864e5));
   if (TR.last !== t) { TR.streak = TR.last === y ? TR.streak + 1 : 1; TR.last = t; }
+  Shared.add(Shared.DAYS, [dayKey()]); renderPPStats();      // l'entraînement compte aussi dans la série 🔥
   TR.sessions++; tsave();
   const total = session.q.length, missed = [...session.missed];
   FX.play("win"); setTimeout(() => burst($("train"), 22), 50);
@@ -2106,8 +2190,49 @@ $("bannerGo").onclick = openTrain;
 
 function soundLabel() { $("sound").textContent = FX.on ? "SON : OUI" : "SON : NON"; $("sound").setAttribute("aria-pressed", FX.on ? "true" : "false"); }
 $("sound").onclick = () => { FX.toggle(); soundLabel(); };
+/* ---------- Mode clair / sombre, et installation comme une application ---------- */
+const Theme = (() => {
+  const meta = () => document.querySelector('meta[name="theme-color"]');
+  const apply = (t) => {
+    document.documentElement.dataset.theme = t;
+    const b = document.getElementById("themeBtn");
+    if (b) { b.textContent = t === "light" ? "🌙" : "☀️"; b.title = t === "light" ? "Passer en mode sombre" : "Passer en mode clair (salle lumineuse, vidéoprojecteur)"; b.setAttribute("aria-label", b.title); b.setAttribute("aria-pressed", t === "light" ? "true" : "false"); }
+    if (meta()) meta().content = t === "light" ? "#f4eee1" : "#11132a";
+  };
+  let t = "dark"; try { t = localStorage.getItem("grimoire-theme") === "light" ? "light" : "dark"; } catch (e) {}
+  apply(t);
+  const b = document.getElementById("themeBtn");
+  if (b) b.onclick = () => { t = t === "light" ? "dark" : "light"; try { localStorage.setItem("grimoire-theme", t); } catch (e) {} apply(t); if (typeof FX !== "undefined") FX.play("click"); };
+  return { apply };
+})();
+const Install = (() => {
+  const btn = document.getElementById("installBtn");
+  const can = !!document.querySelector('link[rel="manifest"]') && /^https?:$/.test(location.protocol);
+  const standalone = () => (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
+  const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  let evt = null;
+  if (!btn || !can || standalone()) return {};
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+  window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); evt = e; btn.hidden = false; });
+  window.addEventListener("appinstalled", () => { btn.hidden = true; evt = null; });
+  if (ios) btn.hidden = false;      // Safari n'a pas de bouton automatique : on explique les deux gestes
+  btn.onclick = async () => {
+    if (evt) { evt.prompt(); try { const r = await evt.userChoice; if (r.outcome === "accepted") btn.hidden = true; } catch (e) {} evt = null; return; }
+    const old = document.getElementById("playerGate"); if (old) old.remove();
+    const g = document.createElement("div"); g.id = "playerGate"; g.className = "pgate";
+    g.innerHTML = `<div class="pcard" role="dialog" aria-modal="true" aria-labelledby="insT"><h2 id="insT">📲 Installer le Grimoire</h2>
+      <p>Sur iPad et iPhone, dans <b>Safari</b> :</p>
+      <p>1. Touche le bouton <b>Partager</b> <span aria-hidden="true">⬆️</span> (en haut à droite sur iPad).<br>2. Choisis <b>« Sur l'écran d'accueil »</b>, puis <b>Ajouter</b>.</p>
+      <p class="pnote">Le Grimoire s'ouvre alors en plein écran, avec son icône, et marche même sans Internet (sauf le classement en ligne).</p>
+      <button class="pclose" id="insClose">Fermer</button></div>`;
+    document.body.appendChild(g); document.getElementById("insClose").onclick = () => g.remove();
+  };
+  return {};
+})();
+
 soundLabel();
 $("pocketBtn").onclick = () => togglePocket($("pocket").hidden);
+$("albumBtn").onclick = () => { FX.play("page"); openPPAlbum(); };
 
 function advance() { FX.play("page"); placed = []; st.s++; save(); render(); window.scrollTo({ top: 0 }); }
 
@@ -2126,6 +2251,96 @@ $("restart").onclick = () => {
   st = { l: 0, s: 0, done: [] }; placed = []; armed = false; $("restart").textContent = "Recommencer"; save(); render();
 };
 
+const dayKey = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+const dayNum = (k) => { const [y, m, d] = k.split("-").map(Number); return Math.round(Date.UTC(y, m - 1, d) / 86400000); };
+const weekKey = (d = new Date()) => {
+  const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())); const wd = t.getUTCDay() || 7;
+  t.setUTCDate(t.getUTCDate() + 4 - wd); const y0 = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
+  return `${t.getUTCFullYear()}-S${String(Math.ceil(((t - y0) / 86400000 + 1) / 7)).padStart(2, "0")}`;
+};
+/* ---------- Commun aux deux jeux : jours actifs (série 🔥) et cartes d'album, rangés par joueur ---------- */
+const Shared = {
+  DAYS: "grimoire-jours-v1", ALB: "grimoire-album-v1",
+  get(base) { if (!Players.current) return []; try { const x = JSON.parse(localStorage.getItem(Players.key(base))); return Array.isArray(x) ? x : []; } catch (e) { return []; } },
+  add(base, vals) {
+    if (!Players.current || !vals.length) return; const cur = new Set(Shared.get(base)), n = cur.size; vals.forEach((v) => v && cur.add(v));
+    if (cur.size !== n) try { localStorage.setItem(Players.key(base), JSON.stringify([...cur].sort().slice(-400))); } catch (e) {}
+  }
+};
+const keyDate = (k) => { const [y, m, d] = k.split("-").map(Number); return new Date(y, m - 1, d); };
+function foldStreak(s0, days) {      // rejoue les jours actifs après la dernière date connue (le joker sauve un jour manqué par semaine)
+  const s = Object.assign({ n: 0, last: null, best: 0, jokerWeek: null }, s0 || {});
+  days.filter((d) => !s.last || d > s.last).sort().forEach((d) => {
+    const gap = s.last ? dayNum(d) - dayNum(s.last) : 99, wk = weekKey(keyDate(d));
+    if (gap === 1) s.n += 1; else if (gap === 2 && s.jokerWeek !== wk) { s.n += 1; s.jokerWeek = wk; } else s.n = 1;
+    s.last = d; s.best = Math.max(s.best || 0, s.n);
+  });
+  return s;
+}
+
+/* ---------- Étoiles, série et cartes d'album dans Premiers pas ---------- */
+// leçon → carte d'album (les mêmes cartes que dans l'aventure)
+const PP_CARDS = { 0: "h1", 1: "m1", 3: "m4", 5: "h3", 7: "m9", 9: "c1", 11: "m5", 13: "h6", 15: "m3", 17: "c2", 19: "m7", 21: "h2", 23: "m6", 25: "h5", 27: "m2", 29: "c3", 31: "h4", 32: "m8" };
+const ALL_CARDS = [1, 2, 3, 4, 5, 6].map((i) => "h" + i).concat([1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => "m" + i), [1, 2, 3].map((i) => "c" + i));
+function cardInfoPP(k) {
+  const kind = { h: "heros", m: "monstres", c: "chateaux" }[k[0]], id = +k.slice(1);
+  const name = (run(`SELECT nom FROM ${kind} WHERE id = ${id}`).values[0] || ["?"])[0];
+  return { k, kind, id, name, img: ({ h: HERO_ART, m: MONSTER_ART, c: CASTLE_ART }[k[0]])[id] || "" };
+}
+const oops = () => { st.err = (st.err || 0) + 1; save(); };
+const ppStars = () => Object.values(st.stars || {}).reduce((a, b) => a + b, 0);
+function ppStreak() {      // la même série que l'aventure : elle part de la série de l'aventure et ajoute les jours de leçon
+  if (!Players.current) return 0;
+  const g = Players.read("grimoire-sql-v1", Players.current) || {}, s = foldStreak(g.streak, Shared.get(Shared.DAYS));
+  if (!s.last) return 0;
+  const gap = dayNum(dayKey()) - dayNum(s.last);
+  return gap <= 1 || (gap === 2 && s.jokerWeek !== weekKey()) ? s.n : 0;
+}
+function lessonFinish() {
+  const l = st.l, err = st.err || 0, stars = err === 0 ? 3 : err <= 2 ? 2 : 1;
+  st.stars = st.stars || {}; const best = Math.max(st.stars[l] || 0, stars); st.stars[l] = best;
+  if (!st.done.includes(l)) st.done.push(l);
+  let card = null; const k = PP_CARDS[l];
+  if (k && !Shared.get(Shared.ALB).includes(k)) { Shared.add(Shared.ALB, [k]); card = cardInfoPP(k); }
+  const fresh = !Shared.get(Shared.DAYS).includes(dayKey()); Shared.add(Shared.DAYS, [dayKey()]);
+  save(); dots(); renderPPStats();
+  return { stars, best, err, card, fire: fresh ? ppStreak() : 0 };
+}
+function renderPPStats() {
+  const n = ppStreak();
+  $("ppFireN").textContent = n; $("ppFire").classList.toggle("off", !n);
+  $("ppFire").title = n ? `Série de ${n} jour(s) d'affilée, commune avec l'aventure` : "Termine une leçon ou une mission aujourd'hui pour lancer ta série de jours";
+  $("ppStarsN").textContent = ppStars(); $("ppStarsS").title = `${ppStars()} étoile(s) sur ${LESSONS.length * 3} · ★★★ quand une leçon est faite sans erreur`;
+  const el = $("ppNext"), t = ppNextStep(); el.hidden = !t || !$("train").hidden || !$("pocket").hidden;
+  if (t) el.innerHTML = `<b>🧭 PROCHAIN PAS</b> ${t}`;
+}
+function ppNextStep() {
+  if (!Players.current) return "";
+  const n = ppStreak();
+  if (n && !Shared.get(Shared.DAYS).includes(dayKey())) {
+    const g = Players.read("grimoire-sql-v1", Players.current) || {};
+    if (!(g.streak && g.streak.last === dayKey())) return `🔥 Termine une leçon aujourd'hui pour garder ta série de ${n} jour${n > 1 ? "s" : ""}.`;
+  }
+  const own = new Set(Shared.get(Shared.ALB)), nextL = Object.keys(PP_CARDS).map(Number).filter((l) => l >= st.l && !own.has(PP_CARDS[l]))[0];
+  if (nextL !== undefined && nextL < LESSONS.length) return `📒 Termine la leçon ${nextL + 1} pour gagner la carte « ${esc(cardInfoPP(PP_CARDS[nextL]).name)} ».`;
+  const low = st.done.filter((l) => ((st.stars || {})[l] || 0) < 3);
+  if (low.length) return `⭐ ${low.length} leçon${low.length > 1 ? "s" : ""} à refaire sans erreur pour les 3 étoiles (la leçon ${low[0] + 1}, par exemple).`;
+  return "";
+}
+function openPPAlbum() {
+  const old = document.getElementById("playerGate"); if (old) old.remove();
+  const own = new Set(Shared.get(Shared.ALB)), byCard = {}; Object.entries(PP_CARDS).forEach(([l, k]) => byCard[k] = +l);
+  const cell = (k) => { const c = cardInfoPP(k);
+    return own.has(k) ? `<div class="acard">${c.img ? `<img src="${c.img}" alt="">` : ""}<b>${esc(c.name)}</b></div>`
+      : `<div class="acard lock"><span class="q" aria-hidden="true">?</span><span>Leçon ${byCard[k] + 1}</span></div>`; };
+  const g = document.createElement("div"); g.id = "playerGate"; g.className = "pgate";
+  g.innerHTML = `<div class="pcard" style="max-width:760px" role="dialog" aria-modal="true" aria-labelledby="alT">
+    <h2 id="alT">📒 Mon album · ${ALL_CARDS.filter((k) => own.has(k)).length}/${ALL_CARDS.length}</h2>
+    <p>Les leçons et les missions de l'aventure débloquent les mêmes cartes. ${location.protocol === "file:" || /claude/.test(location.hostname) ? "" : "Elles se retrouvent dans l'album de l'aventure."}</p>
+    <div class="agrid">${ALL_CARDS.map(cell).join("")}</div>
+    <button class="pclose" id="alClose">Fermer</button></div>`;
+  document.body.appendChild(g); $("alClose").onclick = () => g.remove(); $("alClose").focus();
+}
 function ppSummary(name) {
   const x = Players.read(SAVE, name);
   if (!x || typeof x.l !== "number") return "nouvelle partie";
@@ -2133,7 +2348,7 @@ function ppSummary(name) {
 }
 function showPlayer() { $("playerName").textContent = Players.current || "Joueur"; }
 function openPlayers(first) {
-  playerGate({ summary: ppSummary, bases: [SAVE, TSAVE], legacy: [SAVE, TSAVE], canClose: !first,
+  playerGate({ summary: ppSummary, bases: [SAVE, TSAVE, Shared.DAYS, Shared.ALB], legacy: [SAVE, TSAVE], canClose: !first,
     onChoose: () => { loadSt(); loadTR(); placed = []; showPlayer(); $("train").hidden = true; $("pocket").hidden = true; $("card").hidden = false; render(); FX.play("win"); window.scrollTo({ top: 0 }); } });
 }
 $("playerBtn").onclick = () => { FX.play("page"); openPlayers(false); };

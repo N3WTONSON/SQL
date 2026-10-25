@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta charset="utf-8">
 <title>Le Grimoire des Requêtes</title>
+<script>try { if (localStorage.getItem("grimoire-theme") === "light") document.documentElement.dataset.theme = "light"; } catch (e) {}</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Alegreya:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;600&family=Cinzel:wght@700&display=swap">
@@ -167,6 +168,9 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .bclock.hurry { color: var(--blood); animation: hurry 1s ease-in-out infinite; }
 @keyframes hurry { 50% { transform: scale(1.08); } }
 .blitzbtn { border-color: var(--arcane) !important; color: var(--arcane) !important; }
+.revbar { border-color: var(--rune); background: linear-gradient(90deg, rgba(111, 211, 176, 0.14), rgba(111, 211, 176, 0.02)); }
+.revbar b { color: var(--rune) !important; }
+.revbtn { border-color: var(--rune) !important; color: var(--rune) !important; }
 .bigscore { font-family: var(--f-display); font-size: 72px; line-height: 1; color: var(--arcane); }
 .nextstep { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border: 1px dashed var(--seam); background: var(--stone); font-size: 15px; animation: rise 0.4s ease-out; }
 .nextstep .nsI { font-size: 20px; }
@@ -473,6 +477,7 @@ textarea { font-size: max(16px, 1em); }            /* sous 16 px, l'iPad zoome d
 @media (max-width: 820px) and (min-width: 521px) { .brand { font-size: 28px; } }
 
 .pcard.rankcard { max-width: 720px; }
+.privrow { font-size: 14px; color: var(--ink-dim); }
 .rankcard .tablewrap { padding: 0; }
 table.rank { font-size: 14px; } table.rank td, table.rank th { padding: 8px 10px; }
 table.rank td, table.rank th { text-align: center; }
@@ -520,6 +525,13 @@ table.rank .you { font-family: var(--f-hud); font-size: 11px; color: var(--night
 .pfile { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; border: 1px solid var(--seam); cursor: pointer; color: var(--ink); }
 .pfile input { position: absolute; width: 1px; height: 1px; opacity: 0; }
 .pcard code { font-family: var(--f-code); color: var(--torch); }
+.privcard { max-width: 640px !important; text-align: left !important; }
+.privcard h2 { text-align: center; }
+.privcard h3 { margin: 10px 0 0; font-family: var(--f-display); font-weight: 400; font-size: 20px; color: var(--torch); }
+.privcard ul { margin: 4px 0; padding-left: 20px; line-height: 1.45; }
+.privcard li { margin: 3px 0; }
+.pwarn { border: 1px solid var(--torch); background: rgba(240, 164, 58, 0.1); padding: 8px 10px; }
+.privlink { background: none; border: 0; padding: 0; color: var(--arcane); text-decoration: underline; cursor: pointer; font: inherit; }
 .playerBtn { display: inline-flex; align-items: center; gap: 6px; max-width: 200px; min-height: 32px; font-family: var(--f-body); font-size: 15px; background: none; border: 1px solid var(--seam); color: var(--ink); padding: 4px 10px; cursor: pointer; }
 .playerBtn b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--torch); font-weight: 600; }
 .playerBtn:hover { border-color: var(--torch); }
@@ -528,6 +540,27 @@ table.rank .you { font-family: var(--f-hud); font-size: 11px; color: var(--night
 @media (max-width: 520px) { #rankBtn b, #albumBtn b { display: none; } }
 @media (prefers-reduced-motion: reduce) { *, *::before { animation: none !important; transition: none !important; } }
 @media (max-width: 520px) { .hud { position: static; gap: 10px; } .stats { width: 100%; flex-wrap: wrap; gap: 8px 16px; } .xpbar { width: 60px; } .stat .lbl { display: none; } .brand { font-size: 26px; width: 100%; } .brand img { width: 52px; } .stat { font-size: 14px; } .num { font-size: 18px; } .heart { font-size: 20px; } .hudBtns { width: 100%; flex-wrap: wrap; } .kbd { display: none; } body { font-size: 16px; } }
+/* ---------- Mode clair (salles lumineuses, vidéoprojecteur) ---------- */
+:root[data-theme="light"] {
+  --night: #f4eee1; --stone: #fffaf0; --stone-2: #efe6d3; --seam: #cdbf9f;
+  --ink: #2b2417; --ink-dim: #685f4d; --torch: #a5560c; --torch-deep: #7a3f08;
+  --rune: #1d7556; --blood: #b8322a; --arcane: #1d5c95;
+  color-scheme: light;
+}
+:root[data-theme="light"] body { background-image: radial-gradient(ellipse 60% 40% at 50% -10%, rgba(165,86,12,.10), transparent 70%), linear-gradient(var(--night), var(--night)); }
+:root[data-theme="light"] .console, :root[data-theme="light"] .codeLine, :root[data-theme="light"] textarea { background: #fbf7ec; }
+:root[data-theme="light"] td, :root[data-theme="light"] table.res td { border-bottom-color: var(--seam); }
+:root[data-theme="light"] #sql::placeholder, :root[data-theme="light"] .lvl.locked, :root[data-theme="light"] tr.drop td { color: #a39a86; }
+:root[data-theme="light"] .lvl.done .n { color: #fff; }
+:root[data-theme="light"] .dbtn, :root[data-theme="light"] .btn-cast, :root[data-theme="light"] .pgo, :root[data-theme="light"] .btn.main,
+:root[data-theme="light"] .switchBtn, :root[data-theme="light"] .anew { color: #fff; }
+:root[data-theme="light"] .dbtn.alt { color: var(--torch); }
+:root[data-theme="light"] .switchBtn:hover { background: var(--torch-deep); }
+:root[data-theme="light"] .dot.gold { background: #c69a1c; }
+:root[data-theme="light"] .lstars { color: #b8860b; }
+/* légendes posées sur les images : elles gardent un fond sombre, donc un texte clair */
+:root[data-theme="light"] figure:not(.acard) figcaption { --ink: #ece7da; --ink-dim: #c9c4b6; --torch: #f0a43a; --arcane: #66c9ff; --rune: #6fd3b0; --blood: #e2574c; color: var(--ink); }
+.themeBtn { font-size: 17px; line-height: 1; min-width: 38px; }
 </style>
 </head>
 <body>
@@ -541,8 +574,8 @@ table.rank .you { font-family: var(--f-hud); font-size: 11px; color: var(--night
     <div class="stat streakStat" id="streakStat"><span class="fireI" aria-hidden="true">🔥</span> <span class="num" id="streak">0</span></div>
     <div class="stat" title="Parchemins : chacun donne un indice"><span class="scroll-emo" aria-hidden="true">📜</span> <span class="num" id="scrolls">3</span> <span class="lbl">parchemins</span></div>
     </div>
-    <div class="hudBtns"><button class="playerBtn" id="albumBtn" title="Mon album de cartes" aria-label="Mon album de cartes"><span aria-hidden="true">📒</span><b>Album <span id="albumCount"></span></b></button><button class="playerBtn" id="rankBtn" title="Classement des joueurs" aria-label="Classement des joueurs"><span aria-hidden="true">🏆</span><b>Classement</b></button><button class="playerBtn" id="playerBtn" title="Changer de joueur" aria-label="Changer de joueur"><span aria-hidden="true" id="playerIco">👤</span><b id="playerName">…</b></button><a class="switchBtn" id="switchMode" href="premiers-pas.html" target="_blank" rel="noopener" data-switch title="Passer au mode débutant, avec des blocs à cliquer"><span class="arr">⇄</span>Premiers pas</a>
-    <button class="soundBtn" id="sound" aria-pressed="true">SON : OUI</button></div>
+    <div class="hudBtns"><button class="playerBtn" id="albumBtn" title="Mon album de cartes" aria-label="Mon album de cartes"><span aria-hidden="true">📒</span><b>Album <span id="albumCount"></span></b></button><button class="playerBtn" id="rankBtn" title="Classement des joueurs" aria-label="Classement des joueurs"><span aria-hidden="true">🏆</span><b>Classement</b></button><button class="playerBtn" id="installBtn" hidden title="Installer le Grimoire comme une application" aria-label="Installer le Grimoire comme une application"><span aria-hidden="true">📲</span><b>Installer</b></button><button class="playerBtn" id="playerBtn" title="Changer de joueur" aria-label="Changer de joueur"><span aria-hidden="true" id="playerIco">👤</span><b id="playerName">…</b></button><a class="switchBtn" id="switchMode" href="premiers-pas.html" target="_blank" rel="noopener" data-switch title="Passer au mode débutant, avec des blocs à cliquer"><span class="arr">⇄</span>Premiers pas</a>
+    <button class="soundBtn themeBtn" id="themeBtn" aria-pressed="false" title="Mode clair">☀️</button><button class="soundBtn" id="sound" aria-pressed="true">SON : OUI</button></div>
   </header>
 
   <div class="grid">
@@ -617,6 +650,7 @@ table.rank .you { font-family: var(--f-hud); font-size: 11px; color: var(--night
         <div class="foldBody">
         <div class="loot" id="loot"></div>
         <a class="reset" href="premiers-pas.html" target="_blank" rel="noopener" style="color:var(--arcane)">Revoir les bases : Premiers pas</a>
+        <button class="reset" data-privacy>🔒 Confidentialité</button>
         <button class="reset" id="reset">Recommencer l'aventure</button>
         </div>
       </details>
@@ -1982,6 +2016,36 @@ const Players = (() => {
   };
 })();
 
+
+// 🔒 Confidentialité : ce que le jeu garde et envoie, en clair
+const PRIVACY_HTML = `<h2>🔒 Confidentialité</h2>
+<p><b>Ce que le Grimoire garde, et ce qu'il envoie.</b> Expliqué simplement, pour les joueurs et leurs parents.</p>
+<h3>Sur ton appareil</h3>
+<p>Ta partie (ton pseudo, tes missions, ton XP, tes objets, tes leçons de Premiers pas) est gardée <b>dans le navigateur de cet appareil</b>. Pour jouer, rien n'est envoyé sur Internet. Pas de compte, pas d'adresse e-mail, pas de mot de passe.</p>
+<h3>Le classement en ligne</h3>
+<p>Seulement si la personne qui gère le site l'a activé. Il reçoit <b>uniquement</b> :</p>
+<ul><li>ton <b>pseudo</b> et un <b>numéro tiré au hasard</b> qui te reconnaît ;</li><li>ton <b>niveau</b>, ton <b>XP</b>, le nombre de <b>missions</b> réussies et de <b>badges</b> ;</li><li>pour le défi du jour : la <b>date</b>, le nombre d'<b>essais</b> et le <b>temps</b>.</li></ul>
+<p>Ces informations vont dans une feuille Google Sheets appartenant à la personne qui gère le site. Elles sont visibles par les autres joueurs dans le classement. Jamais d'âge, d'école, d'adresse, de position, de photo ni de publicité.</p>
+<p class="pwarn">👉 <b>Choisis un pseudo, pas ton vrai prénom ni ton nom de famille.</b> Par exemple : « DragonBleu », « Lina_42 ».</p>
+<h3>Te retirer</h3>
+<ul><li><b>Du classement en ligne :</b> bouton 🏆 Classement → « Retirer mon nom du classement en ligne ». Ton nom est effacé de la feuille et n'y est plus envoyé.</li>
+<li><b>De cet appareil :</b> bouton 👤 → ✕ à côté de ton nom (deux fois) efface ta partie.</li>
+<li>Tu peux aussi demander à l'adulte qui gère le site d'effacer ta ligne dans la feuille Google.</li></ul>
+<h3>Le code de sauvegarde</h3>
+<p>Il contient toute ta partie. Garde-le pour toi : la personne qui le colle récupère ta partie.</p>
+<h3>Services extérieurs</h3>
+<p>Les polices d'écriture viennent de Google Fonts : comme pour tout site, Google voit alors l'adresse Internet de l'appareil. Le classement en ligne passe par Google Apps Script. Aucun autre service n'est utilisé.</p>
+<p class="pnote">Pour les adultes qui gèrent le site : informez les familles, demandez des pseudos, et videz la feuille Google en fin d'année (onglets « Classement » et « Defis »).</p>`;
+function openPrivacy() {
+  const old = document.getElementById("privGate"); if (old) old.remove();
+  const g = document.createElement("div"); g.id = "privGate"; g.className = "pgate"; g.style.zIndex = 60;
+  g.innerHTML = `<div class="pcard privcard" role="dialog" aria-modal="true">${PRIVACY_HTML}<button class="pclose" id="privClose">J'ai compris</button></div>`;
+  document.body.appendChild(g);
+  const close = () => g.remove(); document.getElementById("privClose").onclick = close; g.addEventListener("click", (e) => { if (e.target === g) close(); });
+  setTimeout(() => document.getElementById("privClose").focus(), 50);
+}
+document.addEventListener("click", (e) => { if (e.target.closest("[data-privacy]")) { e.preventDefault(); openPrivacy(); } });
+
 /* ---------- CODE DE SAUVEGARDE : la partie tient dans un texte à copier sur un autre appareil ---------- */
 const b64u = {
   enc: (bytes) => { let s = ""; bytes.forEach((b) => { s += String.fromCharCode(b); }); return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); },
@@ -2015,15 +2079,15 @@ function playerGate({ summary, bases, legacy, onChoose, canClose }) {
     <h2 id="pgTitle">${list.length ? "Qui joue ?" : "Bienvenue, aventurier !"}</h2>
     ${list.length ? `<p>Touche ton nom pour reprendre ta partie là où tu l'as laissée.</p>
       <div class="plist">${list.map((n, i) => `<div class="prow"><button class="pbtn" data-pick="${i}"><b>${e(n)}</b><span>${e(summary(n))}</span></button><button class="pdel pexp" data-exp="${i}" title="Code de sauvegarde de ${e(n)}, pour continuer sur un autre appareil" aria-label="Code de sauvegarde de ${e(n)}">📤</button><button class="pdel" data-del="${i}" title="Effacer la partie de ${e(n)}" aria-label="Effacer la partie de ${e(n)}">✕</button></div>`).join("")}</div>
-      <p class="psep">ou nouveau joueur :</p>` : `<p>Avant de commencer, écris ton <b>nom de joueur</b>. Il sert à retrouver ta partie : la prochaine fois, choisis le même nom et tu reprendras là où tu t'es arrêté.</p>`}
+      <p class="psep">ou nouveau joueur :</p>` : `<p>Avant de commencer, choisis un <b>pseudo</b> (pas ton vrai prénom : il peut apparaître dans le classement). Il sert à retrouver ta partie : la prochaine fois, choisis le même pseudo et tu reprendras là où tu t'es arrêté.</p>`}
     <form class="pform" id="pgForm" autocomplete="off">
-      <label for="pgName">Ton nom de joueur</label>
-      <div class="pline"><input id="pgName" maxlength="20" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" enterkeyhint="go" placeholder="Par exemple : Lina">
+      <label for="pgName">Ton pseudo de joueur</label>
+      <div class="pline"><input id="pgName" maxlength="20" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" enterkeyhint="go" placeholder="Par exemple : DragonBleu">
       <button class="pgo" type="submit">${list.length ? "Créer" : "Commencer"}</button></div>
       <p class="perr" id="pgErr" hidden>Écris au moins une lettre.</p>
     </form>
     <button class="pimport" id="pgImport">📥 Tu as déjà joué sur un autre appareil ? <b>Entre ton code de sauvegarde</b></button>
-    <p class="pnote">Ta partie est gardée sur cet appareil. Pour la continuer ailleurs, touche 📤 à côté de ton nom : tu obtiens un code de sauvegarde à recopier sur l'autre appareil.</p>
+    <p class="pnote">Ta partie est gardée sur cet appareil. Pour la continuer ailleurs, touche 📤 à côté de ton nom : tu obtiens un code de sauvegarde à recopier sur l'autre appareil. <button class="privlink" data-privacy>🔒 Confidentialité : ce qui est gardé et envoyé</button></p>
     ${canClose ? `<button class="pclose" id="pgClose">Annuler</button>` : ""}
   </div>`;
   document.body.appendChild(g);
@@ -2102,11 +2166,21 @@ const CLASSEMENT_URL = (typeof window !== "undefined" && typeof window.GRIMOIRE_
 const scoreOf = (name, g) => { g = g || {}; const xp = g.xp || 0; return { id: Players.idOf(name), nom: name, niveau: Math.floor(xp / 150) + 1, xp, missions: (g.completed || []).length, badges: (g.loot || []).filter((l) => l.kind === "badge").length }; };
 let pushTimer = null;
 function pushScore(now) {
-  if (!CLASSEMENT_URL || !Players.current) return;
+  if (!CLASSEMENT_URL || !Players.current || state.prive) return;     // joueur retiré du classement : on n'envoie plus rien
   clearTimeout(pushTimer);
   pushTimer = setTimeout(() => {
     try { fetch(CLASSEMENT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(scoreOf(Players.current, state)) }).catch(() => {}); } catch (e) {}
   }, now ? 0 : 1500);
+}
+async function scriptVersion() {     // la version 2 du script sait retirer un joueur
+  if (!CLASSEMENT_URL) return 0;
+  try { const r = await fetch(CLASSEMENT_URL + (CLASSEMENT_URL.includes("?") ? "&" : "?") + "version=1"); const j = await r.json(); return Array.isArray(j) ? 1 : (+j.version || 1); } catch (e) { return 0; }
+}
+async function removeOnline() {
+  const v = await scriptVersion();
+  if (v < 2) return v === 0 ? "Le classement en ligne ne répond pas (pas d'Internet ?). Réessaie plus tard." : "Le script Google n'est pas à jour : demande à la personne qui gère le site d'installer le nouveau classement/Code.gs. En attendant, ton nom n'est plus envoyé.";
+  try { await fetch(CLASSEMENT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ type: "retirer", id: Players.idOf(Players.current) }) }); return ""; }
+  catch (e) { return "Le classement en ligne ne répond pas. Réessaie plus tard."; }
 }
 async function onlineScores() {
   if (!CLASSEMENT_URL) return null;
@@ -2153,6 +2227,9 @@ async function openRanking() {
     ${res.values.length ? `<div class="tablewrap"><table class="res rank"><thead><tr><th>Rang</th><th>Joueur</th><th>Niveau</th><th>XP</th><th>Missions</th><th>Badges</th></tr></thead>
       <tbody>${res.values.map(([rang, nom, niveau, xp, missions, badges, id]) => `<tr class="${id === myId ? "me" : ""}"><td class="rk">${medal(rang)}</td><td><b>${esc(nom)}</b>${id === myId ? ' <span class="you">toi</span>' : ""}</td><td>${niveau}</td><td>${xp}</td><td>${missions}/${LEVELS.length}</td><td>${badges}</td></tr>`).join("")}</tbody></table></div>`
       : `<p>Aucun joueur pour l'instant.</p>`}
+    ${CLASSEMENT_URL && Players.current ? `<div class="privrow">${state.prive
+      ? `🙈 Tu n'apparais pas dans le classement en ligne. <button class="privlink" id="rkShow">Y apparaître à nouveau</button>`
+      : `<button class="privlink" id="rkHide">🙈 Retirer mon nom du classement en ligne</button>`} · <button class="privlink" data-privacy>🔒 Confidentialité</button></div><p class="perr" id="rkMsg" hidden></p>` : ""}
     <p class="pnote">${online ? "🌍 Classement en ligne : les joueurs de tous les appareils." : CLASSEMENT_URL ? "⚠️ Le classement en ligne ne répond pas (pas d'Internet ?) : seuls les joueurs de cet appareil apparaissent." : "Seuls les joueurs de cet appareil apparaissent. Pour un classement commun à tous les appareils, il faut régler config.js (voir le README)."}</p>
     <details class="rksql"><summary>La requête SQL qui calcule ce classement</summary>
       <pre><code>${esc(RANK_SQL)}</code></pre>
@@ -2162,11 +2239,17 @@ async function openRanking() {
   document.body.appendChild(g);
   const close = () => g.remove();
   $("rkClose").onclick = close; g.addEventListener("click", (e) => { if (e.target === g) close(); });
+  if ($("rkHide")) { let armed = false; $("rkHide").onclick = async () => {
+    if (!armed) { armed = true; $("rkHide").textContent = "Touche encore pour confirmer : ton nom sera effacé du classement en ligne"; return; }
+    state.prive = true; save(); $("rkHide").disabled = true; $("rkHide").textContent = "Retrait en cours…";
+    const err = await removeOnline(); FX.play("unclick");
+    if (err) { $("rkMsg").textContent = err; $("rkMsg").hidden = false; } else openRanking(); }; }
+  if ($("rkShow")) $("rkShow").onclick = () => { state.prive = false; save(); pushScore(true); FX.play("click"); setTimeout(openRanking, 800); };
   setTimeout(() => $("rkClose").focus(), 50);
 }
 function showPlayer() { $("playerName").textContent = Players.current || "Joueur"; $("playerIco").innerHTML = state.avatar ? avatarImg(26, "mini") : "👤"; }
 function openPlayers(first) {
-  playerGate({ summary: gameSummary, bases: [SAVE_KEY], legacy: [SAVE_KEY], canClose: !first,
+  playerGate({ summary: gameSummary, bases: [SAVE_KEY, Shared.DAYS, Shared.ALB], legacy: [SAVE_KEY], canClose: !first,
     onChoose: () => { stopModes(); attempt = { key: null, fails: 0, hints: 0 }; loadState(); showPlayer(); pushScore(true); buildDictionary(LEVELS[state.current]); renderHUD(); renderMap(); renderLoot(); renderSchema(); renderLevel(); FX.play("levelup");
       const intro = () => { if (!state.seenIntro) showIntro(); };
       if (!state.avatar) openAvatarPicker(intro); else intro(); } });
@@ -2817,7 +2900,7 @@ function renderHUD(hit) {
   $("tablesInfo").textContent = LEVELS[state.current].id >= 25 ? "6 tables" : "5 tables";
   renderEngage();
   { const L = curL(), used = state.hintsUsed[L.id] || 0;
-    $("hintBtn").disabled = !!L.daily || !!L.blitz || (state.scrolls <= 0 && !(state.completed.includes(L.id) && attempt.hints < used)); }
+    $("hintBtn").disabled = !!L.daily || !!L.blitz || !!L.revise || (state.scrolls <= 0 && !(state.completed.includes(L.id) && attempt.hints < used)); }
 }
 
 function renderTranslate() {
@@ -2879,7 +2962,7 @@ function showWhy(L) {
 
 function renderLevel() {
   const L = curL();
-  startAttempt(L.blitz ? "eclair-" + blitz.i : L.daily ? "defi-" + L.date : L.id);
+  startAttempt(L.blitz ? "eclair-" + blitz.i : L.revise ? "revision-" + revise.i : L.daily ? "defi-" + L.date : L.id);
   $("dailyBar").hidden = false; renderDailyBar();
   $("lvlTag").textContent = L.chapter;
   $("lvlTitle").textContent = L.title;
@@ -2913,7 +2996,9 @@ function renderLevel() {
   renderTranslate();
   $("kw").innerHTML = keywordsFor(L).map((k) => `<button data-ins="${k}">${k}</button>`).join("");
   const used = state.hintsUsed[L.id] || 0, replay = state.completed.includes(L.id), st = levelStars(L.id);
-  $("out").innerHTML = L.blitz
+  $("out").innerHTML = L.revise
+    ? `<div class="msg info"><b>RÉVISION · ${esc(revise.notion)}</b>Un exercice pour t'entraîner sur cette notion. Une erreur ne coûte rien : corrige, regarde la leçon, ou passe l'exercice.</div>`
+    : L.blitz
     ? `<div class="msg info"><b>DÉFI ÉCLAIR</b>Écris la requête et lance le sort. Une erreur ne coûte rien : corrige ou passe la question.</div>`
     : L.daily
     ? `<div class="msg info"><b>DÉFI DU JOUR</b>Pas de parchemin aujourd'hui : utilise le traducteur sous l'éditeur et « Explorer » pour tester. Chaque sort raté compte comme un essai.</div>`
@@ -2922,7 +3007,7 @@ function renderLevel() {
     : used
     ? L.hints.slice(0, used).map((h, i) => `<div class="hint"><span class="label">Parchemin ${i + 1}</span><br>${h}</div>`).join("")
     : `<div class="msg info">Écris ta formule puis lance le sort. « Explorer » exécute une requête sans valider la mission et sans coûter de PV.<br>⭐ réussir · ⭐⭐ sans parchemin · ⭐⭐⭐ sans parchemin et du premier coup.</div>`;
-  if (!L.daily && !replay && used) attempt.hints = Math.max(attempt.hints, used);
+ if (!L.daily && !L.revise && !replay && used) attempt.hints = Math.max(attempt.hints, used);
   renderHUD();
   $("consoleMode").textContent = "";
 }
@@ -3051,7 +3136,12 @@ function explore() {
   catch (e) { $("out").innerHTML = `<div class="msg warn"><b>VISION TROUBLE</b>${esc(translateError(e.message))}</div>`; }
 }
 
-function cast() {
+function cast() {      // chaque sort raté est noté par notion, pour proposer des révisions ciblées
+  const L = curL(), f0 = attempt.fails;
+  castSpell();
+  if (attempt.fails > f0) noteFail(L);
+}
+function castSpell() {
   const L = curL();
   const q = $("sql").value.trim();
   if (!q) return;
@@ -3062,7 +3152,7 @@ function cast() {
   try { got = write ? runWorld(L, q) : run(q, worldSetup(L)); }
   catch (e) {                                    // erreur de syntaxe : -1 PV
     attempt.fails += 1; if (L.daily) renderDailyBar();
-    if (L.blitz) { FX.play("bad"); $("out").innerHTML = `<div class="msg warn"><b>PRESQUE !</b>${esc(translateError(e.message))} Aucun PV perdu en défi éclair.</div>`; return; }
+    if (L.blitz || L.revise) { FX.play("bad"); $("out").innerHTML = `<div class="msg warn"><b>PRESQUE !</b>${esc(translateError(e.message))} Aucun PV perdu ${L.revise ? "en révision" : "en défi éclair"}.</div>`; return; }
     state.hp -= 1; save(); renderHUD(true); FX.play("hit");
     document.querySelector(".spellbox").classList.remove("shake"); void document.body.offsetWidth;
     document.querySelector(".spellbox").classList.add("shake");
@@ -3102,12 +3192,13 @@ function cast() {
     $("out").innerHTML = `<div class="msg warn"><b>LE SORT FONCTIONNE, MAIS RATE SA CIBLE</b>${esc(problem)}</div>` + diff + table(got);
     return;
   }
-  $("out").innerHTML = `<div class="msg ok"><b>SORT RÉUSSI</b>La boule de cristal confirme ta vision.</div>` + table(got) + (L.daily ? "" : decomposition(L));
+  $("out").innerHTML = `<div class="msg ok"><b>SORT RÉUSSI</b>La boule de cristal confirme ta vision.</div>` + table(got) + (L.daily || L.blitz ? "" : decomposition(L));
   victory(L);
 }
 
 function victory(L) {
   if (L.blitz) return blitzRight();
+  if (L.revise) return reviseRight();
   if (L.daily) return dailyWin(L);
   const first = !state.completed.includes(L.id);
   const lvlBefore = playerLevel();
@@ -3128,6 +3219,7 @@ function victory(L) {
   const chapterEnd = !next || next.chapter !== L.chapter;
   if (first && chapterEnd) state.scrolls += 2;   // bonus de fin de chapitre
   ev.newCards = ALBUM.filter((c) => cardOwned(c) && !ownedBefore.has(c.k));
+  Shared.add(Shared.ALB, ALBUM.filter(cardOwned).map((c) => c.k));
   let extra = afterSuccess(ev);
   const gear = syncEquipment();
   if (gear.length) extra += `<div class="xtra card">${avatarImg(40)} <b>Nouvel équipement pour ton héros :</b> ${gear.map((g) => `${g.ico} ${esc(g.name)}`).join(", ")}</div>`;
@@ -3193,7 +3285,7 @@ function showIntro() {
 
 function readScroll() {
   const L = curL();
-  if (L.daily || L.blitz) return;
+  if (L.daily || L.blitz || L.revise) return;
   const used = state.hintsUsed[L.id] || 0;
   if (state.completed.includes(L.id) && attempt.hints < used) {      // mission rejouée : relire un parchemin déjà lu est gratuit (mais coûte les étoiles)
     attempt.hints += 1; FX.play("scroll");
@@ -3226,6 +3318,35 @@ const weekKey = (d = new Date()) => {      // semaine ISO, du lundi au dimanche 
   t.setUTCDate(t.getUTCDate() + 4 - wd); const y0 = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
   return `${t.getUTCFullYear()}-S${String(Math.ceil(((t - y0) / 86400000 + 1) / 7)).padStart(2, "0")}`;
 };
+/* ---------- Commun aux deux jeux : jours actifs (série 🔥) et cartes d'album, rangés par joueur ---------- */
+const Shared = {
+  DAYS: "grimoire-jours-v1", ALB: "grimoire-album-v1",
+  get(base) { if (!Players.current) return []; try { const x = JSON.parse(localStorage.getItem(Players.key(base))); return Array.isArray(x) ? x : []; } catch (e) { return []; } },
+  add(base, vals) {
+    if (!Players.current || !vals.length) return; const cur = new Set(Shared.get(base)), n = cur.size; vals.forEach((v) => v && cur.add(v));
+    if (cur.size !== n) try { localStorage.setItem(Players.key(base), JSON.stringify([...cur].sort().slice(-400))); } catch (e) {}
+  }
+};
+const keyDate = (k) => { const [y, m, d] = k.split("-").map(Number); return new Date(y, m - 1, d); };
+function foldStreak(s0, days) {      // rejoue les jours actifs après la dernière date connue (le joker sauve un jour manqué par semaine)
+  const s = Object.assign({ n: 0, last: null, best: 0, jokerWeek: null }, s0 || {});
+  days.filter((d) => !s.last || d > s.last).sort().forEach((d) => {
+    const gap = s.last ? dayNum(d) - dayNum(s.last) : 99, wk = weekKey(keyDate(d));
+    if (gap === 1) s.n += 1; else if (gap === 2 && s.jokerWeek !== wk) { s.n += 1; s.jokerWeek = wk; } else s.n = 1;
+    s.last = d; s.best = Math.max(s.best || 0, s.n);
+  });
+  return s;
+}
+let ppAlbum = new Set();      // cartes gagnées dans Premiers pas (même adresse de site seulement)
+function syncShared() {
+  if (!Players.current) return;
+  const s = state.streak || {}, last = s.last, days = Shared.get(Shared.DAYS);
+  if (last) Shared.add(Shared.DAYS, [last]);
+  let changed = false;
+  days.filter((d) => (!last || d > last) && d <= dayKey()).sort().forEach((d) => { markActiveDay(d); changed = true; });
+  ppAlbum = new Set(Shared.get(Shared.ALB));
+  if (changed) save();
+}
 const starsTxt = (n) => "★".repeat(n) + "☆".repeat(3 - n);
 const levelStars = (id) => (state.stars || {})[id] || 0;
 const totalStars = () => Object.values(state.stars || {}).reduce((a, b) => a + b, 0);
@@ -3243,12 +3364,13 @@ function streakNow() {      // la série encore vivante aujourd'hui (sinon 0)
   if (gap === 2 && s.jokerWeek !== weekKey()) return s.n;     // le joker de la semaine peut encore la sauver
   return 0;
 }
-function markActiveDay() {
-  const today = dayKey(), s = state.streak || (state.streak = { n: 0, last: null, best: 0, jokerWeek: null });
-  if (s.last === today) return null;
+function markActiveDay(today = dayKey()) {
+  const s = state.streak || (state.streak = { n: 0, last: null, best: 0, jokerWeek: null }), wk = weekKey(keyDate(today));
+  Shared.add(Shared.DAYS, [today]);
+  if (s.last === today || (s.last && today < s.last)) return null;
   const gap = s.last ? dayNum(today) - dayNum(s.last) : 99, out = {};
   if (gap === 1) s.n += 1;
-  else if (gap === 2 && s.jokerWeek !== weekKey()) { s.n += 1; s.jokerWeek = weekKey(); out.joker = true; }
+  else if (gap === 2 && s.jokerWeek !== wk) { s.n += 1; s.jokerWeek = wk; out.joker = true; }
   else s.n = 1;
   s.last = today; s.best = Math.max(s.best || 0, s.n); out.n = s.n;
   if (s.n % 7 === 0) {      // récompense tous les 7 jours
@@ -3300,8 +3422,8 @@ function todayDaily() {
     mission: D.m, concept: D.c, starter: "", expected: D.q + ";", ordered: !!D.o, hints: [], xp: DAILY_XP, item: null, badge: null };
 }
 const daily = { active: false, L: null, started: 0 };
-const curL = () => (blitz.active ? blitz.L : daily.active ? daily.L : LEVELS[state.current]);
-function stopModes() { daily.active = false; if (blitz.active) { blitz.active = false; clearInterval(blitz.timer); } }
+const curL = () => (blitz.active ? blitz.L : revise.active ? revise.L : daily.active ? daily.L : LEVELS[state.current]);
+function stopModes() { daily.active = false; revise.active = false; if (blitz.active) { blitz.active = false; clearInterval(blitz.timer); } }
 function dailyDone() { return state.daily && state.daily.date === dayKey() && state.daily.done ? state.daily : null; }
 function renderDailyBar() {
   if (blitz.active) {
@@ -3310,19 +3432,27 @@ function renderDailyBar() {
       <span class="bclock" id="blitzTime">3:00</span><button class="dbtn alt" id="blitzSkip">Passer ›</button><button class="dbtn alt" id="blitzQuit">Arrêter</button>`;
     $("blitzSkip").onclick = blitzSkip; $("blitzQuit").onclick = () => endBlitz(true); tickBlitz(); return;
   }
+  if (revise.active) {
+    $("dailyBar").className = "dailybar revbar";
+    $("dailyBar").innerHTML = `<span class="dI" aria-hidden="true">🔁</span><div><b>Révision : ${esc(revise.notion)} · exercice ${Math.min(revise.i + 1, revise.order.length)} / ${revise.order.length}</b><span>${revise.done} réussi(s) · +${REV_XP} XP par bonne réponse · aucun PV en jeu</span></div>
+      <button class="dbtn alt" id="revSkip">Passer ›</button><button class="dbtn alt" id="revQuit">Arrêter</button>`;
+    $("revSkip").onclick = reviseSkip; $("revQuit").onclick = () => endRevise(true); return;
+  }
   $("dailyBar").className = "dailybar";
   const D = todayDaily(), done = dailyDone();
   $("dailyBar").innerHTML = daily.active
     ? `<span class="dI" aria-hidden="true">🎯</span><div><b>Tu relèves le défi du jour</b><span>${esc(D.title)} · ${attempt.fails} essai(s) raté(s)</span></div><button class="dbtn alt" id="dailyLeave">← Revenir à ma mission</button>`
     : `<span class="dI" aria-hidden="true">🎯</span><div><b>Défi du jour : ${esc(D.title)}</b><span>${done ? `✅ Réussi ${done.tries === 0 ? "du premier coup" : `après ${done.tries} essai(s) raté(s)`} · reviens demain pour un nouveau défi` : `+${DAILY_XP} XP, +${DAILY_FIRST_TRY} XP si tu le réussis du premier coup · le même pour tous les joueurs`}</span></div>
        ${done ? `<button class="dbtn alt" id="dailyRank">🏆 Classement du jour</button><button class="dbtn alt" id="dailyGo">Rejouer</button>` : `<button class="dbtn" id="dailyGo">Relever le défi</button>`}
-       ${daily.active ? "" : `<button class="dbtn alt blitzbtn" id="blitzGo" title="Facultatif : combien de requêtes justes en 3 minutes ?">⚡ Défi éclair${state.blitz && state.blitz.best ? ` · record ${state.blitz.best}` : ""}</button>`}`;
+       ${daily.active ? "" : `<button class="dbtn alt blitzbtn" id="blitzGo" title="Facultatif : combien de requêtes justes en 3 minutes ?">⚡ Défi éclair${state.blitz && state.blitz.best ? ` · record ${state.blitz.best}` : ""}</button>`}
+       ${!daily.active && weakNotion() ? `<button class="dbtn alt revbtn" id="revGo" title="3 exercices sans risque sur la notion qui t'a coûté le plus d'essais">🔁 Tu hésites sur ${esc(weakNotion().k)} : 3 exercices</button>` : ""}`;
   $("dailyBar").classList.toggle("done", !!done && !daily.active);
   const go = $("dailyGo"), lv = $("dailyLeave"), rk = $("dailyRank");
   if (go) go.onclick = () => { FX.play("cast"); stopModes(); daily.active = true; daily.L = todayDaily(); daily.started = Date.now(); renderLevel(); window.scrollTo({ top: 0, behavior: "smooth" }); };
   if (lv) lv.onclick = () => { FX.play("page"); daily.active = false; renderLevel(); };
   if (rk) rk.onclick = () => openDailyRanking();
   if ($("blitzGo")) $("blitzGo").onclick = () => { FX.play("page"); openBlitzIntro(); };
+  if ($("revGo")) $("revGo").onclick = () => startRevise(weakNotion());
 }
 function dailyWin(L) {
   const prev = dailyDone(), secs = Math.max(1, Math.round((Date.now() - daily.started) / 1000)), tries = attempt.fails;
@@ -3349,7 +3479,7 @@ function dailyWin(L) {
   $("dBackBtn").focus();
 }
 function pushDaily() {
-  if (!CLASSEMENT_URL || !Players.current || !dailyDone()) return;
+  if (!CLASSEMENT_URL || !Players.current || !dailyDone() || state.prive) return;
   const d = dailyDone(), body = Object.assign(scoreOf(Players.current, state), { type: "defi", defi: d.date, essais: d.tries, secondes: d.secs });
   try { fetch(CLASSEMENT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(body) }).catch(() => {}); } catch (e) {}
 }
@@ -3450,7 +3580,7 @@ const ALBUM = [
   ...[[1, 2], [4, 2], [9, 2], [5, 4], [3, 6], [7, 6], [6, 14], [2, 21], [8, 22]].map(([id, lv]) => ({ k: "m" + id, kind: "monstres", id, lv })),
   ...[[1, 7], [2, 9], [3, 24]].map(([id, lv]) => ({ k: "c" + id, kind: "chateaux", id, lv }))
 ];
-const cardOwned = (c) => state.completed.includes(c.lv);
+const cardOwned = (c) => state.completed.includes(c.lv) || ppAlbum.has(c.k);
 const albumCount = () => ALBUM.filter(cardOwned).length;
 function cardInfo(c) {
   const db = new SQL.Database();
@@ -3489,6 +3619,7 @@ function afterSuccess(ev) {
   return lines.join("");
 }
 function renderEngage() {
+  syncShared();
   const n = streakNow();
   $("streak").textContent = n; $("streakStat").classList.toggle("off", n === 0);
   $("streakStat").title = n ? `Série de ${n} jour(s) d'affilée · record ${(state.streak && state.streak.best) || n} · joker ${state.streak && state.streak.jokerWeek === weekKey() ? "déjà utilisé cette semaine" : "disponible cette semaine"}` : "Réussis une mission aujourd'hui pour lancer ta série de jours";
@@ -3555,7 +3686,7 @@ const NEED = [   // à partir de quelle mission chaque mot-clé est connu (calcu
 ].map((re) => ({ re, at: (LEVELS.find((L) => re.test(L.expected)) || { id: 99 }).id }));
 const blitzPool = () => {
   const reach = Math.max(0, ...state.completed.map((x) => x + 1));
-  return DAILY_BANK.filter((D) => NEED.every((n) => !n.re.test(D.q) || n.at <= reach));
+  return DAILY_BANK.concat(REV_BANK).filter((D) => NEED.every((n) => !n.re.test(D.q) || n.at <= reach));
 };
 const blitz = { active: false, end: 0, score: 0, skips: 0, order: [], i: 0, timer: null, L: null };
 function blitzLevel() {
@@ -3613,9 +3744,106 @@ function endBlitz(quit) {
   $("bzBack").focus();
 }
 
+/* ---------- 7 bis. RÉVISIONS CIBLÉES 🔁 : la notion qui coûte le plus d'essais ---------- */
+const REV_XP = 15, REV_BONUS = 30, REV_MIN = 2;
+const REV_BANK = [      // exercices en plus, pour avoir au moins 3 entraînements par notion (servent aussi au défi éclair)
+  { t: "Les Deux Plus Riches", m: "Affiche le <code>nom</code> et la <code>fortune</code> des <b>2 héros les plus riches</b>, du plus riche au moins riche.", q: "SELECT nom, fortune FROM heros ORDER BY fortune DESC LIMIT 2", o: true, c: ["ORDER BY", "LIMIT"] },
+  { t: "Le Plus Fragile", m: "Affiche le <code>nom</code> et les <code>pv</code> du <b>monstre qui a le moins de PV</b>.", q: "SELECT nom, pv FROM monstres ORDER BY pv LIMIT 1", o: true, c: ["ORDER BY", "LIMIT"] },
+  { t: "Les Trois Babioles", m: "Affiche l'<code>objet</code> et la <code>valeur</code> des <b>3 objets les moins chers</b>, du moins cher au plus cher.", q: "SELECT objet, valeur FROM inventaire ORDER BY valeur LIMIT 3", o: true, c: ["ORDER BY", "LIMIT"] },
+  { t: "Combien de Bêtes ?", m: "Combien y a-t-il de monstres de <code>type</code> <b>'Bête'</b> ?", q: "SELECT COUNT(*) FROM monstres WHERE type = 'Bête'", c: ["COUNT(*)", "WHERE"] },
+  { t: "Les Objets Communs", m: "Combien y a-t-il d'objets de rareté <b>'Commun'</b> dans l'inventaire ?", q: "SELECT COUNT(*) FROM inventaire WHERE rarete = 'Commun'", c: ["COUNT(*)", "WHERE"] },
+  { t: "Le Trésor du Royaume", m: "Quelle est la <b>somme</b> des <code>tresor</code> de tous les châteaux ?", q: "SELECT SUM(tresor) FROM chateaux", c: ["SUM()"] },
+  { t: "Le Plus Gros Monstre", m: "Quel est le <b>plus grand</b> nombre de <code>pv</code> parmi les monstres ?", q: "SELECT MAX(pv) FROM monstres", c: ["MAX()"] },
+  { t: "Le Niveau Moyen", m: "Quel est le <code>niveau</code> <b>moyen</b> des héros ?", q: "SELECT AVG(niveau) FROM heros", c: ["AVG()"] },
+  { t: "Les Monstres par Type", m: "Affiche chaque <code>type</code> de monstre avec le <b>nombre de monstres</b> de ce type.", q: "SELECT type, COUNT(*) FROM monstres GROUP BY type", c: ["GROUP BY", "COUNT(*)"] },
+  { t: "La Puissance par École", m: "Affiche chaque <code>ecole</code> avec la <b>somme</b> de la <code>puissance</code> de ses sorts.", q: "SELECT ecole, SUM(puissance) FROM sorts GROUP BY ecole", c: ["GROUP BY", "SUM()"] },
+  { t: "Le Danger par Région", m: "Affiche chaque <code>region</code> avec le <b>danger le plus haut</b> de ses monstres.", q: "SELECT region, MAX(danger) FROM monstres GROUP BY region", c: ["GROUP BY", "MAX()"] },
+  { t: "Les Grandes Écoles", m: "Affiche chaque <code>ecole</code> et son nombre de sorts, <b>seulement</b> pour les écoles qui ont <b>au moins 2 sorts</b>.", q: "SELECT ecole, COUNT(*) FROM sorts GROUP BY ecole HAVING COUNT(*) >= 2", c: ["GROUP BY", "HAVING"] },
+  { t: "Les Types Nombreux", m: "Affiche chaque <code>type</code> de monstre et son nombre de monstres, <b>seulement</b> s'il y en a <b>au moins 2</b>.", q: "SELECT type, COUNT(*) FROM monstres GROUP BY type HAVING COUNT(*) >= 2", c: ["GROUP BY", "HAVING"] },
+  { t: "Les Écoles Redoutables", m: "Affiche chaque <code>ecole</code> et la somme de sa <code>puissance</code>, <b>seulement</b> si cette somme dépasse <b>100</b>.", q: "SELECT ecole, SUM(puissance) FROM sorts GROUP BY ecole HAVING SUM(puissance) > 100", c: ["GROUP BY", "HAVING"] },
+  { t: "Les Sorts de Chacun", m: "Affiche le <code>nom</code> de <b>chaque</b> héros avec son <b>nombre de sorts</b>, même s'il n'en a aucun (0).", q: "SELECT heros.nom, COUNT(sorts.id) FROM heros LEFT JOIN sorts ON sorts.num_heros = heros.id GROUP BY heros.nom", c: ["LEFT JOIN", "COUNT()"] },
+  { t: "Les Châteaux et leurs Héros", m: "Affiche le <code>nom</code> de chaque château et le <code>nom</code> de ses héros, avec <code>LEFT JOIN</code> en partant de <code>chateaux</code>.", q: "SELECT chateaux.nom, heros.nom FROM chateaux LEFT JOIN heros ON heros.num_chateau = chateaux.id", c: ["LEFT JOIN"] },
+  { t: "Les Héros en M", m: "Affiche le <code>nom</code> des héros dont le nom <b>commence par 'M'</b>.", q: "SELECT nom FROM heros WHERE nom LIKE 'M%'", c: ["LIKE", "%"] },
+  { t: "La Fin en T", m: "Affiche le <code>nom</code> des monstres dont le nom <b>se termine par 't'</b>.", q: "SELECT nom FROM monstres WHERE nom LIKE '%t'", c: ["LIKE", "%"] },
+  { t: "Les Sorts « de »", m: "Affiche le <code>nom</code> des sorts dont le nom <b>contient ' de '</b> (avec les espaces).", q: "SELECT nom FROM sorts WHERE nom LIKE '% de %'", c: ["LIKE", "%"] },
+  { t: "Les Régions Hantées", m: "Affiche la liste des <code>region</code> où vivent des monstres, <b>sans doublons</b>.", q: "SELECT DISTINCT region FROM monstres", c: ["DISTINCT"] },
+  { t: "Les Raretés", m: "Affiche la liste des <code>rarete</code> de l'inventaire, <b>sans doublons</b>.", q: "SELECT DISTINCT rarete FROM inventaire", c: ["DISTINCT"] },
+  { t: "Les Sorts Moyens", m: "Affiche le <code>nom</code> des sorts dont la <code>puissance</code> est <b>entre 40 et 90</b>.", q: "SELECT nom FROM sorts WHERE puissance BETWEEN 40 AND 90", c: ["BETWEEN"] },
+  { t: "Ni Doux, Ni Terribles", m: "Affiche le <code>nom</code> et le <code>danger</code> des monstres dont le danger est <b>entre 3 et 6</b>.", q: "SELECT nom, danger FROM monstres WHERE danger BETWEEN 3 AND 6", c: ["BETWEEN"] },
+  { t: "Les Sorts des Paladins", m: "Affiche le <code>nom</code> des sorts dont le propriétaire est un héros de classe <b>'Paladin'</b>.", q: "SELECT nom FROM sorts WHERE num_heros IN (SELECT id FROM heros WHERE classe = 'Paladin')", c: ["IN", "sous-requête"] },
+  { t: "Les Héros du Marais", m: "Affiche le <code>nom</code> des héros dont le château se trouve dans la région <b>'Marais Putride'</b>.", q: "SELECT nom FROM heros WHERE num_chateau IN (SELECT id FROM chateaux WHERE region = 'Marais Putride')", c: ["IN", "sous-requête"] },
+  { t: "Le Sac des Riches", m: "Affiche l'<code>objet</code> des objets dont le propriétaire a une <code>fortune</code> d'<b>au moins 300</b>.", q: "SELECT objet FROM inventaire WHERE num_heros IN (SELECT id FROM heros WHERE fortune >= 300)", c: ["IN", "sous-requête"] },
+  { t: "Riche ou Pauvre ?", m: "Affiche le <code>nom</code> de chaque héros et l'étiquette <b>'Riche'</b> si sa fortune vaut au moins 300, sinon <b>'Pauvre'</b>.", q: "SELECT nom, CASE WHEN fortune >= 300 THEN 'Riche' ELSE 'Pauvre' END FROM heros", c: ["CASE"] },
+  { t: "Les Cris des Monstres", m: "Affiche le <code>nom</code> de chaque monstre <b>en majuscules</b>.", q: "SELECT UPPER(nom) FROM monstres", c: ["UPPER()"] },
+  { t: "Des Noms à Rallonge", m: "Affiche le <code>nom</code> de chaque sort et sa <b>longueur</b> (nombre de caractères).", q: "SELECT nom, LENGTH(nom) FROM sorts", c: ["LENGTH()"] },
+  { t: "Le Classement des Fortunes", m: "Affiche le <code>nom</code>, la <code>fortune</code> et le <b>rang</b> de chaque héros (1 = le plus riche), avec <code>RANK() OVER</code>.", q: "SELECT nom, fortune, RANK() OVER (ORDER BY fortune DESC) FROM heros", c: ["RANK() OVER"] }
+];
+const NOTIONS = [
+  { k: "WHERE", re: /\bWHERE\b/i }, { k: "AND / OR", re: /\b(AND|OR)\b/i }, { k: "ORDER BY", re: /\bORDER BY\b/i },
+  { k: "LIMIT", re: /\bLIMIT\b/i }, { k: "COUNT", re: /\bCOUNT\(/i }, { k: "SUM, AVG, MIN, MAX", re: /\b(SUM|AVG|MIN|MAX)\(/i },
+  { k: "GROUP BY", re: /\bGROUP BY\b/i }, { k: "HAVING", re: /\bHAVING\b/i }, { k: "JOIN", re: /\bJOIN\b/i },
+  { k: "LEFT JOIN", re: /\bLEFT JOIN\b/i }, { k: "LIKE", re: /\bLIKE\b/i }, { k: "DISTINCT", re: /\bDISTINCT\b/i },
+  { k: "BETWEEN", re: /\bBETWEEN\b/i }, { k: "IN (…)", re: /\bIN \(/i }, { k: "sous-requêtes", re: /\(\s*SELECT\b/i },
+  { k: "CASE", re: /\bCASE\b/i }, { k: "UPPER, LOWER, LENGTH", re: /\b(UPPER|LOWER|LENGTH)\(/i }, { k: "RANK() OVER", re: /\bRANK\(\)/i }
+].map((n) => Object.assign(n, { at: (LEVELS.find((L) => n.re.test(L.expected)) || { id: 99 }).id }));
+const notionOf = (q) => NOTIONS.filter((n) => n.re.test(q)).sort((a, b) => b.at - a.at)[0] || null;   // la notion la plus récente de la requête attendue
+function noteFail(L) {
+  if (L.blitz || L.revise || L.mode === "write") return;
+  const n = notionOf(L.expected); if (!n) return;
+  state.errs = state.errs || {}; state.errs[n.k] = (state.errs[n.k] || 0) + 1; save();
+  if (state.errs[n.k] === REV_MIN) { renderDailyBar(); renderNextStep(); }
+}
+function revisePool(n) {
+  const reach = Math.max(0, ...state.completed.map((x) => x + 1));
+  const bank = DAILY_BANK.concat(REV_BANK).filter((D) => n.re.test(D.q) && NEED.every((x) => !x.re.test(D.q) || x.at <= reach))
+    .map((D) => ({ id: "revision", kwId: 39, title: D.t, mission: D.m, concept: D.c, starter: "", expected: D.q + ";", ordered: !!D.o, pitch: "" }));
+  const lv = LEVELS.filter((L) => state.completed.includes(L.id) && L.mode !== "write" && n.re.test(L.expected) && !worldSetup(L));
+  return lv.concat(bank);
+}
+function weakNotion() {
+  const e = state.errs || {};
+  return NOTIONS.filter((n) => (e[n.k] || 0) >= REV_MIN && revisePool(n).length >= 3).sort((a, b) => e[b.k] - e[a.k])[0] || null;
+}
+const revise = { active: false, notion: "", order: [], i: 0, done: 0, L: null };
+function reviseLevel() {
+  const S = revise.order[revise.i];
+  return Object.assign({}, S, { revise: true, daily: false, blitz: false, hints: [], xp: 0, item: null, badge: null,
+    chapter: `🔁 Révision · ${revise.notion}`, pitch: S.pitch || "Un exercice d'entraînement tiré du royaume. Prends ton temps : ici rien ne se perd." });
+}
+function startRevise(n) {
+  if (!n) return;
+  const pool = revisePool(n);
+  for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+  stopModes(); Object.assign(revise, { active: true, notion: n.k, order: pool.slice(0, 3), i: 0, done: 0 });
+  revise.L = reviseLevel(); FX.play("cast"); renderLevel(); window.scrollTo({ top: 0, behavior: "smooth" }); $("sql").focus();
+}
+function reviseNext() { revise.i += 1; if (revise.i >= revise.order.length) return endRevise(false); revise.L = reviseLevel(); renderLevel(); $("sql").focus(); }
+function reviseRight() { revise.done += 1; state.xp += REV_XP; save(); renderHUD(); FX.play("good"); burst($("dailyBar"), 12); setTimeout(reviseNext, 900); }
+function reviseSkip() { FX.play("unclick"); reviseNext(); }
+function endRevise(quit) {
+  if (!revise.active) return;
+  revise.active = false;
+  const all = revise.done === revise.order.length, gained = revise.done * REV_XP + (all ? REV_BONUS : 0);
+  if (all) { state.xp += REV_BONUS; state.errs[revise.notion] = 0; state.revisions = (state.revisions || 0) + 1; }
+  else if (revise.done) state.errs[revise.notion] = Math.max(0, (state.errs[revise.notion] || 0) - revise.done);
+  const gear = syncEquipment(); save(); renderHUD(); renderLoot(); renderLevel(); renderNextStep();
+  $("overlay").innerHTML = `<div class="card" role="dialog" aria-modal="true" aria-labelledby="rvEnd">
+    <h3 id="rvEnd">${all ? "🔁 Révision réussie !" : quit ? "Révision arrêtée" : "Révision terminée"}</h3>
+    <p>${revise.done} exercice${revise.done > 1 ? "s" : ""} sur ${revise.order.length} réussi${revise.done > 1 ? "s" : ""} sur <b>${esc(revise.notion)}</b>.
+       ${all ? "Cette notion ne te fait plus peur !" : "Tu pourras recommencer quand tu veux depuis le bandeau du haut."}</p>
+    <div class="rewards">${gained ? `<span class="x">+${gained} XP</span>` : ""}${all ? `<span class="b">+${REV_BONUS} XP de bonus</span>` : ""}</div>
+    ${gear.length ? `<div class="xtra card">🎒 Nouvel équipement : ${gear.map((g) => `${g.ico} ${esc(g.name)}`).join(", ")}</div>` : ""}
+    <div class="btns"><button class="btn btn-ghost" id="rvBack">Revenir à ma mission</button></div></div>`;
+  $("overlay").hidden = false;
+  setTimeout(() => { FX.play(all ? "levelup" : "win"); if (all) burst(document.querySelector("#overlay .card"), 24); }, 200);
+  $("rvBack").onclick = () => { $("overlay").hidden = true; renderLevel(); };
+  $("rvBack").focus();
+}
+
 /* ---------- 8. PROCHAIN PAS 🧭 : toujours un petit objectif visible ---------- */
 function nextSteps() {
   const out = [], lv = playerLevel(), toNext = 150 - (state.xp % 150);
+  const wn = weakNotion(); if (wn) out.push({ ico: "🔁", txt: `Tu hésites sur ${wn.k} : 3 exercices pour t'entraîner (bouton « 🔁 » en haut).` });
   out.push({ ico: "⬆️", txt: `Il te manque ${toNext} XP pour le niveau ${lv + 1} !` });
   const g = myGear().find((x) => lv < x.lvl);
   if (g) out.push({ ico: g.ico, txt: `Encore ${g.lvl - lv} niveau${g.lvl - lv > 1 ? "x" : ""} pour gagner ${g.name}.` });
@@ -3702,6 +3930,46 @@ function wire() {
   $("peek").onclick = () => { FX.play("page"); explore(); };
   const soundLabel = () => { $("sound").textContent = FX.on ? "SON : OUI" : "SON : NON"; $("sound").setAttribute("aria-pressed", FX.on ? "true" : "false"); };
   $("sound").onclick = () => { FX.toggle(); soundLabel(); }; soundLabel();
+/* ---------- Mode clair / sombre, et installation comme une application ---------- */
+const Theme = (() => {
+  const meta = () => document.querySelector('meta[name="theme-color"]');
+  const apply = (t) => {
+    document.documentElement.dataset.theme = t;
+    const b = document.getElementById("themeBtn");
+    if (b) { b.textContent = t === "light" ? "🌙" : "☀️"; b.title = t === "light" ? "Passer en mode sombre" : "Passer en mode clair (salle lumineuse, vidéoprojecteur)"; b.setAttribute("aria-label", b.title); b.setAttribute("aria-pressed", t === "light" ? "true" : "false"); }
+    if (meta()) meta().content = t === "light" ? "#f4eee1" : "#11132a";
+  };
+  let t = "dark"; try { t = localStorage.getItem("grimoire-theme") === "light" ? "light" : "dark"; } catch (e) {}
+  apply(t);
+  const b = document.getElementById("themeBtn");
+  if (b) b.onclick = () => { t = t === "light" ? "dark" : "light"; try { localStorage.setItem("grimoire-theme", t); } catch (e) {} apply(t); if (typeof FX !== "undefined") FX.play("click"); };
+  return { apply };
+})();
+const Install = (() => {
+  const btn = document.getElementById("installBtn");
+  const can = !!document.querySelector('link[rel="manifest"]') && /^https?:$/.test(location.protocol);
+  const standalone = () => (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
+  const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  let evt = null;
+  if (!btn || !can || standalone()) return {};
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+  window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); evt = e; btn.hidden = false; });
+  window.addEventListener("appinstalled", () => { btn.hidden = true; evt = null; });
+  if (ios) btn.hidden = false;      // Safari n'a pas de bouton automatique : on explique les deux gestes
+  btn.onclick = async () => {
+    if (evt) { evt.prompt(); try { const r = await evt.userChoice; if (r.outcome === "accepted") btn.hidden = true; } catch (e) {} evt = null; return; }
+    const old = document.getElementById("playerGate"); if (old) old.remove();
+    const g = document.createElement("div"); g.id = "playerGate"; g.className = "pgate";
+    g.innerHTML = `<div class="pcard" role="dialog" aria-modal="true" aria-labelledby="insT"><h2 id="insT">📲 Installer le Grimoire</h2>
+      <p>Sur iPad et iPhone, dans <b>Safari</b> :</p>
+      <p>1. Touche le bouton <b>Partager</b> <span aria-hidden="true">⬆️</span> (en haut à droite sur iPad).<br>2. Choisis <b>« Sur l'écran d'accueil »</b>, puis <b>Ajouter</b>.</p>
+      <p class="pnote">Le Grimoire s'ouvre alors en plein écran, avec son icône, et marche même sans Internet (sauf le classement en ligne).</p>
+      <button class="pclose" id="insClose">Fermer</button></div>`;
+    document.body.appendChild(g); document.getElementById("insClose").onclick = () => g.remove();
+  };
+  return {};
+})();
+
   $("whyBtn").onclick = () => showWhy(LEVELS[state.current]);
   $("hintBtn").onclick = readScroll;
   let tTimer; $("sql").addEventListener("input", () => { clearTimeout(tTimer); tTimer = setTimeout(renderTranslate, 120); });

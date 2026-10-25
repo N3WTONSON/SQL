@@ -53,6 +53,46 @@ function wire() {
   $("peek").onclick = () => { FX.play("page"); explore(); };
   const soundLabel = () => { $("sound").textContent = FX.on ? "SON : OUI" : "SON : NON"; $("sound").setAttribute("aria-pressed", FX.on ? "true" : "false"); };
   $("sound").onclick = () => { FX.toggle(); soundLabel(); }; soundLabel();
+/* ---------- Mode clair / sombre, et installation comme une application ---------- */
+const Theme = (() => {
+  const meta = () => document.querySelector('meta[name="theme-color"]');
+  const apply = (t) => {
+    document.documentElement.dataset.theme = t;
+    const b = document.getElementById("themeBtn");
+    if (b) { b.textContent = t === "light" ? "🌙" : "☀️"; b.title = t === "light" ? "Passer en mode sombre" : "Passer en mode clair (salle lumineuse, vidéoprojecteur)"; b.setAttribute("aria-label", b.title); b.setAttribute("aria-pressed", t === "light" ? "true" : "false"); }
+    if (meta()) meta().content = t === "light" ? "#f4eee1" : "#11132a";
+  };
+  let t = "dark"; try { t = localStorage.getItem("grimoire-theme") === "light" ? "light" : "dark"; } catch (e) {}
+  apply(t);
+  const b = document.getElementById("themeBtn");
+  if (b) b.onclick = () => { t = t === "light" ? "dark" : "light"; try { localStorage.setItem("grimoire-theme", t); } catch (e) {} apply(t); if (typeof FX !== "undefined") FX.play("click"); };
+  return { apply };
+})();
+const Install = (() => {
+  const btn = document.getElementById("installBtn");
+  const can = !!document.querySelector('link[rel="manifest"]') && /^https?:$/.test(location.protocol);
+  const standalone = () => (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
+  const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  let evt = null;
+  if (!btn || !can || standalone()) return {};
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+  window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); evt = e; btn.hidden = false; });
+  window.addEventListener("appinstalled", () => { btn.hidden = true; evt = null; });
+  if (ios) btn.hidden = false;      // Safari n'a pas de bouton automatique : on explique les deux gestes
+  btn.onclick = async () => {
+    if (evt) { evt.prompt(); try { const r = await evt.userChoice; if (r.outcome === "accepted") btn.hidden = true; } catch (e) {} evt = null; return; }
+    const old = document.getElementById("playerGate"); if (old) old.remove();
+    const g = document.createElement("div"); g.id = "playerGate"; g.className = "pgate";
+    g.innerHTML = `<div class="pcard" role="dialog" aria-modal="true" aria-labelledby="insT"><h2 id="insT">📲 Installer le Grimoire</h2>
+      <p>Sur iPad et iPhone, dans <b>Safari</b> :</p>
+      <p>1. Touche le bouton <b>Partager</b> <span aria-hidden="true">⬆️</span> (en haut à droite sur iPad).<br>2. Choisis <b>« Sur l'écran d'accueil »</b>, puis <b>Ajouter</b>.</p>
+      <p class="pnote">Le Grimoire s'ouvre alors en plein écran, avec son icône, et marche même sans Internet (sauf le classement en ligne).</p>
+      <button class="pclose" id="insClose">Fermer</button></div>`;
+    document.body.appendChild(g); document.getElementById("insClose").onclick = () => g.remove();
+  };
+  return {};
+})();
+
   $("whyBtn").onclick = () => showWhy(LEVELS[state.current]);
   $("hintBtn").onclick = readScroll;
   let tTimer; $("sql").addEventListener("input", () => { clearTimeout(tTimer); tTimer = setTimeout(renderTranslate, 120); });
