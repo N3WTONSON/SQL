@@ -173,6 +173,7 @@ function renderLevel() {
       const h = pick("h:").map(Number); if (h.length) html += heroCards(rows("heros").filter((x) => h.includes(x[0])));
       const m = pick("m:").map(Number); if (m.length) html += monsterCards(rows("monstres").filter((x) => m.includes(x[0])));
       const r = pick("r:"); if (r.length) html += regionsFor(db, r);
+      const e = pick("e:"); if (e.length) html += schoolsFor(db, e);
       a.filter((x) => TABLE_ART[x] && x !== "heros").forEach((t) => { html += `<figure class="tblart"><img src="${TABLE_ART[t]}" alt="${ARTCAP[t]}"><figcaption><b>TABLE ${t}</b></figcaption></figure>`; });
       const c = a.filter((x) => typeof x === "number"); if (c.length) html += castleCards(db, c);
       return html;
@@ -238,7 +239,7 @@ const CASTLE_ART = { 1: "assets/chateau-1.webp", 2: "assets/chateau-2.webp", 3: 
 const HERO_ART = { 1: "assets/heros-1.webp", 2: "assets/heros-2.webp", 3: "assets/heros-3.webp", 4: "assets/heros-4.webp", 5: "assets/heros-5.webp", 6: "assets/heros-6.webp" };   // une image par héros : ajouter les suivants ici
 const MONSTER_ART = { 1: "assets/monstre-1.webp", 2: "assets/monstre-2.webp", 3: "assets/monstre-3.webp", 4: "assets/monstre-4.webp", 5: "assets/monstre-5.webp", 6: "assets/monstre-6.webp", 7: "assets/monstre-7.webp", 8: "assets/monstre-8.webp", 9: "assets/monstre-9.webp" };   // une image par monstre : ajouter les suivants ici
 const REGION_ART = { "Forêt Sombre": "assets/region-foret.webp", "Marais Putride": "assets/region-marais.webp", "Crypte Oubliée": "assets/region-crypte.webp", "Pics Gelés": "assets/region-pics.webp" };
-const LEVEL_ART = { 0: ["heros"], 17: ["h:2"], 31: ["h:3"], 30: ["h:6"], 33: ["h:5"], 34: ["h:6"], 2: ["r:Forêt Sombre"], 4: ["m:5"], 6: ["r:Forêt Sombre", "r:Marais Putride", "r:Crypte Oubliée", "r:Pics Gelés"], 10: ["r:Crypte Oubliée"], 14: ["m:6"], 7: [1, 2, 3], 9: [1, 2, 3], 19: [2], 24: [3], 25: ["visites"], 26: [1], 28: [1], 29: [1] };
+const LEVEL_ART = { 0: ["heros"], 17: ["h:2"], 31: ["h:3"], 30: ["h:6"], 33: ["h:5"], 34: ["h:6"], 2: ["r:Forêt Sombre"], 4: ["m:5"], 6: ["r:Forêt Sombre", "r:Marais Putride", "r:Crypte Oubliée", "r:Pics Gelés"], 10: ["r:Crypte Oubliée"], 14: ["m:6", "e:Feu", "e:Glace", "e:Lumière", "e:Nature", "e:Ombre"], 20: ["e:Feu", "e:Glace", "e:Lumière", "e:Nature", "e:Ombre"], 39: ["e:Feu", "e:Glace", "e:Lumière", "e:Nature", "e:Ombre"], 7: [1, 2, 3], 9: [1, 2, 3], 19: [2], 24: [3], 25: ["visites"], 26: [1, "e:Feu", "e:Lumière"], 28: [1], 29: [1] };
 function monsterCards(rows) {   // rows : lignes de la table monstres ; une carte par monstre qui a son image
   return `<div class="castles heroes">${rows.filter((r) => MONSTER_ART[r[0]]).map(([id, nom, type, region, pv, danger, butin], i) => `<figure class="castle hero" style="--i:${i}"><img src="${MONSTER_ART[id]}" alt="${esc(nom)}">
     <figcaption><b>${esc(nom)}</b><code>id ${id} · ${esc(type)} · region ${esc(region)} · pv ${pv} · danger ${danger} · butin ${esc(butin)}</code></figcaption></figure>`).join("")}</div>`;
@@ -247,6 +248,11 @@ function heroCards(rows) {    // rows : lignes de la table heros ; une carte par
   return `<div class="castles heroes">${rows.filter((r) => HERO_ART[r[0]]).map(([id, nom, classe, niveau, pv, fortune, ch], i) => `<figure class="castle hero" style="--i:${i}"><img src="${HERO_ART[id]}" alt="${esc(nom)}">
     <figcaption><b>${esc(nom)}</b><code>id ${id} · ${esc(classe)} · niveau ${niveau} · pv ${pv} · fortune ${fortune} · num_chateau ${ch}</code></figcaption></figure>`).join("")}</div>`;
 }
+const ECOLE_ART = { "Feu": "assets/ecole-feu.webp", "Glace": "assets/ecole-glace.webp", "Lumière": "assets/ecole-lumiere.webp", "Nature": "assets/ecole-nature.webp", "Ombre": "assets/ecole-ombre.webp" };   // une image par école de magie
+function schoolCards(rows) {   // rows : [ecole, nombre de sorts, noms des sorts]
+  return `<div class="castles">${rows.filter((r) => ECOLE_ART[r[0]]).map(([ecole, n, noms], i) => `<figure class="castle" style="--i:${i}"><img src="${ECOLE_ART[ecole]}" alt="École ${esc(ecole)}">
+    <figcaption><b>École : ${esc(ecole)}</b><code>ecole = '${esc(ecole)}' · ${n} sort${n > 1 ? "s" : ""} : ${esc(noms)}</code></figcaption></figure>`).join("")}</div>`;
+}
 function regionCards(rows) {   // rows : [region, nombre de monstres, noms]
   return `<div class="castles">${rows.filter((r) => REGION_ART[r[0]]).map(([region, n, noms], i) => `<figure class="castle" style="--i:${i}"><img src="${REGION_ART[region]}" alt="${esc(region)}">
     <figcaption><b>${esc(region)}</b><code>region = '${esc(region)}' · ${n} monstre${n > 1 ? "s" : ""} : ${esc(noms)}</code></figcaption></figure>`).join("")}</div>`;
@@ -254,6 +260,10 @@ function regionCards(rows) {   // rows : [region, nombre de monstres, noms]
 function regionsFor(db, names) {
   const r = db.exec("SELECT region, COUNT(*), GROUP_CONCAT(nom, ', ') FROM monstres GROUP BY region ORDER BY COUNT(*) DESC")[0];
   return regionCards(r ? r.values.filter((x) => !names || names.includes(x[0])) : []);
+}
+function schoolsFor(db, names) {
+  const r = db.exec("SELECT ecole, COUNT(*), GROUP_CONCAT(nom, ', ') FROM sorts GROUP BY ecole ORDER BY ecole")[0];
+  return schoolCards(r ? r.values.filter((x) => !names || names.includes(x[0])) : []);
 }
 function castleCards(db, ids) {     // une carte par ligne de la table chateaux : une ligne = un château
   const rows = db.exec(`SELECT id, nom, region, seigneur FROM chateaux WHERE id IN (${ids.join(",")}) ORDER BY id`)[0];
@@ -274,6 +284,7 @@ function renderSchema() {
       ${t === "heros" && Object.keys(HERO_ART).length ? `<p class="about">Chaque ligne de la table est un héros :</p>${heroCards(db.exec("SELECT * FROM heros ORDER BY id")[0].values)}` : ""}
       ${t === "monstres" && Object.keys(MONSTER_ART).length ? `<p class="about">Chaque ligne de la table est un monstre :</p>${monsterCards(db.exec("SELECT * FROM monstres ORDER BY id")[0].values)}` : ""}
       ${t === "monstres" ? `<p class="about">Les régions où vivent les monstres (colonne <code>region</code>) :</p>${regionsFor(db)}` : ""}
+      ${t === "sorts" && Object.keys(ECOLE_ART).length ? `<p class="about">Les écoles de magie (colonne <code>ecole</code>) :</p>${schoolsFor(db)}` : ""}
       ${t === "chateaux" ? `<p class="about">Chaque ligne de la table est un château :</p>${castleCards(db, [1, 2, 3])}` : ""}
       <div class="cols">${cols.map((c) => `<button data-ins="${c[1]}" title="Insérer ${c[1]}">${c[1]} <span class="t">${COL_INFO[c[1]] || ""}</span>${LINKS[c[1]] ? ` <span class="lk">→ ${LINKS[c[1]]}</span>` : ""}</button>`).join("")}</div>
       <button class="peekTbl" data-peek="${t}">Voir ses ${n} lignes</button></details>`;

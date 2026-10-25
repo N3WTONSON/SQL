@@ -1,12 +1,17 @@
 // Service worker du Grimoire des Requêtes : tout le jeu est gardé sur l'appareil pour marcher sans Internet.
 // Généré par build.py : la version change à chaque nouvelle version du jeu, l'ancien cache est alors remplacé.
-const CACHE = "grimoire-f31562a21ca2";
+const CACHE = "grimoire-b2bef09b1ae5";
 const FILES = [
  "./",
  "assets/apple-touch-icon.png",
  "assets/chateau-1.webp",
  "assets/chateau-2.webp",
  "assets/chateau-3.webp",
+ "assets/ecole-feu.webp",
+ "assets/ecole-glace.webp",
+ "assets/ecole-lumiere.webp",
+ "assets/ecole-nature.webp",
+ "assets/ecole-ombre.webp",
  "assets/heros-1.webp",
  "assets/heros-2.webp",
  "assets/heros-3.webp",

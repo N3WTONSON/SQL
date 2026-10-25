@@ -436,10 +436,16 @@ function heroCards(rows) {    // rows : lignes de la table heros ; une carte par
   return `<div class="castles heroes">${rows.filter((r) => HERO_ART[r[0]]).map(([id, nom, classe, niveau, pv, fortune, ch], i) => `<figure class="castle hero" style="--i:${i}"><img src="${HERO_ART[id]}" alt="${esc(nom)}">
     <figcaption><b>${esc(nom)}</b><code>id ${id} · ${esc(classe)} · niveau ${niveau} · pv ${pv} · fortune ${fortune} · num_chateau ${ch}</code></figcaption></figure>`).join("")}</div>`;
 }
+const ECOLE_ART = { "Feu": "assets/ecole-feu.webp", "Glace": "assets/ecole-glace.webp", "Lumière": "assets/ecole-lumiere.webp", "Nature": "assets/ecole-nature.webp", "Ombre": "assets/ecole-ombre.webp" };   // une image par école de magie
+function schoolCards(rows) {   // rows : [ecole, nombre de sorts, noms des sorts]
+  return `<div class="castles">${rows.filter((r) => ECOLE_ART[r[0]]).map(([ecole, n, noms], i) => `<figure class="castle" style="--i:${i}"><img src="${ECOLE_ART[ecole]}" alt="École ${esc(ecole)}">
+    <figcaption><b>École : ${esc(ecole)}</b><code>ecole = '${esc(ecole)}' · ${n} sort${n > 1 ? "s" : ""} : ${esc(noms)}</code></figcaption></figure>`).join("")}</div>`;
+}
 function regionCards(rows) {   // rows : [region, nombre de monstres, noms]
   return `<div class="castles">${rows.filter((r) => REGION_ART[r[0]]).map(([region, n, noms], i) => `<figure class="castle" style="--i:${i}"><img src="${REGION_ART[region]}" alt="${esc(region)}">
     <figcaption><b>${esc(region)}</b><code>region = '${esc(region)}' · ${n} monstre${n > 1 ? "s" : ""} : ${esc(noms)}</code></figcaption></figure>`).join("")}</div>`;
 }
+const schoolsHTML = (names) => schoolCards(run("SELECT ecole, COUNT(*), GROUP_CONCAT(nom, ', ') FROM sorts GROUP BY ecole ORDER BY ecole").values.filter((x) => !names || names.includes(x[0])));
 const regionsHTML = (names) => regionCards(run("SELECT region, COUNT(*), GROUP_CONCAT(nom, ', ') FROM monstres GROUP BY region ORDER BY COUNT(*) DESC").values.filter((x) => names.includes(x[0])));
 const castlesHTML = () => `<div class="castles">${run("SELECT id, nom, region, seigneur FROM chateaux ORDER BY id").values.map(([id, nom, region, seigneur], i) => `<figure class="castle" style="--i:${i}"><img src="${CASTLE_ART[id]}" alt="${esc(nom)}">
   <figcaption><b>${esc(nom)}</b><code>id ${id} · region ${esc(region)} · seigneur ${esc(seigneur)}</code></figcaption></figure>`).join("")}</div>`;
@@ -573,7 +579,7 @@ const LESSONS = [
       { type: "build", ask: "Montre le nom et les PV des monstres de la Forêt Sombre.", target: ["SELECT", "nom", ",", "pv", "FROM", "monstres", "WHERE", "region", "=", "'Forêt Sombre'"], extra: ["'Foret Sombre'"],
         traps: { "'Foret Sombre'": "Regarde bien l'accent : dans la table, c'est écrit Forêt avec un ê. Sans l'accent, la base ne trouve aucune ligne." },
         why: "C'est exactement la mission du Chapitre 1 de l'aventure. Tu viens de la réussir en comprenant chaque mot." },
-      { type: "type", ask: "Au clavier : montre le nom des sorts (sorts) de l'école (ecole) Feu.", expected: "SELECT nom FROM sorts WHERE ecole = 'Feu'",
+      { type: "type", schools: ["Feu"], ask: "Au clavier : montre le nom des sorts (sorts) de l'école (ecole) Feu.", expected: "SELECT nom FROM sorts WHERE ecole = 'Feu'",
         words: ["SELECT", "nom", "FROM", "sorts", "WHERE", "ecole", "=", "'Feu'"], why: "Deux sorts de feu : la Boule de Feu et l'Étincelle Ratée. N'oublie jamais les apostrophes autour d'un texte." }
     ] },
   { part: 1, title: "Ranger les lignes", learned: ["ORDER BY range les lignes selon une colonne.", "Par défaut, du plus petit au plus grand. Avec DESC, du plus grand au plus petit.", "Ordre de la phrase : SELECT → FROM → WHERE → ORDER BY."],
@@ -620,7 +626,7 @@ const LESSONS = [
       { type: "build", ask: "Combien de héros y a-t-il dans chaque classe ?", target: ["SELECT", "classe", ",", "COUNT(*)", "FROM", "heros", "GROUP BY", "classe"], extra: ["nom", "WHERE"],
         traps: { "nom": "Un paquet « Mage » contient plusieurs héros : la base ne peut pas afficher un seul nom pour tout le paquet. À côté de COUNT(*), on affiche la colonne des paquets : classe.", "WHERE": "Pas besoin de filtrer ici : on garde tous les héros, on les range seulement en paquets." },
         why: "5 paquets : un par classe. Le paquet Mage contient 2 héros, les autres 1 seul." },
-      { type: "type", ask: "Au clavier : combien de sorts y a-t-il dans chaque école ? (table sorts, colonne ecole)", expected: "SELECT ecole, COUNT(*) FROM sorts GROUP BY ecole",
+      { type: "type", schools: true, ask: "Au clavier : combien de sorts y a-t-il dans chaque école ? (table sorts, colonne ecole)", expected: "SELECT ecole, COUNT(*) FROM sorts GROUP BY ecole",
         words: ["SELECT", "ecole", ",", "COUNT(*)", "FROM", "sorts", "GROUP BY", "ecole"], why: "5 écoles. Feu, Lumière et Nature ont 2 sorts chacune, Glace et Ombre un seul. La même colonne apparaît deux fois : après SELECT pour l'afficher, après GROUP BY pour faire les paquets." }
     ] },
   { part: 2, title: "Relier deux tables", learned: ["id veut dire « numéro ». num_chateau = le numéro du château.", "Le point se lit « de » : heros.nom = le nom (de la table) des héros.", "JOIN relie deux tables ; ON donne la règle : les deux numéros doivent être égaux."],
@@ -1579,6 +1585,7 @@ function render() {
       ${S.kingdom ? kingdomHTML() : ""}
       ${S.castles ? castlesHTML() : ""}
       ${S.regions ? regionsHTML(S.regions) : ""}
+      ${S.schools ? schoolsHTML(S.schools === true ? null : S.schools) : ""}
       ${S.heroes ? heroCards(run("SELECT * FROM heros ORDER BY id").values) : ""}
       ${S.monsters ? monsterCards(run("SELECT * FROM monstres ORDER BY id").values) : ""}
       ${S.after ? S.after.map((t) => `<p>${t}</p>`).join("") : ""}
@@ -1667,7 +1674,7 @@ function renderBuild(S, head) {
 }
 
 function renderType(S, head) {
-  show(`${head}<p class="ask">${esc(S.ask)}</p>
+  show(`${head}<p class="ask">${esc(S.ask)}</p>${S.schools ? schoolsHTML(S.schools === true ? null : S.schools) : ""}
     <textarea id="ta" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" enterkeyhint="enter" aria-label="Ta requête" placeholder="SELECT …"></textarea>
     <div class="btns"><button class="btn main" id="check">Vérifier</button><button class="btn" id="tryit">Essayer sans vérifier</button><button class="btn" id="help">Montre-moi les blocs</button></div>
     <div id="fb"></div><div id="live"></div>`);
