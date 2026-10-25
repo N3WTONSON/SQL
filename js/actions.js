@@ -54,7 +54,7 @@ function cast() {
     let diff = "";
     if (got.columns.length && got.columns.length === want.columns.length && !/mauvais ordre/.test(problem)) {
       const { extra, missing } = diffRows(got, want);
-      const list = (rows) => rows.slice(0, 6).map((r) => `<span>${r.map((v) => esc(v === null ? "NULL" : v)).join(" · ")}</span>`).join("") + (rows.length > 6 ? `<span>… et ${rows.length - 6} autre(s)</span>` : "");
+      const list = (rows) => rows.slice(0, 6).map((r) => `<span>${r.map((v) => v === null ? "NULL" : emo(v) + esc(v)).join(" · ")}</span>`).join("") + (rows.length > 6 ? `<span>… et ${rows.length - 6} autre(s)</span>` : "");
       if (extra.length || missing.length) diff = `<div class="diff">
         ${extra.length ? `<div class="plus"><span class="label">En trop dans ton résultat (${extra.length})</span>${list(extra)}</div>` : ""}
         ${missing.length ? `<div class="minus"><span class="label">Attendues mais absentes (${missing.length})</span>${list(missing)}</div>` : ""}

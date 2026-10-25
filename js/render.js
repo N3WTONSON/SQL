@@ -128,11 +128,19 @@ function orderHTML(L) {
     ${stmts.length === 1 && /^\s*SELECT/i.test(stmts[0]) && /\bWHERE|GROUP|ORDER\b/i.test(stmts[0]) ? `<small>On écrit SELECT en premier, mais la base l'exécute presque en dernier. C'est la clé de nombreuses erreurs.</small>` : ""}</div>`;
 }
 
+/* Emoji des sorts et des objets : décor seulement, ajouté à l'affichage des tableaux (jamais dans le SQL ni dans les données) */
+const SPELL_EMOJI = { "Boule de Feu": "🔥", "Lumière Sacrée": "✨", "Ronces Vivantes": "🌿", "Pas de l'Ombre": "🌑",
+  "Tempête de Givre": "❄️", "Étincelle Ratée": "💨", "Jugement Divin": "⚡", "Peau d'Écorce": "🪵",
+  // objets de l'inventaire (et ceux forgés au chapitre 4)
+  "Épée Solaire": "🗡️", "Hache à Double Tranchant": "🪓", "Bâton de Cristal": "🔮", "Crochets de Serrure": "🗝️",
+  "Bourse Trouée": "👛", "Graine d'Yggdrasil": "🌱", "Potion Douteuse": "🧪", "Cape d'Invisibilité (presque)": "🧥",
+  "Marteau Runique": "🔨", "Enclume de Poche": "⚒️", "Lame des Alliances": "⚔️" };
+const emo = (v) => typeof v === "string" && SPELL_EMOJI[v] ? `<span class="emo" aria-hidden="true">${SPELL_EMOJI[v]}</span>` : "";
 function miniTable(res) {
   if (!res.columns.length) return `<div class="rowcount">Résultat vide : aucune ligne.</div>`;
   const shown = res.values.slice(0, 10);
   return `<div class="tablewrap"><table class="res"><thead><tr>${res.columns.map((c) => `<th>${esc(c)}</th>`).join("")}</tr></thead>
-    <tbody>${shown.map((r) => `<tr>${r.map((v) => `<td>${v === null ? "<i>NULL</i>" : esc(typeof v === "number" && !Number.isInteger(v) ? v.toFixed(2) : v)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
+    <tbody>${shown.map((r) => `<tr>${r.map((v) => `<td>${v === null ? "<i>NULL</i>" : emo(v) + esc(typeof v === "number" && !Number.isInteger(v) ? v.toFixed(2) : v)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
     <div class="rowcount">${res.values.length} ligne(s)${res.values.length > shown.length ? ` · ${shown.length} affichées` : ""}</div>`;
 }
 
@@ -164,11 +172,22 @@ function renderLevel() {
   $("lvlTag").textContent = L.chapter;
   $("lvlTitle").textContent = L.title;
   $("lvlPitch").innerHTML = L.pitch;
-  $("lvlArt").innerHTML = (() => {
+  $("lvlArt").innerHTML = (() => {      // illustrations : "heros", "h:2" (un héros), "m:5" (un monstre), "r:Région", "visites", ou un n° de château
     const a = LEVEL_ART[L.id]; if (!a) return "";
-    if (typeof a[0] === "string" && a[0].startsWith("r:")) { const db = new SQL.Database(); try { db.run(SCHEMA_SQL); return regionsFor(db, a.map((x) => x.slice(2))); } finally { db.close(); } }
-    if (typeof a[0] === "string") return `<figure class="tblart"><img src="${TABLE_ART[a[0]]}" alt="${ARTCAP[a[0]]}"><figcaption><b>TABLE ${a[0]}</b></figcaption></figure>`;
-    const db = new SQL.Database(); try { db.run(SCHEMA_SQL); return castleCards(db, a); } finally { db.close(); }
+    const db = new SQL.Database();
+    try {
+      db.run(SCHEMA_SQL);
+      const rows = (t) => (db.exec(`SELECT * FROM ${t} ORDER BY id`)[0] || { values: [] }).values;
+      const pick = (pre) => a.filter((x) => typeof x === "string" && x.startsWith(pre)).map((x) => x.slice(pre.length));
+      let html = "";
+      if (a.includes("heros")) html += heroCards(rows("heros"));
+      const h = pick("h:").map(Number); if (h.length) html += heroCards(rows("heros").filter((x) => h.includes(x[0])));
+      const m = pick("m:").map(Number); if (m.length) html += monsterCards(rows("monstres").filter((x) => m.includes(x[0])));
+      const r = pick("r:"); if (r.length) html += regionsFor(db, r);
+      a.filter((x) => TABLE_ART[x] && x !== "heros").forEach((t) => { html += `<figure class="tblart"><img src="${TABLE_ART[t]}" alt="${ARTCAP[t]}"><figcaption><b>TABLE ${t}</b></figcaption></figure>`; });
+      const c = a.filter((x) => typeof x === "number"); if (c.length) html += castleCards(db, c);
+      return html;
+    } finally { db.close(); }
   })();
   const usedT = Object.keys(TABLE_INFO).filter((t) => new RegExp(`\\b(FROM|JOIN|INTO|UPDATE)\\s+${t}\\b`, "i").test(L.expected));
   $("lvlTables").innerHTML = `Table${usedT.length > 1 ? "s" : ""} à utiliser : ` + usedT.map((t) => `${pixIcon(t, 22)}<code>${t}</code> <span class="tfr">(${TABLE_INFO[t].fr})</span>`).join(" et ");
@@ -217,8 +236,18 @@ const LINKS = { num_chateau: "chateaux", num_heros: "heros" };   // colonnes qui
 const TABLE_ART = { heros: "assets/table-heros.webp", monstres: "assets/table-monstres.webp", sorts: "assets/table-sorts.webp", inventaire: "assets/table-inventaire.webp", chateaux: "assets/table-chateaux.webp", visites: "assets/table-visites.webp" };
 const CASTLE_ART = { 1: "assets/chateau-1.webp", 2: "assets/chateau-2.webp", 3: "assets/chateau-3.webp" };
 // illustrations au-dessus du récit de certaines missions : un nom de table, ou le numéro d'un château
-const REGION_ART = { "Forêt Sombre": "assets/region-foret.webp", "Marais Putride": "assets/region-marais.webp", "Crypte Oubliée": "assets/region-crypte.webp" };
-const LEVEL_ART = { 2: ["r:Forêt Sombre"], 4: ["r:Forêt Sombre"], 6: ["r:Forêt Sombre", "r:Marais Putride", "r:Crypte Oubliée"], 10: ["r:Crypte Oubliée"], 14: ["r:Crypte Oubliée"], 7: [1, 2, 3], 9: [1, 2, 3], 19: [2], 24: [3], 25: ["visites"], 26: [1], 28: [1], 29: [1] };
+const HERO_ART = { 1: "assets/heros-1.webp", 2: "assets/heros-2.webp", 3: "assets/heros-3.webp", 4: "assets/heros-4.webp", 5: "assets/heros-5.webp", 6: "assets/heros-6.webp" };   // une image par héros : ajouter les suivants ici
+const MONSTER_ART = { 1: "assets/monstre-1.webp", 2: "assets/monstre-2.webp", 3: "assets/monstre-3.webp", 4: "assets/monstre-4.webp", 5: "assets/monstre-5.webp", 6: "assets/monstre-6.webp", 7: "assets/monstre-7.webp", 8: "assets/monstre-8.webp", 9: "assets/monstre-9.webp" };   // une image par monstre : ajouter les suivants ici
+const REGION_ART = { "Forêt Sombre": "assets/region-foret.webp", "Marais Putride": "assets/region-marais.webp", "Crypte Oubliée": "assets/region-crypte.webp", "Pics Gelés": "assets/region-pics.webp" };
+const LEVEL_ART = { 0: ["heros"], 17: ["h:2"], 31: ["h:3"], 30: ["h:6"], 33: ["h:5"], 34: ["h:6"], 2: ["r:Forêt Sombre"], 4: ["m:5"], 6: ["r:Forêt Sombre", "r:Marais Putride", "r:Crypte Oubliée", "r:Pics Gelés"], 10: ["r:Crypte Oubliée"], 14: ["m:6"], 7: [1, 2, 3], 9: [1, 2, 3], 19: [2], 24: [3], 25: ["visites"], 26: [1], 28: [1], 29: [1] };
+function monsterCards(rows) {   // rows : lignes de la table monstres ; une carte par monstre qui a son image
+  return `<div class="castles heroes">${rows.filter((r) => MONSTER_ART[r[0]]).map(([id, nom, type, region, pv, danger, butin], i) => `<figure class="castle hero" style="--i:${i}"><img src="${MONSTER_ART[id]}" alt="${esc(nom)}">
+    <figcaption><b>${esc(nom)}</b><code>id ${id} · ${esc(type)} · region ${esc(region)} · pv ${pv} · danger ${danger} · butin ${esc(butin)}</code></figcaption></figure>`).join("")}</div>`;
+}
+function heroCards(rows) {    // rows : lignes de la table heros ; une carte par héros qui a son image
+  return `<div class="castles heroes">${rows.filter((r) => HERO_ART[r[0]]).map(([id, nom, classe, niveau, pv, fortune, ch], i) => `<figure class="castle hero" style="--i:${i}"><img src="${HERO_ART[id]}" alt="${esc(nom)}">
+    <figcaption><b>${esc(nom)}</b><code>id ${id} · ${esc(classe)} · niveau ${niveau} · pv ${pv} · fortune ${fortune} · num_chateau ${ch}</code></figcaption></figure>`).join("")}</div>`;
+}
 function regionCards(rows) {   // rows : [region, nombre de monstres, noms]
   return `<div class="castles">${rows.filter((r) => REGION_ART[r[0]]).map(([region, n, noms], i) => `<figure class="castle" style="--i:${i}"><img src="${REGION_ART[region]}" alt="${esc(region)}">
     <figcaption><b>${esc(region)}</b><code>region = '${esc(region)}' · ${n} monstre${n > 1 ? "s" : ""} : ${esc(noms)}</code></figcaption></figure>`).join("")}</div>`;
@@ -243,6 +272,8 @@ function renderSchema() {
     return `<details class="tbl" ${i < 2 ? "open" : ""}><summary>${TABLE_ART[t] ? `<img class="tthumb" src="${TABLE_ART[t]}" alt="">` : ""}<span class="tname" style="color:inherit;font-size:inherit">${pixIcon(t, 20)}${t} <b>· ${T.fr}</b></span><span class="tcount">${n} lignes ▾</span></summary>
       ${TABLE_ART[t] ? `<figure class="tblart"><img src="${TABLE_ART[t]}" alt="${ARTCAP[t]}"><figcaption><b>TABLE ${t}</b></figcaption></figure>` : ""}
       <p class="about">${T.about} <i>${T.memo}</i></p>
+      ${t === "heros" && Object.keys(HERO_ART).length ? `<p class="about">Chaque ligne de la table est un héros :</p>${heroCards(db.exec("SELECT * FROM heros ORDER BY id")[0].values)}` : ""}
+      ${t === "monstres" && Object.keys(MONSTER_ART).length ? `<p class="about">Chaque ligne de la table est un monstre :</p>${monsterCards(db.exec("SELECT * FROM monstres ORDER BY id")[0].values)}` : ""}
       ${t === "monstres" ? `<p class="about">Les régions où vivent les monstres (colonne <code>region</code>) :</p>${regionsFor(db)}` : ""}
       ${t === "chateaux" ? `<p class="about">Chaque ligne de la table est un château :</p>${castleCards(db, [1, 2, 3])}` : ""}
       <div class="cols">${cols.map((c) => `<button data-ins="${c[1]}" title="Insérer ${c[1]}">${c[1]} <span class="t">${COL_INFO[c[1]] || ""}</span>${LINKS[c[1]] ? ` <span class="lk">→ ${LINKS[c[1]]}</span>` : ""}</button>`).join("")}</div>
@@ -260,7 +291,7 @@ function renderLoot() {
 function table(res) {
   if (!res.columns.length) return `<div class="msg info">Le sort n'a rien renvoyé.</div>`;
   return `<div class="tablewrap"><table class="res"><thead><tr>${res.columns.map((c) => `<th>${esc(c)}</th>`).join("")}</tr></thead>
-    <tbody>${res.values.map((r, ri) => `<tr style="--i:${ri}">${r.map((v) => `<td>${v === null ? "<i>NULL</i>" : esc(v)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
+    <tbody>${res.values.map((r, ri) => `<tr style="--i:${ri}">${r.map((v) => `<td>${v === null ? "<i>NULL</i>" : emo(v) + esc(v)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
     <div class="rowcount">${res.values.length} ligne(s)</div>`;
 }
 
@@ -274,7 +305,7 @@ function worldView(w) {
     return `<div class="worldhead">${esc(a.table)}${b.missing ? " · NOUVELLE TABLE" : ""}<span>${ch.size - gone.length} LIGNE(S) CRÉÉE(S) OU MODIFIÉE(S) · ${gone.length} SUPPRIMÉE(S)</span></div>
       ${planChanged ? `<div class="worldplan">Plan : ${a.plan.map((x) => `<code>${esc(x)}</code>`).join(" ")}</div>` : ""}
       <div class="tablewrap"><table class="res"><thead><tr>${a.columns.map((c) => `<th>${esc(c)}</th>`).join("")}</tr></thead>
-      <tbody>${a.values.map((r, ri) => `<tr style="--i:${ri}" class="${ch.has(r[0]) ? "chg" : ""}">${r.map((v) => `<td>${v === null ? "<i>NULL</i>" : esc(v)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
+      <tbody>${a.values.map((r, ri) => `<tr style="--i:${ri}" class="${ch.has(r[0]) ? "chg" : ""}">${r.map((v) => `<td>${v === null ? "<i>NULL</i>" : emo(v) + esc(v)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
       ${a.values.length ? "" : `<div class="rowcount">La table est vide pour l'instant.</div>`}
       ${gone.length ? `<div class="gone">Supprimé : ${gone.map((r) => esc(r[1])).join(", ")}</div>` : ""}`;
   }).join("");

@@ -123,9 +123,14 @@ Ensuite, l'aventure complète (`index.html`) reprend ces notions dès le Chapitr
 - **Illustrations des tables** : une grande image par table (`assets/table-*.webp`) dans le panneau des tables
   et sur la carte « Les 5 tables du royaume » de Premiers pas, avec les **vraies colonnes** écrites par le jeu.
   Les trois châteaux ont chacun leur image (`assets/chateau-1.webp` à `chateau-3.webp`) : affichés côte à côte,
-  ils montrent qu'**une ligne de la table = un château**. Les trois régions (Forêt Sombre, Marais Putride, Crypte
-  Oubliée, `assets/region-*.webp`) apparaissent avec leurs monstres dans le panneau `monstres` et dans les leçons
-  GROUP BY et OR. Certaines missions (2, 4, 6, 7, 9, 10, 14, 19, 24, 25 à 29) ont leur illustration au-dessus du récit.
+  ils montrent qu'**une ligne de la table = un château**. Les quatre régions (Forêt Sombre, Marais Putride, Crypte
+  Oubliée, Pics Gelés, `assets/region-*.webp`) apparaissent avec leurs monstres dans le panneau `monstres` et dans les leçons
+  GROUP BY et OR. Les six héros ont leur portrait (`assets/heros-1.webp` à `heros-6.webp`), avec les vraies valeurs de
+  leur ligne : on les voit sous la table `heros` (leçon 1 de Premiers pas, panneau des tables, première mission).
+  Les neuf monstres ont aussi le leur (`assets/monstre-1.webp` à `monstre-9.webp`), dans l'étape « Une ligne = un monstre »
+  de Premiers pas et dans le panneau `monstres` ; l'Ours-Hibou et la Liche illustrent leur boss.
+  Certaines missions ont leur illustration au-dessus du récit (0, 2, 4, 6, 7, 9, 10, 14, 17, 19, 24 à 31, 33, 34) ;
+  aucune ne montre le héros qui est la réponse de la mission.
 - **Animations** : les lignes d'un résultat arrivent une à une ; avec `WHERE`, le videur écarte les lignes
   une par une sous les yeux du joueur ; les blocs posés « tombent » dans la phrase ; étincelles à chaque
   réussite, secousse à chaque erreur ; les pastilles de couleur des `JOIN` pulsent. Tout s'arrête si

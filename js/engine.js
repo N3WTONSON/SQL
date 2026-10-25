@@ -23,7 +23,7 @@ function snapshot(db, tables) {
       if (!cols.length) return { table: t, missing: true };
       const r = db.exec(`SELECT * FROM ${t} ORDER BY 1`)[0];
       const plan = cols[0].values.map((c) => `${c[1]} ${String(c[2] || "").toUpperCase()}${c[5] ? " PRIMARY KEY" : ""}`);
-      return { table: t, columns: cols[0].values.map((c) => c[1]), plan, sig: plan.join("|"), values: r ? r.values : [] };
+      return { table: t, columns: cols[0].values.map((c) => c[1]), plan, sig: plan.join("|").toLowerCase(), values: r ? r.values : [] };
     } catch (e) { return { table: t, missing: true }; }
   });
 }

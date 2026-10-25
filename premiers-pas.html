@@ -176,12 +176,16 @@ td .tag { display: inline-block; animation: tagPulse 1.6s ease-in-out 2; animati
 @keyframes spark { from { transform: translate(-50%, -50%); opacity: 1; } to { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(90deg); opacity: 0; } }
 .shake { animation: shake .35s; }
 @keyframes shake { 25% { transform: translateX(-6px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-3px); } }
+.castle.hero img { aspect-ratio: 4 / 3; object-position: center 20%; }
+.heroes { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
 .castles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin: 6px 0 10px; }
+.castles:has(> :nth-child(4)) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .castle { animation: rise 0.45s ease-out both; animation-delay: calc(var(--i, 0) * 0.1s); margin: 0; position: relative; border: 2px solid var(--torch-deep); border-radius: 6px; overflow: hidden; background: var(--night); }
 .castle img { display: block; width: 100%; height: auto; aspect-ratio: 720 / 411; object-fit: cover; }
 .castle figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 14px 7px 5px; background: linear-gradient(transparent, rgba(17, 19, 42, 0.94) 42%); display: flex; flex-direction: column; font-size: 12px; line-height: 1.25; color: var(--ink); }
 .castle figcaption b { color: var(--torch); font-size: 14px; }
 .castle figcaption code { font-size: 10.5px; color: var(--ink-dim); background: none; padding: 0; }
+.emo { margin-right: 6px; font-style: normal; user-select: none; -webkit-user-select: none; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
 .kingdom { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
 .kcard { border: 1px solid var(--seam); background: var(--stone-2); padding: 10px; display: flex; flex-direction: column; gap: 5px; animation: rise 0.45s ease-out both; animation-delay: calc(var(--i, 0) * 0.08s); }
 .kart { margin: 0 0 4px; position: relative; border: 2px solid var(--torch-deep); border-radius: 6px; overflow: hidden; }
@@ -342,7 +346,17 @@ function burst(el, n = 14) {
 function shake(el) { if (!el || reducedMotion()) return; el.classList.remove("shake"); void el.offsetWidth; el.classList.add("shake"); }
 const TABLE_ART = { heros: "assets/table-heros.webp", monstres: "assets/table-monstres.webp", sorts: "assets/table-sorts.webp", inventaire: "assets/table-inventaire.webp", chateaux: "assets/table-chateaux.webp" };
 const CASTLE_ART = { 1: "assets/chateau-1.webp", 2: "assets/chateau-2.webp", 3: "assets/chateau-3.webp" };
-const REGION_ART = { "Forêt Sombre": "assets/region-foret.webp", "Marais Putride": "assets/region-marais.webp", "Crypte Oubliée": "assets/region-crypte.webp" };
+const HERO_ART = { 1: "assets/heros-1.webp", 2: "assets/heros-2.webp", 3: "assets/heros-3.webp", 4: "assets/heros-4.webp", 5: "assets/heros-5.webp", 6: "assets/heros-6.webp" };   // une image par héros : ajouter les suivants ici
+const MONSTER_ART = { 1: "assets/monstre-1.webp", 2: "assets/monstre-2.webp", 3: "assets/monstre-3.webp", 4: "assets/monstre-4.webp", 5: "assets/monstre-5.webp", 6: "assets/monstre-6.webp", 7: "assets/monstre-7.webp", 8: "assets/monstre-8.webp", 9: "assets/monstre-9.webp" };   // une image par monstre : ajouter les suivants ici
+const REGION_ART = { "Forêt Sombre": "assets/region-foret.webp", "Marais Putride": "assets/region-marais.webp", "Crypte Oubliée": "assets/region-crypte.webp", "Pics Gelés": "assets/region-pics.webp" };
+function monsterCards(rows) {   // rows : lignes de la table monstres ; une carte par monstre qui a son image
+  return `<div class="castles heroes">${rows.filter((r) => MONSTER_ART[r[0]]).map(([id, nom, type, region, pv, danger, butin], i) => `<figure class="castle hero" style="--i:${i}"><img src="${MONSTER_ART[id]}" alt="${esc(nom)}">
+    <figcaption><b>${esc(nom)}</b><code>id ${id} · ${esc(type)} · region ${esc(region)} · pv ${pv} · danger ${danger} · butin ${esc(butin)}</code></figcaption></figure>`).join("")}</div>`;
+}
+function heroCards(rows) {    // rows : lignes de la table heros ; une carte par héros qui a son image
+  return `<div class="castles heroes">${rows.filter((r) => HERO_ART[r[0]]).map(([id, nom, classe, niveau, pv, fortune, ch], i) => `<figure class="castle hero" style="--i:${i}"><img src="${HERO_ART[id]}" alt="${esc(nom)}">
+    <figcaption><b>${esc(nom)}</b><code>id ${id} · ${esc(classe)} · niveau ${niveau} · pv ${pv} · fortune ${fortune} · num_chateau ${ch}</code></figcaption></figure>`).join("")}</div>`;
+}
 function regionCards(rows) {   // rows : [region, nombre de monstres, noms]
   return `<div class="castles">${rows.filter((r) => REGION_ART[r[0]]).map(([region, n, noms], i) => `<figure class="castle" style="--i:${i}"><img src="${REGION_ART[region]}" alt="${esc(region)}">
     <figcaption><b>${esc(region)}</b><code>region = '${esc(region)}' · ${n} monstre${n > 1 ? "s" : ""} : ${esc(noms)}</code></figcaption></figure>`).join("")}</div>`;
@@ -415,7 +429,7 @@ function wd(sql, fr) { return '<span class="word"><b>' + sql + '</b><i>' + fr + 
 const LESSONS = [
   { part: 1, title: "Une table, c'est quoi ?", learned: ["Une table est un tableau : une ligne par élément, une colonne par information.", "Les mots-clés (SELECT, FROM…) sont en anglais ; les noms des tables et des colonnes sont en français, sans accents."],
     steps: [
-      { type: "look", title: "Le registre des héros",
+      { type: "look", title: "Le registre des héros", heroes: true,
         text: ["Une <b>base de données</b>, c'est un ensemble de tableaux. Chaque tableau s'appelle une <b>table</b>.", "Voici la table <code>heros</code> : les héros du royaume. <b>Chaque ligne est un héros.</b> <b>Chaque colonne est une information</b> sur lui. Sous chaque nom de colonne, sa traduction en français."],
         sql: "SELECT * FROM heros" },
       { type: "quiz", q: "Combien de héros y a-t-il dans la table ?", options: [
@@ -512,7 +526,7 @@ const LESSONS = [
     ] },
   { part: 2, title: "Faire des paquets", learned: ["GROUP BY range les lignes en paquets qui ont la même valeur.", "COUNT(*) compte alors chaque paquet séparément.", "Le résultat a une ligne par paquet.", "À côté de COUNT(*), on affiche la colonne qui sert à faire les paquets."],
     steps: [
-      { type: "look", title: "Ranger en paquets", regions: ["Forêt Sombre", "Marais Putride", "Crypte Oubliée"],
+      { type: "look", title: "Ranger en paquets", regions: ["Forêt Sombre", "Marais Putride", "Crypte Oubliée", "Pics Gelés"],
         text: ["Et si on veut compter les monstres <b>de chaque région</b>, tout d'un coup ?", "On range d'abord les monstres en <b>paquets</b> : tous ceux d'une même région ensemble. Les couleurs montrent les paquets."],
         tables: [{ label: "Les monstres, rangés par région", sql: "SELECT nom, region FROM monstres ORDER BY region", hl: { color: 1 } }],
         after: ["<span class=\"word\"><b>GROUP BY</b><i>range en paquets par</i></span> <span class=\"word\"><b>region</b><i>la région</i></span> fait ces paquets. Ensuite, COUNT(*) compte <b>chaque paquet</b>, et chaque paquet devient une seule ligne :"] },
@@ -1151,6 +1165,11 @@ LESSONS.forEach((L, i) => {
   if (RECALL[i]) L.steps.unshift({ type: "quiz", recall: true, ...RECALL[i] });
   L.memos = L.steps.filter((x) => x.type === "memo").flatMap((x) => x.keys);
 });
+{ const L1 = LESSONS[1].steps, k = L1.findIndex((x) => x.ask && x.ask.startsWith("Maintenant, montre tout le contenu de la table des monstres"));
+  L1.splice(k + 1, 0, { type: "look", title: "Une ligne = un monstre", monsters: true,
+    text: ["Voici ce que tu viens d'afficher : la table <code>monstres</code>. <b>Chaque ligne est un monstre</b>, et chaque colonne une information sur lui : son type, sa région, ses PV, son danger (de 1 à 9) et ce qu'il laisse quand on le bat (son butin).",
+      "Sous chaque illustration, les vraies valeurs de sa ligne."],
+    sql: "SELECT * FROM monstres" }); }
 LESSONS[0].steps.splice(2, 0, { type: "look", title: "Une ligne = un château", castles: true,
   text: ["Regarde la table <code>chateaux</code>. Elle a <b>3 lignes</b> : une ligne par château. Chaque illustration ci-dessous, c'est <b>une ligne</b> du tableau.",
     "Les <b>colonnes</b> (id, nom, region, seigneur, tresor) sont les informations qu'on note sur chaque château. Le Bastion de l'Aube, par exemple, a l'id 1, se trouve dans les Plaines Dorées et a pour seigneur la Reine Ysolde."],
@@ -1177,13 +1196,21 @@ function sameResult(a, b, ordered) {
   if (!ordered) { x.sort(); y.sort(); }
   return x.join("|") === y.join("|");
 }
+/* Emoji des sorts et des objets : décor seulement, ajouté à l'affichage des tableaux (jamais dans le SQL ni dans les données) */
+const SPELL_EMOJI = { "Boule de Feu": "🔥", "Lumière Sacrée": "✨", "Ronces Vivantes": "🌿", "Pas de l'Ombre": "🌑",
+  "Tempête de Givre": "❄️", "Étincelle Ratée": "💨", "Jugement Divin": "⚡", "Peau d'Écorce": "🪵",
+  // objets de l'inventaire (et ceux forgés au chapitre 4)
+  "Épée Solaire": "🗡️", "Hache à Double Tranchant": "🪓", "Bâton de Cristal": "🔮", "Crochets de Serrure": "🗝️",
+  "Bourse Trouée": "👛", "Graine d'Yggdrasil": "🌱", "Potion Douteuse": "🧪", "Cape d'Invisibilité (presque)": "🧥",
+  "Marteau Runique": "🔨", "Enclume de Poche": "⚒️", "Lame des Alliances": "⚔️" };
+const emo = (v) => typeof v === "string" && SPELL_EMOJI[v] ? `<span class="emo" aria-hidden="true">${SPELL_EMOJI[v]}</span>` : "";
 const PAL = ["#f0a43a", "#66c9ff", "#6fd3b0", "#c792ea", "#e2574c"];
 function tableHTML(res, hl) {
   if (!res.columns.length || !res.values.length) return `<p class="count">Aucune ligne ne correspond.</p>`;
   const colorCols = hl && hl.color !== undefined ? [].concat(hl.color) : [];
   const uniq = {}; colorCols.forEach((c) => { uniq[c] = [...new Set(res.values.map((r) => r[c]))].filter((v) => typeof v !== "number").sort(); });
   const colorOf = (c, v) => PAL[typeof v === "number" ? (v - 1) % PAL.length : uniq[c].indexOf(v) % PAL.length];
-  const cell = (v, c) => v === null ? "—" : colorCols.includes(c) ? `<span class="tag" style="background:${colorOf(c, v)}">${esc(v)}</span>` : esc(v);
+  const cell = (v, c) => v === null ? "—" : colorCols.includes(c) ? `<span class="tag" style="background:${colorOf(c, v)}">${emo(v)}${esc(v)}</span>` : emo(v) + esc(v);
   return `<div class="tablewrap"><table><thead><tr>${res.columns.map((c) => `<th>${esc(c)}${COL_FR[c] ? `<span class="fr">${esc(COL_FR[c])}</span>` : ""}</th>`).join("")}</tr></thead>
     <tbody>${res.values.map((r, ri) => `<tr style="--i:${ri}" class="${hl && hl.test ? (hl.test(r[hl.col]) ? "keep" : "drop") : hl && hl.chg ? (hl.chg.includes(key(r)) ? "keep" : hl.gone.includes(key(r)) ? "drop" : "") : ""}">${r.map((v, c) => `<td>${cell(v, c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
     <span class="count">${res.values.length} ligne(s)</span>`;
@@ -1198,7 +1225,8 @@ function evalQ(S, q) {      // lecture : le résultat ; écriture : la table apr
       ? `<span class="zoneLabel">LE PLAN DE LA TABLE ${t.toUpperCase()} APRÈS TA PHRASE</span>${tableHTML(plan.res)}` +
         `<div style="margin-top:14px"></div><span class="zoneLabel">SES LIGNES</span>${rows.res && rows.res.columns.length ? tableHTML(rows.res) : `<p class="count">La table est vide : 0 ligne.</p>`}`
       : `<div class="fb info"><b>LA TABLE ${t.toUpperCase()} N'EXISTE PAS (OU PLUS)</b>Tables du royaume : ${tables.values.map((x) => x[0]).join(", ")}.</div>`;
-    return { res: plan.res, html, exists: plan.res.values.length > 0 };
+    const low = { columns: plan.res.columns, values: plan.res.values.map(([c, t, r]) => [String(c).toLowerCase(), String(t).toUpperCase(), r]) };
+    return { res: low, raw: plan.res.values.map((x) => x[0]), html, exists: plan.res.values.length > 0 };
   }
   if (!S.write) { const r = tryRun(q, S.setup); return r.err ? { err: r.err } : { res: r.res, html: tableHTML(r.res) }; }
   const t = S.write, before = run(`SELECT * FROM ${t}`, S.setup), r = tryRun(q + `; SELECT * FROM ${t}`, S.setup);
@@ -1213,7 +1241,20 @@ function evalQ(S, q) {      // lecture : le résultat ; écriture : la table apr
 function ddlMsg(ev, tv) {
   if (tv.exists && !ev.exists) return "La table n'existe pas après ta phrase. Vérifie le début : CREATE TABLE nom ( … ).";
   if (!tv.exists && ev.exists) return "La table est encore debout. DELETE FROM vide seulement les lignes ; pour la démolir entière : DROP TABLE.";
-  return "Le plan ne correspond pas : vérifie le nom de chaque colonne et son type (INTEGER = nombre, TEXT = texte).";
+  // on dit précisément ce qui cloche, colonne par colonne
+  const got = ev.res.values, want = tv.res.values, out = [];
+  want.forEach(([c, t, r]) => { const g = got.find((x) => x[0] === c);
+    if (!g) out.push(`il manque la colonne ${c} (${t})`);
+    else if (g[1] !== t) out.push(`la colonne ${c} doit être de type ${t}, pas ${g[1] || "sans type"}`);
+    else if (g[2] !== r) out.push(r ? `${c} doit être la PRIMARY KEY` : `${c} ne doit pas être la PRIMARY KEY`); });
+  got.forEach(([c]) => { if (!want.some((x) => x[0] === c)) out.push(`la colonne ${c} n'est pas demandée (faute de frappe ? accent ?)`); });
+  if (!out.length && got.map((x) => x[0]).join() !== want.map((x) => x[0]).join()) out.push("les colonnes ne sont pas dans l'ordre demandé");
+  return "Le plan ne correspond pas : " + (out.join(" ; ") || "vérifie le nom de chaque colonne et son type") + ".";
+}
+function caseNote(S, r, tv) {      // ID au lieu de id : juste pour la base, mais on prend la bonne habitude
+  if (!S.ddl || !r.raw || !tv.raw) return "";
+  const diff = r.raw.filter((c, i) => tv.raw[i] && c !== tv.raw[i] && c.toLowerCase() === tv.raw[i].toLowerCase());
+  return diff.length ? `<div class="fb info"><b>PETITE REMARQUE</b>Tu as écrit ${diff.map((c) => `« ${esc(c)} »`).join(", ")} en majuscules. La base l'accepte, car elle ne fait pas la différence entre ID et id pour un nom de colonne. Mais dans le royaume, tous les noms s'écrivent en minuscules (id, nom, fortune) : garde cette habitude, et seuls les mots-clés (SELECT, CREATE TABLE…) seront en majuscules.</div>` : "";
 }
 function writeMsg(ev, tv, q) {
   if (!ev.changed) return "Rien n'a changé dans la table : ta phrase ne fait que regarder, ou elle n'est pas finie.";
@@ -1268,6 +1309,8 @@ function render() {
       ${S.kingdom ? kingdomHTML() : ""}
       ${S.castles ? castlesHTML() : ""}
       ${S.regions ? regionsHTML(S.regions) : ""}
+      ${S.heroes ? heroCards(run("SELECT * FROM heros ORDER BY id").values) : ""}
+      ${S.monsters ? monsterCards(run("SELECT * FROM monstres ORDER BY id").values) : ""}
       ${S.after ? S.after.map((t) => `<p>${t}</p>`).join("") : ""}
       ${S.highlight ? `<div class="legend"><span class="k">la ligne reste</span><span class="d">la ligne part</span></div>` : ""}
       ${nextBtn("J'ai compris")}`);
@@ -1336,7 +1379,7 @@ function renderBuild(S, head) {
     if (!placed.length) fb = `<div class="fb try"><b>RIEN ENCORE</b>Clique sur les blocs, dans l'ordre, pour construire ta phrase.</div>`;
     else if (trap) fb = `<div class="fb try"><b>REGARDE CE BLOC</b>${esc(S.traps[trap])}</div>`;
     else if (full().join("|") === S.target.join("|") || (r.res && sameResult(r.res, target, S.ordered))) {
-      fb = `<div class="fb ok"><b>BRAVO</b>${esc(S.why)}</div>${nextBtn()}`;
+      fb = `<div class="fb ok"><b>BRAVO</b>${esc(S.why)}</div>${caseNote(S, r, tv)}${nextBtn()}`;
     } else if (r.res && S.ddl) {
       fb = `<div class="fb try"><b>LA PHRASE MARCHE, MAIS…</b>${esc(ddlMsg(r, tv))}</div>`;
     } else if (r.res && S.write) {
@@ -1380,7 +1423,7 @@ function renderType(S, head) {
     if (S.ddl && !sameResult(r.res, target, false)) { FX.play("bad"); $("fb").innerHTML = `<div class="fb try"><b>LA PHRASE MARCHE, MAIS…</b>${esc(ddlMsg(r, tv))}</div>`; return; }
     if (S.write && !sameResult(r.res, target, false)) { FX.play("bad"); $("fb").innerHTML = `<div class="fb try"><b>LA PHRASE MARCHE, MAIS…</b>${esc(writeMsg(r, tv, q))}</div>`; return; }
     if (!sameResult(r.res, target, S.ordered)) FX.play("bad");
-    if (sameResult(r.res, target, S.ordered)) { $("fb").innerHTML = `<div class="fb ok"><b>BRAVO</b>${esc(S.why)}</div>${nextBtn()}`; FX.play("good"); burst($("fb").firstElementChild); $("next").onclick = advance; $("next").focus(); }
+    if (sameResult(r.res, target, S.ordered)) { $("fb").innerHTML = `<div class="fb ok"><b>BRAVO</b>${esc(S.why)}</div>${caseNote(S, r, tv)}${nextBtn()}`; FX.play("good"); burst($("fb").firstElementChild); $("next").onclick = advance; $("next").focus(); }
     else if (!r.res.columns.length) $("fb").innerHTML = `<div class="fb try"><b>AUCUNE LIGNE</b>Ta phrase ne trouve rien. Si tu compares un texte, vérifie les apostrophes, les majuscules et les accents.</div>`;
     else if (S.ordered && r.res.values.length === target.values.length && r.res.columns.length === target.columns.length && sameResult(r.res, target, false))
       $("fb").innerHTML = `<div class="fb try"><b>PRESQUE</b>Les bonnes lignes sont là, mais pas dans le bon ordre. Regarde ton ORDER BY : faut-il DESC ?</div>`;
